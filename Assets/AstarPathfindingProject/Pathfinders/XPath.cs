@@ -26,7 +26,9 @@ namespace Pathfinding {
 
 		public XPath () {}
 
-		public new static XPath Construct (Vector3 start, Vector3 end, OnPathDelegate callback = null) {
+	    //Good Game
+        //public new static XPath Construct (Vector3 start, Vector3 end, OnPathDelegate callback = null) {
+        public new static XPath Construct (Int3 start, Int3 end, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<XPath>();
 
 			p.Setup(start, end, callback);
@@ -34,27 +36,50 @@ namespace Pathfinding {
 			return p;
 		}
 
-		public override void Reset () {
+		protected override void Reset () {
 			base.Reset();
 			endingCondition = null;
 		}
+
+#if !ASTAR_NO_GRID_GRAPH
+		protected override bool EndPointGridGraphSpecialCase (GraphNode endNode) {
+			// Don't use the grid graph special case for this path type
+			return false;
+		}
+#endif
 
 		/** The start node need to be special cased and checked here if it is a valid target */
 		protected override void CompletePathIfStartIsValidTarget () {
 			var pNode = pathHandler.GetPathNode(startNode);
 
 			if (endingCondition.TargetFound(pNode)) {
-				endNode = pNode.node;
-				endPoint = (Vector3)endNode.position;
+				ChangeEndNode(startNode);
 				Trace(pNode);
 				CompleteState = PathCompleteState.Complete;
 			}
 		}
 
-		public override void CalculateStep (long targetTick) {
+		/** Changes the #endNode to \a target and resets some temporary flags on the previous node.
+		 * Also sets #endPoint to the position of \a target.
+		 */
+		void ChangeEndNode (GraphNode target) {
+			// Reset temporary flags on the previous end node, otherwise they might be
+			// left in the graph and cause other paths to calculate paths incorrectly
+			if (endNode != null && endNode != startNode) {
+				var pathNode = pathHandler.GetPathNode(endNode);
+				pathNode.flag1 = pathNode.flag2 = false;
+			}
+
+			endNode = target;
+		    //Good Game
+            //endPoint = (Vector3)target.position;
+            endPoint = target.position;
+		}
+
+		protected override void CalculateStep (long targetTick) {
 			int counter = 0;
 
-			// Continue to search while there hasn't ocurred an error and the end hasn't been found
+			// Continue to search as long as we haven't encountered an error and we haven't found the target
 			while (CompleteState == PathCompleteState.NotCalculated) {
 				searchedNodes++;
 
@@ -68,14 +93,13 @@ namespace Pathfinding {
 				currentR.node.Open(this, currentR, pathHandler);
 
 				// Any nodes left to search?
-				if (pathHandler.HeapEmpty()) {
-					Error();
-					LogError("Searched whole area but could not find target");
+				if (pathHandler.heap.isEmpty) {
+					FailWithError("Searched whole area but could not find target");
 					return;
 				}
 
 				// Select the node with the lowest F score and remove it from the open list
-				currentR = pathHandler.PopNode();
+				currentR = pathHandler.heap.Remove();
 
 				// Check for time every 500 nodes, roughly every 0.5 ms usually
 				if (counter > 500) {
@@ -95,33 +119,32 @@ namespace Pathfinding {
 			}
 
 			if (CompleteState == PathCompleteState.Complete) {
-				endNode = currentR.node;
-				endPoint = (Vector3)endNode.position;
+				ChangeEndNode(currentR.node);
 				Trace(currentR);
 			}
 		}
 	}
 
 	/** Customized ending condition for a path.
-	 * This class can be used to implement a custom ending condition for e.g an Pathfinding.XPath.\n
-	 * Inherit from this class and override the #TargetFound function to implement you own ending condition logic.\n
-	 * \n
-	 * For example, you might want to create an Ending Condition which stops when a node is close enough to a given point.\n
+	 * This class can be used to implement a custom ending condition for e.g an Pathfinding.XPath.
+	 * Inherit from this class and override the #TargetFound function to implement you own ending condition logic.
+	 *
+	 * For example, you might want to create an Ending Condition which stops when a node is close enough to a given point.
 	 * Then what you do is that you create your own class, let's call it MyEndingCondition and override the function TargetFound to specify our own logic.
 	 * We want to inherit from ABPathEndingCondition because only ABPaths have end points defined.
 	 *
 	 * \code
 	 * public class MyEndingCondition : ABPathEndingCondition {
 	 *
-	 * // Maximum world distance to the target node before terminating the path
-	 * public float maxDistance = 10;
+	 *     // Maximum world distance to the target node before terminating the path
+	 *     public float maxDistance = 10;
 	 *
-	 * // Reuse the constructor in the superclass
-	 * public EndingConditionProximity (ABPath p) : base (p) {}
+	 *     // Reuse the constructor in the superclass
+	 *     public MyEndingCondition (ABPath p) : base (p) {}
 	 *
-	 * public override bool TargetFound (PathNode node) {
-	 *  return ((Vector3)node.node.position - abPath.originalEndPoint).sqrMagnitude <= maxDistance*maxDistance;
-	 * }
+	 *     public override bool TargetFound (PathNode node) {
+	 *         return ((Vector3)node.node.position - abPath.originalEndPoint).sqrMagnitude <= maxDistance*maxDistance;
+	 *     }
 	 * }
 	 * \endcode
 	 *
@@ -133,19 +156,18 @@ namespace Pathfinding {
 	 * Then you simply assign it to the \a endingCondition variable on, for example an XPath which uses the EndingCondition.
 	 *
 	 * \code
-	 * EndingConditionProximity ec = new MyEndingCondition ();
-	 * ec.maxDistance = 100; //Or some other value
+	 * XPath myXPath = XPath.Construct(startPoint, endPoint);
+	 * MyEndingCondition ec = new MyEndingCondition();
+	 * ec.maxDistance = 100; // Or some other value
 	 * myXPath.endingCondition = ec;
 	 *
-	 * //Call the path!
-	 * mySeeker.StartPath (ec);
+	 * // Calculate the path!
+	 * seeker.StartPath (ec);
 	 * \endcode
 	 *
-	 * Where \a mySeeker is a Seeker component, and \a myXPath is an Pathfinding.XPath.\n
+	 * Where \a seeker is a #Seeker component, and \a myXPath is an Pathfinding.XPath.\n
 	 *
-	 * \note The above was written without testing. I hope I haven't made any mistakes, if you try it out, and it doesn't seem to work. Please post a comment below.
-	 *
-	 * \note Written for 3.0.8.3
+	 * \note The above was written without testing. I hope I haven't made any mistakes, if you try it out, and it doesn't seem to work. Please post a comment in the forums.
 	 *
 	 * \version Method structure changed in 3.2
 	 * \version Updated in version 3.6.8
@@ -202,8 +224,11 @@ namespace Pathfinding {
 			this.maxDistance = maxDistance;
 		}
 
-		public override bool TargetFound (PathNode node) {
-			return ((Vector3)node.node.position - abPath.originalEndPoint).sqrMagnitude <= maxDistance*maxDistance;
+		public override bool TargetFound (PathNode node)
+		{
+		    //Good Game
+            //return ((Vector3)node.node.position - abPath.originalEndPoint).sqrMagnitude <= maxDistance*maxDistance;
+            return (node.node.position - abPath.originalEndPoint).sqrMagnitude <= maxDistance*maxDistance;
 		}
 	}
 }

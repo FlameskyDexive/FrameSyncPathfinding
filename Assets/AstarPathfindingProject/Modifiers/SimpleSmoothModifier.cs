@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-
+using System.Linq.Expressions;
 using Pathfinding.Util;
 
 namespace Pathfinding {
@@ -54,6 +54,7 @@ namespace Pathfinding {
 
 		/** Determines how much smoothing to apply in each smooth iteration. 0.5 usually produces the nicest looking curves. */
 		[Tooltip("Determines how much smoothing to apply in each smooth iteration. 0.5 usually produces the nicest looking curves")]
+		[Range(0, 1)]
 		public float strength = 0.5F;
 
 		/** Toggle to divide all lines in equal length segments.
@@ -93,7 +94,9 @@ namespace Pathfinding {
 				return;
 			}
 
-			List<Vector3> path = null;
+		    //Good Game
+            //List<Vector3> path = null;
+            List<Int3> path = null;
 
 			switch (smoothType) {
 			case SmoothType.Simple:
@@ -103,16 +106,22 @@ namespace Pathfinding {
 			case SmoothType.OffsetSimple:
 				path = SmoothOffsetSimple(p.vectorPath); break;
 			case SmoothType.CurvedNonuniform:
-				path = CurvedNonuniform(p.vectorPath); break;
+			    //Good Game
+                    //path = CurvedNonuniform(p.vectorPath); break;
+                    path = IntMath.Vector3s2Int3s(CurvedNonuniform(IntMath.Int3s2Vector3s(p.vectorPath))); break;
 			}
 
-			if (path != p.vectorPath) {
-				ListPool<Vector3>.Release(p.vectorPath);
+			if (path != p.vectorPath)
+			{
+			    //Good Game
+                //ListPool<Vector3>.Release(ref p.vectorPath);
+                ListPool<Int3>.Release(ref p.vectorPath);
 				p.vectorPath = path;
 			}
 		}
 
-		public List<Vector3> CurvedNonuniform (List<Vector3> path) {
+	    //Good Game
+        public List<Vector3> CurvedNonuniform (List<Vector3> path) {
 			if (maxSegmentLength <= 0) {
 				Debug.LogWarning("Max Segment Length is <= 0 which would cause DivByZero-exception or other nasty errors (avoid this)");
 				return path;
@@ -177,7 +186,9 @@ namespace Pathfinding {
 				   h4*tan2;
 		}
 
-		public List<Vector3> SmoothOffsetSimple (List<Vector3> path) {
+	    //Good Game
+        //public List<Vector3> SmoothOffsetSimple (List<Vector3> path) {
+        public List<Int3> SmoothOffsetSimple (List<Int3> path) {
 			if (path.Count <= 2 || iterations <= 0) {
 				return path;
 			}
@@ -189,10 +200,15 @@ namespace Pathfinding {
 
 			int maxLength = (path.Count-2)*(int)Mathf.Pow(2, iterations)+2;
 
-			List<Vector3> subdivided = ListPool<Vector3>.Claim(maxLength);
+            //Good Game
+            /*List<Vector3> subdivided = ListPool<Vector3>.Claim(maxLength);
 			List<Vector3> subdivided2 = ListPool<Vector3>.Claim(maxLength);
 
-			for (int i = 0; i < maxLength; i++) { subdivided.Add(Vector3.zero); subdivided2.Add(Vector3.zero); }
+			for (int i = 0; i < maxLength; i++) { subdivided.Add(Vector3.zero); subdivided2.Add(Vector3.zero); }*/
+            List<Int3> subdivided = ListPool<Int3>.Claim(maxLength);
+			List<Int3> subdivided2 = ListPool<Int3>.Claim(maxLength);
+
+			for (int i = 0; i < maxLength; i++) { subdivided.Add(Int3.zero); subdivided2.Add(Int3.zero); }
 
 			for (int i = 0; i < path.Count; i++) {
 				subdivided[i] = path[i];
@@ -201,19 +217,30 @@ namespace Pathfinding {
 			for (int iteration = 0; iteration < iterations; iteration++) {
 				int currentPathLength = (path.Count-2)*(int)Mathf.Pow(2, iteration)+2;
 
-				//Switch the arrays
-				List<Vector3> tmp = subdivided;
+                //Switch the arrays
+			    //Good Game
+                //List<Vector3> tmp = subdivided;
+                List<Int3> tmp = subdivided;
 				subdivided = subdivided2;
 				subdivided2 = tmp;
 
 				const float nextMultiplier = 1F;
 
-				for (int i = 0; i < currentPathLength-1; i++) {
-					Vector3 current = subdivided2[i];
+				for (int i = 0; i < currentPathLength-1; i++)
+				{
+				    //Good Game
+                    /*Vector3 current = subdivided2[i];
 					Vector3 next = subdivided2[i+1];
 
-					Vector3 normal = Vector3.Cross(next-current, Vector3.up);
-					normal = normal.normalized;
+					Vector3 normal = Vector3.Cross(next-current, Vector3.up);*/
+                    Int3 current = subdivided2[i];
+				    Int3 next = subdivided2[i+1];
+
+				    Int3 normal = Int3.Cross(next-current, Int3.up);
+
+				    //Good Game
+                    //normal = normal.normalized;
+                    normal = (Int3)((Vector3)normal).normalized;
 
 					bool firstRight = false;
 					bool secondRight = false;
@@ -244,45 +271,65 @@ namespace Pathfinding {
 				subdivided[(path.Count-2)*(int)Mathf.Pow(2, iteration+1)+2-1] = subdivided2[currentPathLength-1];
 			}
 
-			ListPool<Vector3>.Release(subdivided2);
+            //Good Game
+            //ListPool<Vector3>.Release(ref subdivided2);
+            ListPool<Int3>.Release(ref subdivided2);
 
 			return subdivided;
 		}
 
-		public List<Vector3> SmoothSimple (List<Vector3> path) {
+	    //Good Game
+        //public List<Vector3> SmoothSimple (List<Vector3> path) {
+        public List<Int3> SmoothSimple (List<Int3> path) {
 			if (path.Count < 2) return path;
 
-			List<Vector3> subdivided;
+            //Good Game
+            //List<Vector3> subdivided;
+            List<Int3> subdivided;
 
 			if (uniformLength) {
 				// Clamp to a small value to avoid the path being divided into a huge number of segments
 				maxSegmentLength = Mathf.Max(maxSegmentLength, 0.005f);
 
 				float pathLength = 0;
-				for (int i = 0; i < path.Count-1; i++) {
-					pathLength += Vector3.Distance(path[i], path[i+1]);
+				for (int i = 0; i < path.Count-1; i++)
+				{
+				    //Good Game
+                    //pathLength += Vector3.Distance(path[i], path[i+1]);
+                    pathLength += Int3.Distance(path[i], path[i+1]);
 				}
 
 				int estimatedNumberOfSegments = Mathf.FloorToInt(pathLength / maxSegmentLength);
-				// Get a list with an initial capacity high enough so that we can add all points
-				subdivided = ListPool<Vector3>.Claim(estimatedNumberOfSegments+2);
+                // Get a list with an initial capacity high enough so that we can add all points
+			    //Good Game
+                //subdivided = ListPool<Vector3>.Claim(estimatedNumberOfSegments+2);
+                subdivided = ListPool<Int3>.Claim(estimatedNumberOfSegments+2);
 
-				float distanceAlong = 0;
+			    //Good Game
+                float distanceAlong = 0;
 
 				// Sample points every [maxSegmentLength] world units along the path
 				for (int i = 0; i < path.Count-1; i++) {
 					var start = path[i];
 					var end = path[i+1];
 
-					float length = Vector3.Distance(start, end);
+				    //Good Game
+                    //float length = Vector3.Distance(start, end);
+                    long length = Int3.Distance(start, end);
 
-					while (distanceAlong < length) {
-						subdivided.Add(Vector3.Lerp(start, end, distanceAlong / length));
+					while (distanceAlong < length)
+					{
+					    //Good Game
+					    //subdivided.Add(Vector3.Lerp(start, end, distanceAlong / length));
+                        subdivided.Add(Int3.Lerp(start, end, distanceAlong / length));
 						distanceAlong += maxSegmentLength;
 					}
 
 					distanceAlong -= length;
 				}
+
+				// Make sure we get the exact position of the last point
+				subdivided.Add(path[path.Count-1]);
 			} else {
 				subdivisions = Mathf.Max(subdivisions, 0);
 
@@ -292,27 +339,30 @@ namespace Pathfinding {
 				}
 
 				int steps = 1 << subdivisions;
-				subdivided = ListPool<Vector3>.Claim((path.Count-1)*steps + 1);
-
-				for (int i = 0; i < path.Count-1; i++)
-					for (int j = 0; j < steps; j++)
-						subdivided.Add(Vector3.Lerp(path[i], path[i+1], (float)j / steps));
+			    //Good Game
+                //subdivided = ListPool<Vector3>.Claim((path.Count-1)*steps + 1);
+                subdivided = ListPool<Int3>.Claim((path.Count-1)*steps + 1);
+				Polygon.Subdivide(path, subdivided, steps);
 			}
 
-			// Make sure we get the exact position of the last point
-			// (none of the branches above will add it)
-			subdivided.Add(path[path.Count-1]);
-
 			if (strength > 0) {
-				for (int it = 0; it < iterations; it++) {
-					Vector3 prev = subdivided[0];
+				for (int it = 0; it < iterations; it++)
+				{
+				    //Good Game
+                    //Vector3 prev = subdivided[0];
+                    Int3 prev = subdivided[0];
 
-					for (int i = 1; i < subdivided.Count-1; i++) {
-						Vector3 tmp = subdivided[i];
+					for (int i = 1; i < subdivided.Count-1; i++)
+					{
+					    //Good Game
+                        //Vector3 tmp = subdivided[i];
+                        Int3 tmp = subdivided[i];
 
-						// prev is at this point set to the value that subdivided[i-1] had before this loop started
-						// Move the point closer to the average of the adjacent points
-						subdivided[i] = Vector3.Lerp(tmp, (prev+subdivided[i+1])/2F, strength);
+                        // prev is at this point set to the value that subdivided[i-1] had before this loop started
+                        // Move the point closer to the average of the adjacent points
+					    //Good Game
+                        //subdivided[i] = Vector3.Lerp(tmp, (prev+subdivided[i+1])/2F, strength);
+                        subdivided[i] = Int3.Lerp(tmp, (prev+subdivided[i+1])/2F, strength);
 
 						prev = tmp;
 					}
@@ -322,15 +372,23 @@ namespace Pathfinding {
 			return subdivided;
 		}
 
-		public List<Vector3> SmoothBezier (List<Vector3> path) {
+	    //Good Game
+        //public List<Vector3> SmoothBezier (List<Vector3> path) {
+        public List<Int3> SmoothBezier (List<Int3> path) {
 			if (subdivisions < 0) subdivisions = 0;
 
 			int subMult = 1 << subdivisions;
-			List<Vector3> subdivided = ListPool<Vector3>.Claim();
+            //Good Game
+            //List<Vector3> subdivided = ListPool<Vector3>.Claim();
+            List<Int3> subdivided = ListPool<Int3>.Claim();
 
-			for (int i = 0; i < path.Count-1; i++) {
-				Vector3 tangent1;
-				Vector3 tangent2;
+			for (int i = 0; i < path.Count-1; i++)
+			{
+			    //Good Game
+                /*Vector3 tangent1;
+				Vector3 tangent2;*/
+                Int3 tangent1;
+				Int3 tangent2;
 				if (i == 0) {
 					tangent1 = path[i+1]-path[i];
 				} else {
@@ -346,13 +404,21 @@ namespace Pathfinding {
 				tangent1 *= bezierTangentLength;
 				tangent2 *= bezierTangentLength;
 
-				Vector3 v1 = path[i];
+			    //Good Game
+                /*Vector3 v1 = path[i];
 				Vector3 v2 = v1+tangent1;
 				Vector3 v4 = path[i+1];
-				Vector3 v3 = v4+tangent2;
+				Vector3 v3 = v4+tangent2;*/
+                Vector3 v1 = (Vector3)path[i];
+				Vector3 v2 = v1+(Vector3)tangent1;
+				Vector3 v4 = (Vector3)path[i+1];
+				Vector3 v3 = v4+(Vector3)tangent2;
 
-				for (int j = 0; j < subMult; j++) {
-					subdivided.Add(AstarSplines.CubicBezier(v1, v2, v3, v4, (float)j/subMult));
+				for (int j = 0; j < subMult; j++)
+				{
+				    //Good Game
+                    //subdivided.Add(AstarSplines.CubicBezier(v1, v2, v3, v4, (float)j/subMult));
+                    subdivided.Add((Int3)AstarSplines.CubicBezier(v1, v2, v3, v4, (float)j/subMult));
 				}
 			}
 

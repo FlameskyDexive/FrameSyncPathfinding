@@ -37,14 +37,20 @@ namespace Pathfinding {
 		/** Indicates if the target has been found. Also true if the target cannot be reached (is in another area) */
 		public bool[] targetsFound;
 
+        //Good Game
 		/** Target points specified when creating the path. These are snapped to the nearest nodes */
-		public Vector3[] targetPoints;
+		//public Vector3[] targetPoints;
+		public Int3[] targetPoints;
 
-		/** Target points specified when creating the path. These are not snapped to the nearest nodes */
-		public Vector3[] originalTargetPoints;
+        /** Target points specified when creating the path. These are not snapped to the nearest nodes */
+	    //Good Game
+        //public Vector3[] originalTargetPoints;
+        public Int3[] originalTargetPoints;
 
-		/** Stores all vector paths to the targets. Elements are null if no path was found */
-		public List<Vector3>[] vectorPaths;
+        /** Stores all vector paths to the targets. Elements are null if no path was found */
+	    //Good Game
+        //public List<Vector3>[] vectorPaths;
+        public List<Int3>[] vectorPaths;
 
 		/** Stores all paths to the targets. Elements are null if no path was found */
 		public List<GraphNode>[] nodePaths;
@@ -82,32 +88,38 @@ namespace Pathfinding {
 		}
 
 		/** False if the path goes from one point to multiple targets. True if it goes from multiple start points to one target point */
-		public bool inverted = true;
+		public bool inverted { get; protected set; }
 
 		/** Default constructor.
 		 * Do not use this. Instead use the static Construct method which can handle path pooling.
 		 */
 		public MultiTargetPath () {}
 
-		public static MultiTargetPath Construct (Vector3[] startPoints, Vector3 target, OnPathDelegate[] callbackDelegates, OnPathDelegate callback = null) {
+	    //Good Game
+        //public static MultiTargetPath Construct (Vector3[] startPoints, Vector3 target, OnPathDelegate[] callbackDelegates, OnPathDelegate callback = null) {
+        public static MultiTargetPath Construct (Int3[] startPoints, Int3 target, OnPathDelegate[] callbackDelegates, OnPathDelegate callback = null) {
 			MultiTargetPath p = Construct(target, startPoints, callbackDelegates, callback);
 
 			p.inverted = true;
 			return p;
 		}
 
-		public static MultiTargetPath Construct (Vector3 start, Vector3[] targets, OnPathDelegate[] callbackDelegates, OnPathDelegate callback = null) {
+	    //Good Game
+        //public static MultiTargetPath Construct (Vector3 start, Vector3[] targets, OnPathDelegate[] callbackDelegates, OnPathDelegate callback = null) {
+        public static MultiTargetPath Construct (Int3 start, Int3[] targets, OnPathDelegate[] callbackDelegates, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<MultiTargetPath>();
 
 			p.Setup(start, targets, callbackDelegates, callback);
 			return p;
 		}
 
-		protected void Setup (Vector3 start, Vector3[] targets, OnPathDelegate[] callbackDelegates, OnPathDelegate callback) {
+	    //Good Game
+        //protected void Setup (Vector3 start, Vector3[] targets, OnPathDelegate[] callbackDelegates, OnPathDelegate callback) {
+        protected void Setup (Int3 start, Int3[] targets, OnPathDelegate[] callbackDelegates, OnPathDelegate callback) {
 			inverted = false;
 			this.callback = callback;
 			callbacks = callbackDelegates;
-
+			if (callbacks != null && callbacks.Length != targets.Length) throw new System.ArgumentException("The targets array must have the same length as the callbackDelegates array");
 			targetPoints = targets;
 
 			originalStartPoint = start;
@@ -116,23 +128,36 @@ namespace Pathfinding {
 			startIntPoint = (Int3)start;
 
 			if (targets.Length == 0) {
-				Error();
-				LogError("No targets were assigned to the MultiTargetPath");
+				FailWithError("No targets were assigned to the MultiTargetPath");
 				return;
 			}
 
 			endPoint = targets[0];
 
-			originalTargetPoints = new Vector3[targetPoints.Length];
+            //Good Game
+            //originalTargetPoints = new Vector3[targetPoints.Length];
+            originalTargetPoints = new Int3[targetPoints.Length];
 			for (int i = 0; i < targetPoints.Length; i++) {
 				originalTargetPoints[i] = targetPoints[i];
 			}
 		}
 
-		public override void OnEnterPool () {
+		protected override void Reset () {
+			base.Reset();
+			pathsForAll = true;
+			chosenTarget = -1;
+			sequentialTarget = 0;
+			inverted = true;
+			heuristicMode = HeuristicMode.Sequential;
+		}
+
+		protected override void OnEnterPool () {
 			if (vectorPaths != null)
 				for (int i = 0; i < vectorPaths.Length; i++)
-					if (vectorPaths[i] != null) Util.ListPool<Vector3>.Release(vectorPaths[i]);
+					if (vectorPaths[i] != null)
+					        //Good Game
+                        //Util.ListPool<Vector3>.Release(vectorPaths[i]);
+                        Util.ListPool<Int3>.Release(vectorPaths[i]);
 
 			vectorPaths = null;
 			vectorPath = null;
@@ -143,6 +168,11 @@ namespace Pathfinding {
 
 			nodePaths = null;
 			path = null;
+			callbacks = null;
+			targetNodes = null;
+			targetsFound = null;
+			targetPoints = null;
+			originalTargetPoints = null;
 
 			base.OnEnterPool();
 		}
@@ -184,7 +214,7 @@ namespace Pathfinding {
 			}
 		}
 
-		public override void ReturnPath () {
+		protected override void ReturnPath () {
 			if (error) {
 				// Call all callbacks
 				if (callbacks != null) {
@@ -210,10 +240,13 @@ namespace Pathfinding {
 
 			for (int i = 0; i < nodePaths.Length; i++) {
 				if (nodePaths[i] != null) {
-					CompleteState = PathCompleteState.Complete;
+					// Note that we use the lowercase 'completeState' here.
+					// The property (CompleteState) will ensure that the complete state is never
+					// changed away from the error state but in this case we don't want that behaviour.
+					completeState = PathCompleteState.Complete;
 					anySucceded = true;
 				} else {
-					CompleteState = PathCompleteState.Error;
+					completeState = PathCompleteState.Error;
 				}
 
 				if (callbacks != null && callbacks[i] != null) {
@@ -226,10 +259,10 @@ namespace Pathfinding {
 			}
 
 			if (anySucceded) {
-				CompleteState = PathCompleteState.Complete;
+				completeState = PathCompleteState.Complete;
 				SetPathParametersForReturn(chosenTarget);
 			} else {
-				CompleteState = PathCompleteState.Error;
+				completeState = PathCompleteState.Error;
 			}
 
 			if (callback != null) {
@@ -243,7 +276,9 @@ namespace Pathfinding {
 			Trace(nodeR);
 			vectorPaths[i] = vectorPath;
 			nodePaths[i] = path;
-			vectorPath = Util.ListPool<Vector3>.Claim();
+            //Good Game
+			//vectorPath = Util.ListPool<Vector3>.Claim();
+			vectorPath = Util.ListPool<Int3>.Claim();
 			path = Util.ListPool<GraphNode>.Claim();
 
 			targetsFound[i] = true;
@@ -270,7 +305,7 @@ namespace Pathfinding {
 		}
 
 		protected void RebuildOpenList () {
-			BinaryHeapM heap = pathHandler.GetHeap();
+			BinaryHeap heap = pathHandler.heap;
 
 			for (int j = 0; j < heap.numberOfItems; j++) {
 				PathNode nodeR = heap.GetNode(j);
@@ -278,23 +313,21 @@ namespace Pathfinding {
 				heap.SetF(j, nodeR.F);
 			}
 
-			pathHandler.RebuildHeap();
+			pathHandler.heap.Rebuild();
 		}
 
-		public override void Prepare () {
+		protected override void Prepare () {
 			nnConstraint.tags = enabledTags;
-			NNInfo startNNInfo  = AstarPath.active.GetNearest(startPoint, nnConstraint, startHint);
+			var startNNInfo  = AstarPath.active.GetNearest(startPoint, nnConstraint);
 			startNode = startNNInfo.node;
 
 			if (startNode == null) {
-				LogError("Could not find start node for multi target path");
-				Error();
+				FailWithError("Could not find start node for multi target path");
 				return;
 			}
 
-			if (!startNode.Walkable) {
-				LogError("Nearest node to the start point is not walkable");
-				Error();
+			if (!CanTraverse(startNode)) {
+				FailWithError("The node closest to the start point could not be traversed");
 				return;
 			}
 
@@ -304,7 +337,9 @@ namespace Pathfinding {
 				pathNNConstraint.SetStart(startNNInfo.node);
 			}
 
-			vectorPaths = new List<Vector3>[targetPoints.Length];
+		    //Good Game
+            //vectorPaths = new List<Vector3>[targetPoints.Length];
+            vectorPaths = new List<Int3>[targetPoints.Length];
 			nodePaths = new List<GraphNode>[targetPoints.Length];
 			targetNodes = new GraphNode[targetPoints.Length];
 			targetsFound = new bool[targetPoints.Length];
@@ -315,11 +350,11 @@ namespace Pathfinding {
 			bool anyNotNull = false;
 
 			for (int i = 0; i < targetPoints.Length; i++) {
-				NNInfo endNNInfo = AstarPath.active.GetNearest(targetPoints[i], nnConstraint);
+				var endNNInfo = AstarPath.active.GetNearest(targetPoints[i], nnConstraint);
 
 				targetNodes[i] = endNNInfo.node;
 
-				targetPoints[i] = endNNInfo.clampedPosition;
+				targetPoints[i] = endNNInfo.position;
 				if (targetNodes[i] != null) {
 					anyNotNull = true;
 					endNode = targetNodes[i];
@@ -327,7 +362,7 @@ namespace Pathfinding {
 
 				bool notReachable = false;
 
-				if (endNNInfo.node != null && endNNInfo.node.Walkable) {
+				if (endNNInfo.node != null && CanTraverse(endNNInfo.node)) {
 					anyWalkable = true;
 				} else {
 					notReachable = true;
@@ -346,35 +381,24 @@ namespace Pathfinding {
 				}
 			}
 
-			startPoint = startNNInfo.clampedPosition;
+			startPoint = startNNInfo.position;
 
 			startIntPoint = (Int3)startPoint;
 
-			if (startNode == null || !anyNotNull) {
-				LogError("Couldn't find close nodes to either the start or the end (start = "+(startNode != null ? "found" : "not found")+" end = "+(anyNotNull ? "at least one found" : "none found")+")");
-				Error();
-				return;
-			}
-
-			if (!startNode.Walkable) {
-				LogError("The node closest to the start point is not walkable");
-				Error();
+			if (!anyNotNull) {
+				FailWithError("Couldn't find nodes close to the all of the end points");
 				return;
 			}
 
 			if (!anyWalkable) {
-				LogError("No target nodes were walkable");
-				Error();
+				FailWithError("No target nodes could be traversed");
 				return;
 			}
 
 			if (!anySameArea) {
-				LogError("There are no valid paths to the targets");
-				Error();
+				FailWithError("There are no valid paths to the targets");
 				return;
 			}
-
-			//=== Calcuate hTarget ===
 
 			RecalculateHTarget(true);
 		}
@@ -488,7 +512,7 @@ namespace Pathfinding {
 			}
 		}
 
-		public override void Initialize () {
+		protected override void Initialize () {
 			// Reset the start node to prevent
 			// old info from previous paths to be used
 			PathNode startRNode = pathHandler.GetPathNode(startNode);
@@ -525,17 +549,16 @@ namespace Pathfinding {
 			searchedNodes++;
 
 			//any nodes left to search?
-			if (pathHandler.HeapEmpty()) {
-				LogError("No open points, the start node didn't open any nodes");
-				Error();
+			if (pathHandler.heap.isEmpty) {
+				FailWithError("No open points, the start node didn't open any nodes");
 				return;
 			}
 
 			// Take the first node off the heap
-			currentR = pathHandler.PopNode();
+			currentR = pathHandler.heap.Remove();
 		}
 
-		public override void Cleanup () {
+		protected override void Cleanup () {
 			// Make sure that the shortest path is set
 			// after the path has been calculated
 			ChooseShortestPath();
@@ -552,10 +575,10 @@ namespace Pathfinding {
 			}
 		}
 
-		public override void CalculateStep (long targetTick) {
+		protected override void CalculateStep (long targetTick) {
 			int counter = 0;
 
-			// Continue to search while there hasn't ocurred an error and the end hasn't been found
+			// Continue to search as long as we haven't encountered an error and we haven't found the target
 			while (CompleteState == PathCompleteState.NotCalculated) {
 				// @Performance Just for debug info
 				searchedNodes++;
@@ -582,14 +605,14 @@ namespace Pathfinding {
 				currentR.node.Open(this, currentR, pathHandler);
 
 				// Any nodes left to search?
-				if (pathHandler.HeapEmpty()) {
+				if (pathHandler.heap.isEmpty) {
 					CompleteState = PathCompleteState.Complete;
 					break;
 				}
 
 				// Select the node with the lowest F score and remove it from the open list
 				AstarProfiler.StartFastProfile(7);
-				currentR = pathHandler.PopNode();
+				currentR = pathHandler.heap.Remove();
 				AstarProfiler.EndFastProfile(7);
 
 				// Check for time every 500 nodes, roughly every 0.5 ms usually
@@ -620,15 +643,18 @@ namespace Pathfinding {
 					path[path.Count-i-1] = tmp;
 				}
 
-				for (int i = 0; i < half; i++) {
-					Vector3 tmp = vectorPath[i];
+				for (int i = 0; i < half; i++)
+				{
+				    //Good Game
+                    //Vector3 tmp = vectorPath[i];
+                    Int3 tmp = vectorPath[i];
 					vectorPath[i] = vectorPath[vectorPath.Count-i-1];
 					vectorPath[vectorPath.Count-i-1] = tmp;
 				}
 			}
 		}
 
-		public override string DebugString (PathLog logMode) {
+		internal override string DebugString (PathLog logMode) {
 			if (logMode == PathLog.None || (!error && logMode == PathLog.OnlyErrors)) {
 				return "";
 			}
@@ -681,7 +707,7 @@ namespace Pathfinding {
 					text.Append("\n	Graph: ");
 					text.Append(startNode.GraphIndex);
 					text.Append("\nBinary Heap size at completion: ");
-					text.AppendLine(pathHandler.GetHeap() == null ? "Null" : (pathHandler.GetHeap().numberOfItems-2).ToString());  // -2 because numberOfItems includes the next item to be added and item zero is not used
+					text.AppendLine(pathHandler.heap == null ? "Null" : (pathHandler.heap.numberOfItems-2).ToString());  // -2 because numberOfItems includes the next item to be added and item zero is not used
 				}
 			}
 

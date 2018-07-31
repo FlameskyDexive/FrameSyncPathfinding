@@ -1,8 +1,13 @@
 ﻿
+using System;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using Pathfinding;
 using Debug = UnityEngine.Debug;
+using Path = Pathfinding.Path;
 
 public class AStarPlayer : MonoBehaviour
 {
@@ -25,34 +30,42 @@ public class AStarPlayer : MonoBehaviour
     float playerCenterY = 1.0f;
     // Use this for initialization
 
+    private Transform startObj;
+    private Transform endObj;
+    private Transform pointRoot;
+
     void Start()
     {
         seeker = GetComponent<Seeker>();
         playerCenterY = transform.localPosition.y;
+        startObj = GameObject.Find("Sphere").transform;
+        endObj = GameObject.Find("Sphere3").transform;
+        pointRoot = GameObject.Find("Points").transform;
     }
     
     //寻路结束;
 
     public void OnPathComplete(Path p)
     {
-        UnityEngine.Debug.Log("OnPathComplete error = " + p.error);
+        //UnityEngine.Debug.Log("OnPathComplete error = " + p.error);
         if (!p.error)
         {
             currentWayPoint = 0;
             path = p;
             stopMove = false;
         }
-        
+
+        PositionsLog(p.vectorPath);
         for (int index = 0; index < path.vectorPath.Count; index++)
         {
-            UnityEngine.Debug.Log(gameObject.name + "-path.vectorPath[" + index + "]=" + path.vectorPath[index]);
+            //UnityEngine.Debug.Log(gameObject.name + "-path.vectorPath[" + index + "]=" + path.vectorPath[index]);
         }
     }
     
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        /*if (Input.GetMouseButtonDown(0))
         {
 
             RaycastHit hit;
@@ -68,11 +81,87 @@ public class AStarPlayer : MonoBehaviour
 
             targetPosition = hit.point;// new Vector3(hit.point.x, transform.localPosition.y, hit.point.z);
             UnityEngine.Debug.Log("targetPosition=" + targetPosition);
-            seeker.StartPath(transform.position, targetPosition, OnPathComplete);
+            seeker.StartPath((Int3)transform.position, (Int3)targetPosition, OnPathComplete);
+        }*/
+        
+    }
+
+
+
+    /// <summary>
+    /// Log Test path finding points 
+    /// </summary>
+    private int funnelIndex = 0;
+    string content = String.Empty;
+    private void PositionsLog(List<Int3> p)
+    {
+        for (int i = 0; i < p.Count; i++)
+        {
+            string log = "---funnel index---" + funnelIndex + "---position---" + i + "---" + p[i];
+
+            Debug.Log(log);
+            content += log + "\n";
         }
 
+        funnelIndex++;
+        /*if (!File.Exists(PathHelper.AppHotfixResPath))
+        {
+            File.Create(PathHelper.AppHotfixResPath);
+        }*/
     }
-    void FixedUpdate()
+
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(Screen.width - 300, 2, 250, 50), "Seek Path ABCD"))
+        {
+            //Debug.Log("--start position--" + (Int3)startObj.position + "--end position--" + (Int3)endObj.position);
+            StartCoroutine(Seeking());
+        }
+        /*GUI.BeginScrollView(new Rect(0, 50, 700, 700), new Vector2(0, 0), new Rect(0, 50, 700, 700));
+        for (int i = 0; i < UPPER; i++)
+        {
+
+        }
+        GUI.Label(new Rect(0, 80, 700, 800), content);
+        GUI.EndScrollView();*/
+    }
+
+    IEnumerator Seeking()
+    {
+        SeekPath(0, 1);
+        yield return new WaitForSeconds(0.5f);
+        SeekPath(0, 2);
+        yield return new WaitForSeconds(0.5f);
+        SeekPath(0, 3);
+        yield return new WaitForSeconds(0.5f);
+        SeekPath(1, 0);
+        yield return new WaitForSeconds(0.5f);
+        SeekPath(1, 2);
+        yield return new WaitForSeconds(0.5f);
+        SeekPath(1, 3);
+        yield return new WaitForSeconds(0.5f);
+        SeekPath(2, 0);
+        yield return new WaitForSeconds(0.5f);
+        SeekPath(2, 1);
+        yield return new WaitForSeconds(0.5f);
+        SeekPath(2, 3);
+        yield return new WaitForSeconds(0.5f);
+        SeekPath(3, 0);
+        yield return new WaitForSeconds(0.5f);
+        SeekPath(3, 1);
+        yield return new WaitForSeconds(0.5f);
+        SeekPath(3, 2);
+        yield return new WaitForSeconds(0.5f);
+        string positionLog = PathHelper.AppHotfixResPath + "/positionLog.txt";
+        File.WriteAllText(positionLog, content, Encoding.UTF8);
+    }
+
+    public void SeekPath(int from, int to)
+    {
+         seeker.StartPath((Int3)pointRoot.GetChild(from).position, (Int3)pointRoot.GetChild(to).position, OnPathComplete);
+    }
+
+    /*void FixedUpdate()
     {
         if (path == null || stopMove)
         {
@@ -117,7 +206,7 @@ public class AStarPlayer : MonoBehaviour
             transform.localPosition += dir;
         }
 
-    }
+    }*/
 
 }
 

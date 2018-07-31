@@ -1,4 +1,5 @@
 using System;
+using Pathfinding;
 
 // 分数类, 维护一个分子和一个分母
 public struct VFactor
@@ -255,6 +256,11 @@ public struct VFactor
     }
 
     public static VInt3 operator *(VInt3 v, VFactor f)
+    {
+        return IntMath.Divide(v, f.nom, f.den);
+    }
+
+    public static Int3 operator *(Int3 v, VFactor f)
     {
         return IntMath.Divide(v, f.nom, f.den);
     }

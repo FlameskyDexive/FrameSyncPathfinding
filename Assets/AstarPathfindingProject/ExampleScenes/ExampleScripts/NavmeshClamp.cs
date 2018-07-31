@@ -13,14 +13,21 @@ namespace Pathfinding {
 	[HelpURL("http://arongranberg.com/astar/docs/class_pathfinding_1_1_navmesh_clamp.php")]
 	public class NavmeshClamp : MonoBehaviour {
 		GraphNode prevNode;
-		Vector3 prevPos;
+	    //Good Game
+        //Vector3 prevPos;
+        Int3 prevPos;
 
 		// Update is called once per frame
 		void LateUpdate () {
-			if (prevNode == null) {
-				NNInfo nninfo = AstarPath.active.GetNearest(transform.position);
+			if (prevNode == null)
+			{
+			    //Good Game
+                //var nninfo = AstarPath.active.GetNearest(transform.position);
+                var nninfo = AstarPath.active.GetNearest((Int3)transform.position);
 				prevNode = nninfo.node;
-				prevPos = transform.position;
+			    //Good Game
+                //prevPos = transform.position;
+                prevPos = (Int3)transform.position;
 			}
 
 			if (prevNode == null) {
@@ -31,14 +38,27 @@ namespace Pathfinding {
 				var graph = AstarData.GetGraph(prevNode) as IRaycastableGraph;
 				if (graph != null) {
 					GraphHitInfo hit;
-					if (graph.Linecast(prevPos, transform.position, prevNode, out hit)) {
-						hit.point.y = transform.position.y;
-						Vector3 closest = VectorMath.ClosestPointOnLine(hit.tangentOrigin, hit.tangentOrigin+hit.tangent, transform.position);
-						Vector3 ohit = hit.point;
+				    //Good Game
+                    //if (graph.Linecast(prevPos, transform.position, prevNode, out hit)) {
+                    if (graph.Linecast(prevPos, (Int3)transform.position, prevNode, out hit))
+                    {
+                        //Good Game
+                        //hit.point.y = transform.position.y;
+                        hit.point.y = (int)transform.position.y;
+                        //Good Game
+                        //Vector3 closest = VectorMath.ClosestPointOnLine(hit.tangentOrigin, hit.tangentOrigin+hit.tangent, transform.position);
+                        Vector3 closest = VectorMath.ClosestPointOnLine((Vector3)hit.tangentOrigin, (Vector3)(hit.tangentOrigin+hit.tangent), transform.position);
+                        //Good Game
+                        //Vector3 ohit = hit.point;
+                        Vector3 ohit = (Vector3)hit.point;
 						ohit = ohit + Vector3.ClampMagnitude((Vector3)hit.node.position-ohit, 0.008f);
-						if (graph.Linecast(ohit, closest, hit.node, out hit)) {
+                        //Good Game
+                        /*if (graph.Linecast(ohit, closest, hit.node, out hit)) {
 							hit.point.y = transform.position.y;
-							transform.position = hit.point;
+							transform.position = hit.point;*/
+                        if (graph.Linecast((Int3)ohit, (Int3)closest, hit.node, out hit)) {
+							hit.point.y = (int)transform.position.y;
+							transform.position = (Vector3)hit.point;
 						} else {
 							closest.y = transform.position.y;
 
@@ -49,7 +69,9 @@ namespace Pathfinding {
 				}
 			}
 
-			prevPos = transform.position;
+		    //Good Game
+            //prevPos = transform.position;
+            prevPos = (Int3)transform.position;
 		}
 	}
 }

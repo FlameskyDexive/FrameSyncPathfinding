@@ -1,5 +1,9 @@
+using System;
+using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using Pathfinding.Util;
 
 namespace Pathfinding {
@@ -8,11 +12,41 @@ namespace Pathfinding {
 	/** Simplifies paths on navmesh graphs using the funnel algorithm.
 	 * The funnel algorithm is an algorithm which can, given a path corridor with nodes in the path where the nodes have an area, like triangles, it can find the shortest path inside it.
 	 * This makes paths on navmeshes look much cleaner and smoother.
-	 * \image html images/funnelModifier_on.png
+	 * \shadowimage{funnelModifier_on.png}
+	 *
+	 * The funnel modifier also works on grid graphs however since it only simplifies the paths within the nodes which the original path visited it may not always
+	 * simplify the path as much as you would like it to. The \link Pathfinding.RaycastModifier RaycastModifier\endlink can be a better fit for grid graphs.
+	 * \shadowimage{funnel_on_grid.png}
+	 *
 	 * \ingroup modifiers
+	 * \see http://digestingduck.blogspot.se/2010/03/simple-stupid-funnel-algorithm.html
 	 */
 	[HelpURL("http://arongranberg.com/astar/docs/class_pathfinding_1_1_funnel_modifier.php")]
 	public class FunnelModifier : MonoModifier {
+		/** Determines if twists and bends should be straightened out before running the funnel algorithm.
+		 * If the unwrap option is disabled the funnel will simply be projected onto the XZ plane.
+		 * If the unwrap option is enabled then the funnel may be oriented arbitrarily and may have twists and bends.
+		 * This makes it possible to support the funnel algorithm in XY space as well as in more complicated cases, such
+		 * as on curved worlds.
+		 *
+		 * \note This has a performance overhead, so if you do not need it you can disable it to improve
+		 * performance.
+		 *
+		 * \shadowimage{funnel_unwrap_illustration.png}
+		 *
+		 * \see #Pathfinding.Funnel.Unwrap for more example images.
+		 *
+		 * \note This is required if you want to use the funnel modifier for 2D games (i.e in the XY plane).
+		 */
+		public bool unwrap = true;
+
+		/** Insert a vertex every time the path crosses a portal instead of only at the corners of the path.
+		 * The resulting path will have exactly one vertex per portal if this is enabled.
+		 * This may introduce vertices with the same position in the output (esp. in corners where many portals meet).
+		 * \shadowimage{funnel_split_at_every_portal.png}
+		 */
+		public bool splitAtEveryPortal;
+
 	#if UNITY_EDITOR
 		[UnityEditor.MenuItem("CONTEXT/Seeker/Add Funnel Modifier")]
 		public static void AddComp (UnityEditor.MenuCommand command) {
@@ -22,197 +56,174 @@ namespace Pathfinding {
 
 		public override int Order { get { return 10; } }
 
-		public override void Apply (Path p) {
-			List<GraphNode> path = p.path;
-			List<Vector3> vectorPath = p.vectorPath;
+        public override void Apply(Path p)
+        {
+            List<GraphNode> path = p.path;
+            List<Int3> vectorPath = p.vectorPath;
+            if (((path != null) && (path.Count != 0)) && ((vectorPath != null) && (vectorPath.Count == path.Count)))
+            {
+                List<Int3> funnelPath = ListPool<Int3>.Claim();
+                List<Int3> left = ListPool<Int3>.Claim(path.Count + 1);
+                List<Int3> right = ListPool<Int3>.Claim(path.Count + 1);
+                left.Add(vectorPath[0]);
+                right.Add(vectorPath[0]);
+                for (int i = 0; i < (path.Count - 1); i++)
+                {
+                    bool flag = path[i].GetPortal(path[i + 1], left, right, false);
+                    bool flag2 = false;
+                    if (!flag && !flag2)
+                    {
+                        left.Add(path[i].position);
+                        right.Add(path[i].position);
+                        left.Add(path[i + 1].position);
+                        right.Add(path[i + 1].position);
+                    }
+                }
+                left.Add(vectorPath[vectorPath.Count - 1]);
+                right.Add(vectorPath[vectorPath.Count - 1]);
+                if (!this.RunFunnel(left, right, funnelPath))
+                {
+                    funnelPath.Add(vectorPath[0]);
+                    funnelPath.Add(vectorPath[vectorPath.Count - 1]);
+                }
+                ListPool<Int3>.Release(p.vectorPath);
+                p.vectorPath = funnelPath;
+                //PositionsLog(funnelPath);
+                ListPool<Int3>.Release(left);
+                ListPool<Int3>.Release(right);
+            }
+        }
 
-			if (path == null || path.Count == 0 || vectorPath == null || vectorPath.Count != path.Count) {
-				return;
-			}
 
-			List<Vector3> funnelPath = ListPool<Vector3>.Claim();
+        public void OnCreate()
+        {
+        }
 
-			// Claim temporary lists and try to find lists with a high capacity
-			List<Vector3> left = ListPool<Vector3>.Claim(path.Count+1);
-			List<Vector3> right = ListPool<Vector3>.Claim(path.Count+1);
+        public void OnGet()
+        {
+            base.seeker = null;
+            //base.priority = 0;
+            base.Awake();
+        }
 
-			AstarProfiler.StartProfile("Construct Funnel");
+        public void OnRecycle()
+        {
+        }
 
-			// Add start point
-			left.Add(vectorPath[0]);
-			right.Add(vectorPath[0]);
-
-			// Loop through all nodes in the path (except the last one)
-			for (int i = 0; i < path.Count-1; i++) {
-				// Get the portal between path[i] and path[i+1] and add it to the left and right lists
-				bool portalWasAdded = path[i].GetPortal(path[i+1], left, right, false);
-
-				if (!portalWasAdded) {
-					// Fallback, just use the positions of the nodes
-					left.Add((Vector3)path[i].position);
-					right.Add((Vector3)path[i].position);
-
-					left.Add((Vector3)path[i+1].position);
-					right.Add((Vector3)path[i+1].position);
-				}
-			}
-
-			// Add end point
-			left.Add(vectorPath[vectorPath.Count-1]);
-			right.Add(vectorPath[vectorPath.Count-1]);
-
-			if (!RunFunnel(left, right, funnelPath)) {
-				// If funnel algorithm failed, degrade to simple line
-				funnelPath.Add(vectorPath[0]);
-				funnelPath.Add(vectorPath[vectorPath.Count-1]);
-			}
-
-			// Release lists back to the pool
-			ListPool<Vector3>.Release(p.vectorPath);
-			p.vectorPath = funnelPath;
-
-			ListPool<Vector3>.Release(left);
-			ListPool<Vector3>.Release(right);
-		}
-
-		/** Calculate a funnel path from the \a left and \a right portal lists.
-		 * The result will be appended to \a funnelPath
-		 */
-		public static bool RunFunnel (List<Vector3> left, List<Vector3> right, List<Vector3> funnelPath) {
-			if (left == null) throw new System.ArgumentNullException("left");
-			if (right == null) throw new System.ArgumentNullException("right");
-			if (funnelPath == null) throw new System.ArgumentNullException("funnelPath");
-
-			if (left.Count != right.Count) throw new System.ArgumentException("left and right lists must have equal length");
-
-			if (left.Count < 3) {
-				return false;
-			}
-
-			//Remove identical vertices
-			while (left[1] == left[2] && right[1] == right[2]) {
-				//System.Console.WriteLine ("Removing identical left and right");
-				left.RemoveAt(1);
-				right.RemoveAt(1);
-
-				if (left.Count <= 3) {
-					return false;
-				}
-			}
-
-			Vector3 swPoint = left[2];
-			if (swPoint == left[1]) {
-				swPoint = right[2];
-			}
-
-			//Test
-			while (VectorMath.IsColinearXZ(left[0], left[1], right[1]) || VectorMath.RightOrColinearXZ(left[1], right[1], swPoint) == VectorMath.RightOrColinearXZ(left[1], right[1], left[0])) {
-	#if ASTARDEBUG
-				Debug.DrawLine(left[1], right[1], new Color(0, 0, 0, 0.5F));
-				Debug.DrawLine(left[0], swPoint, new Color(0, 0, 0, 0.5F));
-	#endif
-				left.RemoveAt(1);
-				right.RemoveAt(1);
-
-				if (left.Count <= 3) {
-					return false;
-				}
-
-				swPoint = left[2];
-				if (swPoint == left[1]) {
-					swPoint = right[2];
-				}
-			}
-
-			//Switch left and right to really be on the "left" and "right" sides
-			/** \todo The colinear check should not be needed */
-			if (!VectorMath.IsClockwiseXZ(left[0], left[1], right[1]) && !VectorMath.IsColinearXZ(left[0], left[1], right[1])) {
-				//System.Console.WriteLine ("Wrong Side 2");
-				List<Vector3> tmp = left;
-				left = right;
-				right = tmp;
-			}
-
-			#if ASTARDEBUG
-			for (int i = 0; i < left.Count-1; i++) {
-				Debug.DrawLine(left[i], left[i+1], Color.red);
-				Debug.DrawLine(right[i], right[i+1], Color.magenta);
-				Debug.DrawRay(right[i], Vector3.up, Color.magenta);
-			}
-			for (int i = 0; i < left.Count; i++) {
-				//Debug.DrawLine (right[i],left[i], Color.cyan);
-			}
-			#endif
-
-			funnelPath.Add(left[0]);
-
-			Vector3 portalApex = left[0];
-			Vector3 portalLeft = left[1];
-			Vector3 portalRight = right[1];
-
-			int apexIndex = 0;
-			int rightIndex = 1;
-			int leftIndex = 1;
-
-			for (int i = 2; i < left.Count; i++) {
-				if (funnelPath.Count > 2000) {
-					Debug.LogWarning("Avoiding infinite loop. Remove this check if you have this long paths.");
-					break;
-				}
-
-				Vector3 pLeft = left[i];
-				Vector3 pRight = right[i];
-
-				/*Debug.DrawLine (portalApex,portalLeft,Color.red);
-				 * Debug.DrawLine (portalApex,portalRight,Color.yellow);
-				 * Debug.DrawLine (portalApex,left,Color.cyan);
-				 * Debug.DrawLine (portalApex,right,Color.cyan);*/
-
-				if (VectorMath.SignedTriangleAreaTimes2XZ(portalApex, portalRight, pRight) >= 0) {
-					if (portalApex == portalRight || VectorMath.SignedTriangleAreaTimes2XZ(portalApex, portalLeft, pRight) <= 0) {
-						portalRight = pRight;
-						rightIndex = i;
-					} else {
-						funnelPath.Add(portalLeft);
-						portalApex = portalLeft;
-						apexIndex = leftIndex;
-
-						portalLeft = portalApex;
-						portalRight = portalApex;
-
-						leftIndex = apexIndex;
-						rightIndex = apexIndex;
-
-						i = apexIndex;
-
-						continue;
-					}
-				}
-
-				if (VectorMath.SignedTriangleAreaTimes2XZ(portalApex, portalLeft, pLeft) <= 0) {
-					if (portalApex == portalLeft || VectorMath.SignedTriangleAreaTimes2XZ(portalApex, portalRight, pLeft) >= 0) {
-						portalLeft = pLeft;
-						leftIndex = i;
-					} else {
-						funnelPath.Add(portalRight);
-						portalApex = portalRight;
-						apexIndex = rightIndex;
-
-						portalLeft = portalApex;
-						portalRight = portalApex;
-
-						leftIndex = apexIndex;
-						rightIndex = apexIndex;
-
-						i = apexIndex;
-
-						continue;
-					}
-				}
-			}
-
-			funnelPath.Add(left[left.Count-1]);
-			return true;
-		}
-	}
+        public bool RunFunnel(List<Int3> left, List<Int3> right, List<Int3> funnelPath)
+        {
+            if (left == null)
+            {
+                throw new ArgumentNullException("left");
+            }
+            if (right == null)
+            {
+                throw new ArgumentNullException("right");
+            }
+            if (funnelPath == null)
+            {
+                throw new ArgumentNullException("funnelPath");
+            }
+            if (left.Count != right.Count)
+            {
+                throw new ArgumentException("left and right lists must have equal length");
+            }
+            if (left.Count <= 3)
+            {
+                return false;
+            }
+            while ((left[1] == left[2]) && (right[1] == right[2]))
+            {
+                left.RemoveAt(1);
+                right.RemoveAt(1);
+                if (left.Count <= 3)
+                {
+                    return false;
+                }
+            }
+            Int3 c = left[2];
+            if (c == left[1])
+            {
+                c = right[2];
+            }
+            while (Polygon.IsColinear(left[0], left[1], right[1]) || (Polygon.Left(left[1], right[1], c) == Polygon.Left(left[1], right[1], left[0])))
+            {
+                left.RemoveAt(1);
+                right.RemoveAt(1);
+                if (left.Count <= 3)
+                {
+                    return false;
+                }
+                c = left[2];
+                if (c == left[1])
+                {
+                    c = right[2];
+                }
+            }
+            if (!Polygon.IsClockwise(left[0], left[1], right[1]) && !Polygon.IsColinear(left[0], left[1], right[1]))
+            {
+                List<Int3> list = left;
+                left = right;
+                right = list;
+            }
+            funnelPath.Add(left[0]);
+            Int3 a = left[0];
+            Int3 b = left[1];
+            Int3 num4 = right[1];
+            int num5 = 0;
+            int num6 = 1;
+            int num7 = 1;
+            for (int i = 2; i < left.Count; i++)
+            {
+                if (funnelPath.Count > 0x7d0)
+                {
+                    Debug.LogWarning("Avoiding infinite loop. Remove this check if you have this long paths.");
+                    break;
+                }
+                Int3 num9 = left[i];
+                Int3 num10 = right[i];
+                if (Polygon.TriangleArea2(a, num4, num10) >= 0L)
+                {
+                    if ((a == num4) || (Polygon.TriangleArea2(a, b, num10) <= 0L))
+                    {
+                        num4 = num10;
+                        num6 = i;
+                    }
+                    else
+                    {
+                        funnelPath.Add(b);
+                        a = b;
+                        num5 = num7;
+                        b = a;
+                        num4 = a;
+                        num7 = num5;
+                        num6 = num5;
+                        i = num5;
+                        continue;
+                    }
+                }
+                if (Polygon.TriangleArea2(a, b, num9) <= 0L)
+                {
+                    if ((a == b) || (Polygon.TriangleArea2(a, num4, num9) >= 0L))
+                    {
+                        b = num9;
+                        num7 = i;
+                    }
+                    else
+                    {
+                        funnelPath.Add(num4);
+                        a = num4;
+                        num5 = num6;
+                        b = a;
+                        num4 = a;
+                        num7 = num5;
+                        num6 = num5;
+                        i = num5;
+                    }
+                }
+            }
+            funnelPath.Add(left[left.Count - 1]);
+            return true;
+        }
+    }
 }

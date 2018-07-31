@@ -10,15 +10,15 @@ namespace Pathfinding {
 	 *
 	 * The path can be called like:
 	 * \code
-	 * //Here you create a new path and set how far it should search. Null is for the callback, but the seeker will handle that
-	 * ConstantPath cpath = ConstantPath.Construct (transform.position, 2000, null);
-	 * //Set the seeker to search for the path (where mySeeker is a variable referencing a Seeker component)
-	 * mySeeker.StartPath (cpath, myCallbackFunction);
+	 * // Here you create a new path and set how far it should search. Null is for the callback, but the seeker will handle that
+	 * ConstantPath cpath = ConstantPath.Construct(transform.position, 2000, null);
+	 * // Set the seeker to search for the path (where mySeeker is a variable referencing a Seeker component)
+	 * mySeeker.StartPath(cpath, myCallbackFunction);
 	 * \endcode
 	 *
 	 * Then when getting the callback, all nodes will be stored in the variable ConstantPath.allNodes (remember that you need to cast it from Path to ConstantPath first to get the variable).
 	 *
-	 * This list will be sorted by G score (cost/distance to reach the node), however only the last duplicate of a node in the list is guaranteed to be sorted in this way.
+	 * This list will be sorted by the cost to reach that node (more specifically the G score if you are familiar with the terminology for search algorithms).
 	 * \shadowimage{constantPath.png}
 	 *
 	 * \ingroup paths
@@ -27,12 +27,14 @@ namespace Pathfinding {
 	 **/
 	public class ConstantPath : Path {
 		public GraphNode startNode;
-		public Vector3 startPoint;
-		public Vector3 originalStartPoint;
+	    //Good Game
+        /*public Vector3 startPoint;
+		public Vector3 originalStartPoint;*/
+        public Int3 startPoint;
+		public Int3 originalStartPoint;
 
 		/** Contains all nodes the path found.
-		 * \note Due to the nature of the search, there might be duplicates of some nodes in the array.
-		 * This list will be sorted by G score (cost/distance to reach the node), however only the last duplicate of a node in the list is guaranteed to be sorted in this way.
+		 * This list will be sorted by G score (cost/distance to reach the node).
 		 */
 		public List<GraphNode> allNodes;
 
@@ -43,27 +45,33 @@ namespace Pathfinding {
 		 */
 		public PathEndingCondition endingCondition;
 
-		public override bool FloodingPath {
+		internal override bool FloodingPath {
 			get {
 				return true;
 			}
 		}
 
-		/** Constructs a ConstantPath starting from the specified point.
+        /** Constructs a ConstantPath starting from the specified point.
 		 * \param start             From where the path will be started from (the closest node to that point will be used)
 		 * \param maxGScore			Searching will be stopped when a node has a G score greater than this
 		 * \param callback			Will be called when the path has completed, leave this to null if you use a Seeker to handle calls
 		 *
-		 * Searching will be stopped when a node has a G score (cost to reach it) greater than \a maxGScore */
-		public static ConstantPath Construct (Vector3 start, int maxGScore, OnPathDelegate callback = null) {
+		 * Searching will be stopped when a node has a G score (cost to reach it) greater or equal to \a maxGScore
+		 * in order words it will search all nodes with a cost to get there less than \a maxGScore.
+		 */
+	    //Good Game
+        //public static ConstantPath Construct (Vector3 start, int maxGScore, OnPathDelegate callback = null) {
+        public static ConstantPath Construct (Int3 start, int maxGScore, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<ConstantPath>();
 
 			p.Setup(start, maxGScore, callback);
 			return p;
 		}
 
-		/** Sets up a ConstantPath starting from the specified point */
-		protected void Setup (Vector3 start, int maxGScore, OnPathDelegate callback) {
+        /** Sets up a ConstantPath starting from the specified point */
+	    //Good Game
+        //protected void Setup (Vector3 start, int maxGScore, OnPathDelegate callback) {
+        protected void Setup (Int3 start, int maxGScore, OnPathDelegate callback) {
 			this.callback = callback;
 			startPoint = start;
 			originalStartPoint = startPoint;
@@ -71,9 +79,9 @@ namespace Pathfinding {
 			endingCondition = new EndingConditionDistance(this, maxGScore);
 		}
 
-		public override void OnEnterPool () {
+		protected override void OnEnterPool () {
 			base.OnEnterPool();
-			if (allNodes != null) Util.ListPool<GraphNode>.Release(allNodes);
+			if (allNodes != null) Util.ListPool<GraphNode>.Release(ref allNodes);
 		}
 
 		/** Reset the path to default values.
@@ -82,31 +90,30 @@ namespace Pathfinding {
 		 *
 		 * Also sets #heuristic to Heuristic.None as it is the default value for this path type
 		 */
-		public override void Reset () {
+		protected override void Reset () {
 			base.Reset();
 			allNodes = Util.ListPool<GraphNode>.Claim();
 			endingCondition = null;
-			originalStartPoint = Vector3.zero;
-			startPoint = Vector3.zero;
+			originalStartPoint = Int3.zero;
+			startPoint = Int3.zero;
 			startNode = null;
 			heuristic = Heuristic.None;
 		}
 
-		public override void Prepare () {
+		protected override void Prepare () {
 			nnConstraint.tags = enabledTags;
-			NNInfo startNNInfo  = AstarPath.active.GetNearest(startPoint, nnConstraint);
+			var startNNInfo  = AstarPath.active.GetNearest(startPoint, nnConstraint);
 
 			startNode = startNNInfo.node;
 			if (startNode == null) {
-				Error();
-				LogError("Could not find close node to the start point");
+				FailWithError("Could not find close node to the start point");
 				return;
 			}
 		}
 
 		/** Initializes the path.
 		 * Sets up the open list and adds the first node to it */
-		public override void Initialize () {
+		protected override void Initialize () {
 			PathNode startRNode = pathHandler.GetPathNode(startNode);
 
 			startRNode.node = startNode;
@@ -124,24 +131,24 @@ namespace Pathfinding {
 			allNodes.Add(startNode);
 
 			//any nodes left to search?
-			if (pathHandler.HeapEmpty()) {
+			if (pathHandler.heap.isEmpty) {
 				CompleteState = PathCompleteState.Complete;
 				return;
 			}
 
-			currentR = pathHandler.PopNode();
+			currentR = pathHandler.heap.Remove();
 		}
 
-		public override void Cleanup () {
+		protected override void Cleanup () {
 			int c = allNodes.Count;
 
 			for (int i = 0; i < c; i++) pathHandler.GetPathNode(allNodes[i]).flag1 = false;
 		}
 
-		public override void CalculateStep (long targetTick) {
+		protected override void CalculateStep (long targetTick) {
 			int counter = 0;
 
-			//Continue to search while there hasn't ocurred an error and the end hasn't been found
+			//Continue to search as long as we haven't encountered an error and we haven't found the target
 			while (CompleteState == PathCompleteState.NotCalculated) {
 				searchedNodes++;
 
@@ -173,7 +180,7 @@ namespace Pathfinding {
 				AstarProfiler.EndFastProfile(4);
 
 				//any nodes left to search?
-				if (pathHandler.HeapEmpty()) {
+				if (pathHandler.heap.isEmpty) {
 					CompleteState = PathCompleteState.Complete;
 					break;
 				}
@@ -181,7 +188,7 @@ namespace Pathfinding {
 
 				//Select the node with the lowest F score and remove it from the open list
 				AstarProfiler.StartFastProfile(7);
-				currentR = pathHandler.PopNode();
+				currentR = pathHandler.heap.Remove();
 				AstarProfiler.EndFastProfile(7);
 
 				//Check for time every 500 nodes, roughly every 0.5 ms usually

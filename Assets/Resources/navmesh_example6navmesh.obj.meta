@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 9ec886acf52f3f6489d5be304996f5ec
+guid: 60c92f3e996b2304ba6e7c0e9139cb8f
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
@@ -18,7 +18,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: navmesh_example6navmeshMat
-    second: {fileID: 2100000, guid: 8a5be4ad242fec94181e8144c3e1e3df, type: 2}
+    second: {fileID: 2100000, guid: 9797feb011e9c3b40a185d4409f7f7d3, type: 2}
   materials:
     importMaterials: 1
     materialName: 3

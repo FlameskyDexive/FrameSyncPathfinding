@@ -1,4 +1,4 @@
-using Assets.Scripts.GameLogic;
+//using Assets.Scripts.GameLogic;
 using Pathfinding;
 using System;
 using System.Collections.Generic;
@@ -73,7 +73,7 @@ public class PathfindingUtility
                     bool flag;
                     num++;
                     Vector3 b = Polygon.IntersectionPoint((Vector3) numArray[i], (Vector3) numArray[(i + 1) % 3], vector, vector2, out flag);
-                    DebugHelper.Assert(flag);
+                    //DebugHelper.Assert(flag);
                     float num5 = vector.XZSqrMagnitude(ref b);
                     if (num5 < maxValue)
                     {

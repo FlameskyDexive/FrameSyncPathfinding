@@ -35,17 +35,21 @@ namespace Pathfinding {
 		 */
 		public FleePath () {}
 
-		/** Constructs a new FleePath.
+        /** Constructs a new FleePath.
 		 * The FleePath will be taken from a pool.
 		 */
-		public static FleePath Construct (Vector3 start, Vector3 avoid, int searchLength, OnPathDelegate callback = null) {
+	    //Good Game
+        //public static FleePath Construct (Vector3 start, Vector3 avoid, int searchLength, OnPathDelegate callback = null) {
+        public static FleePath Construct (Int3 start, Int3 avoid, int searchLength, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<FleePath>();
 
 			p.Setup(start, avoid, searchLength, callback);
 			return p;
 		}
 
-		protected void Setup (Vector3 start, Vector3 avoid, int searchLength, OnPathDelegate callback) {
+	    //Good Game
+        //protected void Setup (Vector3 start, Vector3 avoid, int searchLength, OnPathDelegate callback) {
+        protected void Setup (Int3 start, Int3 avoid, int searchLength, OnPathDelegate callback) {
 			Setup(start, searchLength, callback);
 			aim = avoid-start;
 			// TODO: Why is this multiplication by 10 here?

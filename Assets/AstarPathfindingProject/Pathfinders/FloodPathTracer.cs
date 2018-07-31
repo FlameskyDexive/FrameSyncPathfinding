@@ -44,17 +44,21 @@ namespace Pathfinding {
 		 */
 		public FloodPathTracer () {}
 
-		public static FloodPathTracer Construct (Vector3 start, FloodPath flood, OnPathDelegate callback = null) {
+	    //Good Game
+        //public static FloodPathTracer Construct (Vector3 start, FloodPath flood, OnPathDelegate callback = null) {
+        public static FloodPathTracer Construct (Int3 start, FloodPath flood, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<FloodPathTracer>();
 
 			p.Setup(start, flood, callback);
 			return p;
 		}
 
-		protected void Setup (Vector3 start, FloodPath flood, OnPathDelegate callback) {
+	    //Good Game
+        //protected void Setup (Vector3 start, FloodPath flood, OnPathDelegate callback) {
+        protected void Setup (Int3 start, FloodPath flood, OnPathDelegate callback) {
 			this.flood = flood;
 
-			if (flood == null || flood.GetState() < PathState.Returned) {
+			if (flood == null || flood.PipelineState < PathState.Returned) {
 				throw new System.ArgumentException("You must supply a calculated FloodPath to the 'flood' argument");
 			}
 
@@ -62,7 +66,7 @@ namespace Pathfinding {
 			nnConstraint = new FloodPathConstraint(flood);
 		}
 
-		public override void Reset () {
+		protected override void Reset () {
 			base.Reset();
 			flood = null;
 		}
@@ -70,21 +74,17 @@ namespace Pathfinding {
 		/** Initializes the path.
 		 * Traces the path from the start node.
 		 */
-		public override void Initialize () {
+		protected override void Initialize () {
 			if (startNode != null && flood.HasPathTo(startNode)) {
 				Trace(startNode);
 				CompleteState = PathCompleteState.Complete;
 			} else {
-				Error();
-				LogError("Could not find valid start node");
+				FailWithError("Could not find valid start node");
 			}
 		}
 
-		public override void CalculateStep (long targetTick) {
-			if (!IsDone()) {
-				Error();
-				LogError("Something went wrong. At this point the path should be completed");
-			}
+		protected override void CalculateStep (long targetTick) {
+			if (!IsDone()) throw new System.Exception("Something went wrong. At this point the path should be completed");
 		}
 
 		/** Traces the calculated path from the start node to the end.
@@ -97,7 +97,9 @@ namespace Pathfinding {
 
 			while (c != null) {
 				path.Add(c);
-				vectorPath.Add((Vector3)c.position);
+			    //Good Game
+                //vectorPath.Add((Vector3)c.position);
+                vectorPath.Add(c.position);
 				c = flood.GetParent(c);
 
 				count++;

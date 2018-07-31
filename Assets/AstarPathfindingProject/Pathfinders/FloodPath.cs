@@ -45,9 +45,13 @@ namespace Pathfinding {
 	 * \ingroup paths
 	 *
 	 */
-	public class FloodPath : Path {
-		public Vector3 originalStartPoint;
-		public Vector3 startPoint;
+	public class FloodPath : Path
+	{
+	    //Good Game
+        /*public Vector3 originalStartPoint;
+		public Vector3 startPoint;*/
+        public Int3 originalStartPoint;
+		public Int3 startPoint;
 		public GraphNode startNode;
 
 		/** If false, will not save any information.
@@ -57,7 +61,7 @@ namespace Pathfinding {
 
 		protected Dictionary<GraphNode, GraphNode> parents;
 
-		public override bool FloodingPath {
+		internal override bool FloodingPath {
 			get {
 				return true;
 			}
@@ -76,7 +80,9 @@ namespace Pathfinding {
 		 */
 		public FloodPath () {}
 
-		public static FloodPath Construct (Vector3 start, OnPathDelegate callback = null) {
+	    //Good Game
+        //public static FloodPath Construct (Vector3 start, OnPathDelegate callback = null) {
+        public static FloodPath Construct (Int3 start, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<FloodPath>();
 
 			p.Setup(start, callback);
@@ -91,7 +97,9 @@ namespace Pathfinding {
 			return p;
 		}
 
-		protected void Setup (Vector3 start, OnPathDelegate callback) {
+	    //Good Game
+        //protected void Setup (Vector3 start, OnPathDelegate callback) {
+        protected void Setup (Int3 start, OnPathDelegate callback) {
 			this.callback = callback;
 			originalStartPoint = start;
 			startPoint = start;
@@ -100,34 +108,44 @@ namespace Pathfinding {
 
 		protected void Setup (GraphNode start, OnPathDelegate callback) {
 			this.callback = callback;
-			originalStartPoint = (Vector3)start.position;
+		    //Good Game
+            //originalStartPoint = (Vector3)start.position;
+            originalStartPoint = start.position;
 			startNode = start;
-			startPoint = (Vector3)start.position;
+		    //Good Game
+            //startPoint = (Vector3)start.position;
+            startPoint = start.position;
 			heuristic = Heuristic.None;
 		}
 
-		public override void Reset () {
+		protected override void Reset () {
 			base.Reset();
-			originalStartPoint = Vector3.zero;
-			startPoint = Vector3.zero;
+		    //Good Game
+            /*originalStartPoint = Vector3.zero;
+			startPoint = Vector3.zero;*/
+            originalStartPoint = Int3.zero;
+			startPoint = Int3.zero;
 			startNode = null;
 			/** \todo Avoid this allocation */
 			parents = new Dictionary<GraphNode, GraphNode>();
 			saveParents = true;
 		}
 
-		public override void Prepare () {
+		protected override void Prepare () {
 			AstarProfiler.StartProfile("Get Nearest");
 
 			if (startNode == null) {
 				//Initialize the NNConstraint
 				nnConstraint.tags = enabledTags;
-				NNInfo startNNInfo  = AstarPath.active.GetNearest(originalStartPoint, nnConstraint);
+				var startNNInfo  = AstarPath.active.GetNearest(originalStartPoint, nnConstraint);
 
-				startPoint = startNNInfo.clampedPosition;
+				startPoint = startNNInfo.position;
 				startNode = startNNInfo.node;
-			} else {
-				startPoint = (Vector3)startNode.position;
+			} else
+			{
+			    //Good Game
+                //startPoint = (Vector3)startNode.position;
+                startPoint = startNode.position;
 			}
 
 			AstarProfiler.EndProfile();
@@ -137,23 +155,17 @@ namespace Pathfinding {
 #endif
 
 			if (startNode == null) {
-				Error();
-				LogError("Couldn't find a close node to the start point");
+				FailWithError("Couldn't find a close node to the start point");
 				return;
 			}
 
-			if (!startNode.Walkable) {
-#if ASTARDEBUG
-				Debug.DrawRay(startPoint, Vector3.up, Color.red);
-				Debug.DrawLine(startPoint, (Vector3)startNode.position, Color.red);
-#endif
-				Error();
-				LogError("The node closest to the start point is not walkable");
+			if (!CanTraverse(startNode)) {
+				FailWithError("The node closest to the start point could not be traversed");
 				return;
 			}
 		}
 
-		public override void Initialize () {
+		protected override void Initialize () {
 			PathNode startRNode = pathHandler.GetPathNode(startNode);
 
 			startRNode.node = startNode;
@@ -169,18 +181,18 @@ namespace Pathfinding {
 			searchedNodes++;
 
 			// Any nodes left to search?
-			if (pathHandler.HeapEmpty()) {
+			if (pathHandler.heap.isEmpty) {
 				CompleteState = PathCompleteState.Complete;
 			}
 
-			currentR = pathHandler.PopNode();
+			currentR = pathHandler.heap.Remove();
 		}
 
 		/** Opens nodes until there are none left to search (or until the max time limit has been exceeded) */
-		public override void CalculateStep (long targetTick) {
+		protected override void CalculateStep (long targetTick) {
 			int counter = 0;
 
-			//Continue to search while there hasn't ocurred an error and the end hasn't been found
+			//Continue to search as long as we haven't encountered an error and we haven't found the target
 			while (CompleteState == PathCompleteState.NotCalculated) {
 				searchedNodes++;
 
@@ -196,14 +208,14 @@ namespace Pathfinding {
 				AstarProfiler.EndFastProfile(4);
 
 				//any nodes left to search?
-				if (pathHandler.HeapEmpty()) {
+				if (pathHandler.heap.isEmpty) {
 					CompleteState = PathCompleteState.Complete;
 					break;
 				}
 
 				//Select the node with the lowest F score and remove it from the open list
 				AstarProfiler.StartFastProfile(7);
-				currentR = pathHandler.PopNode();
+				currentR = pathHandler.heap.Remove();
 				AstarProfiler.EndFastProfile(7);
 
 				//Check for time every 500 nodes, roughly every 0.5 ms usually

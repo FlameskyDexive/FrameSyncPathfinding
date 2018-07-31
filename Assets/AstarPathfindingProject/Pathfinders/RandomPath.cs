@@ -51,18 +51,20 @@ namespace Pathfinding {
 		/** The G score of #maxGScoreNodeR */
 		int maxGScore;
 
-		/** An aim can be used to guide the pathfinder to not take totally random paths.
+        /** An aim can be used to guide the pathfinder to not take totally random paths.
 		 * For example you might want your AI to continue in generally the same direction as before, then you can specify
 		 * aim to be transform.postion + transform.forward*10 which will make it more often take paths nearer that point
 		 * \see #aimStrength */
-		public Vector3 aim;
+	    //Good Game
+        //public Vector3 aim;
+        public Int3 aim;
 
 		int nodesEvaluatedRep;
 
 		/** Random number generator */
 		readonly System.Random rnd = new System.Random();
 
-		public override bool FloodingPath {
+		internal override bool FloodingPath {
 			get {
 				return true;
 			}
@@ -74,7 +76,7 @@ namespace Pathfinding {
 			}
 		}
 
-		public override void Reset () {
+		protected override void Reset () {
 			base.Reset();
 
 			searchLength = 5000;
@@ -84,7 +86,9 @@ namespace Pathfinding {
 			chosenNodeR = null;
 			maxGScoreNodeR = null;
 			maxGScore = 0;
-			aim = Vector3.zero;
+		    //Good Game
+            //aim = Vector3.zero;
+            aim = Int3.zero;
 
 			nodesEvaluatedRep = 0;
 		}
@@ -92,27 +96,37 @@ namespace Pathfinding {
 		public RandomPath () {}
 
 		[System.Obsolete("This constructor is obsolete. Please use the pooling API and the Construct methods")]
-		public RandomPath (Vector3 start, int length, OnPathDelegate callback = null) {
+		//Good Game
+        //public RandomPath (Vector3 start, int length, OnPathDelegate callback = null) {
+        public RandomPath (Int3 start, int length, OnPathDelegate callback = null) {
 			throw new System.Exception("This constructor is obsolete. Please use the pooling API and the Setup methods");
 		}
 
-		public static RandomPath Construct (Vector3 start, int length, OnPathDelegate callback = null) {
+	    //Good Game
+        //public static RandomPath Construct (Vector3 start, int length, OnPathDelegate callback = null) {
+        public static RandomPath Construct (Int3 start, int length, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<RandomPath>();
 
 			p.Setup(start, length, callback);
 			return p;
 		}
 
-		protected RandomPath Setup (Vector3 start, int length, OnPathDelegate callback) {
+	    //Good Game
+        //protected RandomPath Setup (Vector3 start, int length, OnPathDelegate callback) {
+        protected RandomPath Setup (Int3 start, int length, OnPathDelegate callback) {
 			this.callback = callback;
 
 			searchLength = length;
 
 			originalStartPoint = start;
-			originalEndPoint = Vector3.zero;
+            //Good Game
+            //originalEndPoint = Vector3.zero;
+            originalEndPoint = Int3.zero;
 
 			startPoint = start;
-			endPoint = Vector3.zero;
+            //Good Game
+            //endPoint = Vector3.zero;
+            endPoint = Int3.zero;
 
 			startIntPoint = (Int3)start;
 
@@ -121,10 +135,12 @@ namespace Pathfinding {
 
 		/** Calls callback to return the calculated path.
 		 * \see #callback */
-		public override void ReturnPath () {
+		protected override void ReturnPath () {
 			if (path != null && path.Count > 0) {
 				endNode = path[path.Count-1];
-				endPoint = (Vector3)endNode.position;
+			    //Good Game
+                //endPoint = (Vector3)endNode.position;
+                endPoint = endNode.position;
 				originalEndPoint = endPoint;
 
 				hTarget = endNode.position;
@@ -134,11 +150,11 @@ namespace Pathfinding {
 			}
 		}
 
-		public override void Prepare () {
+		protected override void Prepare () {
 			nnConstraint.tags = enabledTags;
-			NNInfo startNNInfo  = AstarPath.active.GetNearest(startPoint, nnConstraint, startHint);
+			var startNNInfo  = AstarPath.active.GetNearest(startPoint, nnConstraint);
 
-			startPoint = startNNInfo.clampedPosition;
+			startPoint = startNNInfo.position;
 			endPoint = startPoint;
 
 			startIntPoint = (Int3)startPoint;
@@ -153,21 +169,19 @@ namespace Pathfinding {
 #endif
 
 			if (startNode == null || endNode == null) {
-				LogError("Couldn't find close nodes to the start point");
-				Error();
+				FailWithError("Couldn't find close nodes to the start point");
 				return;
 			}
 
-			if (!startNode.Walkable) {
-				LogError("The node closest to the start point is not walkable");
-				Error();
+			if (!CanTraverse(startNode)) {
+				FailWithError("The node closest to the start point could not be traversed");
 				return;
 			}
 
 			heuristicScale = aimStrength;
 		}
 
-		public override void Initialize () {
+		protected override void Initialize () {
 			//Adjust the costs for the end node
 			/*if (hasEndPoint && recalcStartEndCosts) {
 			 *  endNodeCosts = endNode.InitialOpen (open,hTarget,(Int3)endPoint,this,false);
@@ -200,19 +214,18 @@ namespace Pathfinding {
 			searchedNodes++;
 
 			//any nodes left to search?
-			if (pathHandler.HeapEmpty()) {
-				LogError("No open points, the start node didn't open any nodes");
-				Error();
+			if (pathHandler.heap.isEmpty) {
+				FailWithError("No open points, the start node didn't open any nodes");
 				return;
 			}
 
-			currentR = pathHandler.PopNode();
+			currentR = pathHandler.heap.Remove();
 		}
 
-		public override void CalculateStep (long targetTick) {
+		protected override void CalculateStep (long targetTick) {
 			int counter = 0;
 
-			// Continue to search while there hasn't ocurred an error and the end hasn't been found
+			// Continue to search as long as we haven't encountered an error and we haven't found the target
 			while (CompleteState == PathCompleteState.NotCalculated) {
 				searchedNodes++;
 
@@ -240,22 +253,21 @@ namespace Pathfinding {
 				currentR.node.Open(this, currentR, pathHandler);
 
 				// Any nodes left to search?
-				if (pathHandler.HeapEmpty()) {
+				if (pathHandler.heap.isEmpty) {
 					if (chosenNodeR != null) {
 						CompleteState = PathCompleteState.Complete;
 					} else if (maxGScoreNodeR != null) {
 						chosenNodeR = maxGScoreNodeR;
 						CompleteState = PathCompleteState.Complete;
 					} else {
-						LogError("Not a single node found to search");
-						Error();
+						FailWithError("Not a single node found to search");
 					}
 					break;
 				}
 
 
 				// Select the node with the lowest F score and remove it from the open list
-				currentR = pathHandler.PopNode();
+				currentR = pathHandler.heap.Remove();
 
 				// Check for time every 500 nodes, roughly every 0.5 ms usually
 				if (counter > 500) {

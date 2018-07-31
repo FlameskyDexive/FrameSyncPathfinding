@@ -18,14 +18,19 @@ namespace Pathfinding {
 		public MaxTurn turnConstruct1 = new MaxTurn();
 		public ConstantTurn turnConstruct2 = new ConstantTurn();
 
-		public override void Apply (Path p) {
-			Vector3[] vectorPath = p.vectorPath.ToArray();
+		public override void Apply (Path p)
+		{
+		    //Good Game
+            Vector3[] vectorPath = IntMath.Int3s2Vector3s(p.vectorPath).ToArray();
+            //Int3[] vectorPath = p.vectorPath.ToArray();
 
 			if (vectorPath == null || vectorPath.Length <= 2) {
 				return;
 			}
 
-			List<Vector3> newPath = new List<Vector3>();
+		    //Good Game
+            List<Vector3> newPath = new List<Vector3>();
+            //List<Int3> newPath = new List<Int3>();
 			newPath.Add(vectorPath[0]);
 
 			TurnConstructor.turningRadius = turningRadius;
@@ -59,7 +64,9 @@ namespace Pathfinding {
 			}
 
 			newPath.Add(vectorPath[vectorPath.Length-1]);
-			p.vectorPath = newPath;
+            //Good Game
+			//p.vectorPath = newPath;
+			p.vectorPath = IntMath.Vector3s2Int3s(newPath);
 		}
 
 		void EvaluatePaths (List<Turn> turnList, List<Vector3> output) {

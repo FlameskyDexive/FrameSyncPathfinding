@@ -86,12 +86,12 @@ public class ListView<T> : ListViewBase, IEnumerable, IEnumerable<T>
     public void Sort(Comparison<T> comparison)
     {
         base.Context.Sort(new ComparisonConverter<T>(comparison));
-    }
+    }*/
 
     IEnumerator<T> IEnumerable<T>.GetEnumerator()
     {
-        return this.GetEnumerator();
-    }*/
+        return null;
+    }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
@@ -140,7 +140,7 @@ public class ListView<T> : ListViewBase, IEnumerable, IEnumerable<T>
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    /*[StructLayout(LayoutKind.Sequential)]
     public struct Enumerator : IDisposable, IEnumerator, IEnumerator<T>
     {
         private List<object> Reference;
@@ -164,7 +164,7 @@ public class ListView<T> : ListViewBase, IEnumerable, IEnumerable<T>
             {
                 return this.Iter.Current;
             }
-        }*/
+        }#1#
         public void Reset()
         {
             this.Iter = this.Reference.GetEnumerator();
@@ -180,6 +180,6 @@ public class ListView<T> : ListViewBase, IEnumerable, IEnumerable<T>
         {
             return this.Iter.MoveNext();
         }
-    }
+    }*/
 }
 
