@@ -40,7 +40,7 @@ namespace Pathfinding.Voxels {
 		/** The world AABB to rasterize */
 		public Bounds forcedBounds;
 
-		public VoxelArea voxelArea;
+		public VoxelArea voxelArea { get; set; }
 		public VoxelContourSet countourSet;
 
 		/** Transform from voxel space to world space */

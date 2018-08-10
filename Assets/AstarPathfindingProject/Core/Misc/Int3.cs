@@ -463,7 +463,7 @@ namespace Pathfinding {
 
 		/** Returns a nicely formatted string representing the vector */
 		public override string ToString () {
-			return "( "+x+", "+y+", "+z+")";
+			return "("+x+","+y+","+z+")";
 		}
 
 		public override bool Equals (System.Object obj) {

@@ -181,6 +181,31 @@ public struct VQuaternion : IEquatable<VQuaternion>
         return new UnityEngine.Quaternion(ob.x * PrecisionFactor, ob.y * PrecisionFactor, ob.z * PrecisionFactor, ob.w * PrecisionFactor);
     }
 
+    //GG Add
+    public static long Dot(VQuaternion a, VQuaternion b)
+    {
+        return a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
+    //GG Add
+    public static VQuaternion Inverse(VQuaternion rotation)
+    {
+        //VFactor invNorm = 1000 / ((rotation.x * rotation.x) + (rotation.y * rotation.y) + (rotation.z * rotation.z) + (rotation.w * rotation.w));
+        VFactor invNorm = new VFactor(1000, ((rotation.x * rotation.x) + (rotation.y * rotation.y) + (rotation.z * rotation.z) + (rotation.w * rotation.w)));
+        return VQuaternion.Multiply(VQuaternion.Conjugate(rotation), invNorm);
+    }
+
+    //GG Add
+    public static VQuaternion Conjugate(VQuaternion value)
+    {
+        VQuaternion quaternion;
+        quaternion.x = -value.x;
+        quaternion.y = -value.y;
+        quaternion.z = -value.z;
+        quaternion.w = value.w;
+        return quaternion;
+    }
+
     /// <summary>
     /// Multiplies two instances.
     /// </summary>

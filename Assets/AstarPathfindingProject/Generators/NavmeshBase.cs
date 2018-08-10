@@ -298,6 +298,7 @@ namespace Pathfinding {
 			}
 		}
 
+        //Good Game
 		/** Returns a rect containing the indices of all tiles touching the specified bounds */
 		public IntRect GetTouchingTiles (Bounds bounds) {
 			bounds = transform.InverseTransform(bounds);
@@ -1276,7 +1277,10 @@ namespace Pathfinding {
 						hasher.HashNode(nodes[j]);
 					}
 
-					if (!gizmos.Draw(hasher)) {
+				    //Good Game 
+				    //Debug.Log("---mesh---" + tiles[i].verts[0] + "\n" + tiles[i].verts[1] + "\n" + tiles[i].verts[2]);
+
+                    if (!gizmos.Draw(hasher)) {
 						using (var helper = gizmos.GetGizmoHelper(active, hasher)) {
 							if (showMeshSurface || showMeshOutline) CreateNavmeshSurfaceVisualization(tiles[i], helper);
 							if (showMeshSurface || showMeshOutline) CreateNavmeshOutlineVisualization(tiles[i], helper);
@@ -1322,11 +1326,15 @@ namespace Pathfinding {
 			ArrayPool<Color>.Release(ref colors);
 		}
 
+        //Good Game Translate EditorÄ£Ê½ÏÂ
 		/** Creates an outline of the navmesh for use in OnDrawGizmos in the editor */
 		static void CreateNavmeshOutlineVisualization (NavmeshTile tile, GraphGizmoHelper helper) {
 			var sharedEdges = new bool[3];
 
-			for (int j = 0; j < tile.nodes.Length; j++) {
+		    //Good Game 
+		    //Debug.Log("---tile triangle count---" + tile.nodes.Length + "\n---tile vertices count---" + tile.verts.Length);
+
+            for (int j = 0; j < tile.nodes.Length; j++) {
 				sharedEdges[0] = sharedEdges[1] = sharedEdges[2] = false;
 
 				var node = tile.nodes[j];

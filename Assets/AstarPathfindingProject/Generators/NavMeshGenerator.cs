@@ -25,7 +25,7 @@ namespace Pathfinding {
 	public class NavMeshGraph : NavmeshBase, IUpdatableGraph {
 		/** Mesh to construct navmesh from */
 		[JsonMember]
-		public Mesh sourceMesh;
+		public Mesh sourceMesh { get; set; }
 
 		/** Offset in world space */
 		[JsonMember]
@@ -83,7 +83,8 @@ namespace Pathfinding {
 			}
 		}
 
-		public override GraphTransform CalculateTransform () {
+	    //Good Game Translate 计算物体信息
+        public override GraphTransform CalculateTransform () {
 			return new GraphTransform(Matrix4x4.TRS(offset, Quaternion.Euler(rotation), Vector3.one) * Matrix4x4.TRS(sourceMesh != null ? sourceMesh.bounds.min * scale : Vector3.zero, Quaternion.identity, Vector3.one));
 		}
 
@@ -98,6 +99,7 @@ namespace Pathfinding {
 			UpdateArea(o, this);
 		}
 
+        //Good Game Translate 静态更新寻路点的障碍，除了传入的边界点未整型化，计算过程已全部整型化
 		public static void UpdateArea (GraphUpdateObject o, INavmeshHolder graph) {
 			Bounds bounds = graph.transform.InverseTransform(o.bounds);
 
@@ -249,7 +251,8 @@ namespace Pathfinding {
 			}
 		}
 
-		protected override void DeserializeSettingsCompatibility (GraphSerializationContext ctx) {
+	    //Good Game Translate 从本地反序列化，就设置，已废弃
+        protected override void DeserializeSettingsCompatibility (GraphSerializationContext ctx) {
 			base.DeserializeSettingsCompatibility(ctx);
 
 			sourceMesh = ctx.DeserializeUnityObject() as Mesh;

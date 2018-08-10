@@ -360,8 +360,12 @@ namespace Pathfinding {
 		/** A random point on the surface of the node.
 		 * For point nodes and other nodes which do not have a surface, this will always return the position of the node.
 		 */
-		public virtual Vector3 RandomPointOnSurface () {
+        //GG
+		/*public virtual Vector3 RandomPointOnSurface () {
 			return (Vector3)position;
+		}*/
+		public virtual Int3 RandomPointOnSurface () {
+			return position;
 		}
 
 		/** Hash code used for checking if the gizmos need to be updated.
@@ -597,7 +601,7 @@ namespace Pathfinding {
 		/** Checks if \a point is inside the node */
 		public virtual bool ContainsPoint (Int3 point) {
             //Good Game
-			return ContainsPoint((Vector3)point);
+			return ContainsPoint(point);
 			//return ContainsPoint(point);
 		}
 
@@ -609,7 +613,7 @@ namespace Pathfinding {
 		 * transforming the point first and then calling ContainsPointInGraphSpace.
 		 * \snippet MiscSnippets.cs MeshNode.ContainsPoint
 		 */
-		public abstract bool ContainsPoint (Vector3 point);
+		//public abstract bool ContainsPoint (Vector3 point);
 
 		/** Checks if \a point is inside the node in graph space.
 		 *

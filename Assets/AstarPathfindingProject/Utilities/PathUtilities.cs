@@ -514,16 +514,22 @@ namespace Pathfinding {
 
 						// Test if it is some distance away from the other points
 						if (clearanceRadius > 0) {
-							for (int j = 0; j < pts.Count; j++) {
-								if ((pts[j]-p).sqrMagnitude < clearanceRadius) {
+							for (int j = 0; j < pts.Count; j++)
+							{
+							    //GG
+                                //if ((pts[j]-p).sqrMagnitude < clearanceRadius) {
+                                if ((pts[j]-(Vector3)p).sqrMagnitude < clearanceRadius) {
 									worked = false;
 									break;
 								}
 							}
 						}
 
-						if (worked) {
-							pts.Add(p);
+						if (worked)
+						{
+						    //GG
+                            //pts.Add(p);
+                            pts.Add((Vector3)p);
 							break;
 						}
 						testCount++;

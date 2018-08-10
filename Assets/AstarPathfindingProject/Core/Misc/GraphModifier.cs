@@ -187,8 +187,11 @@ namespace Pathfinding {
 
 		void Reset () {
 			// Create a new random 64 bit value (62 bit actually because we skip negative numbers, but that's still enough by a huge margin)
-			var rnd1 = (ulong)Random.Range(0, int.MaxValue);
-			var rnd2 = ((ulong)Random.Range(0, int.MaxValue) << 32);
+			/*var rnd1 = (ulong)Random.Range(0, int.MaxValue);
+			var rnd2 = ((ulong)Random.Range(0, int.MaxValue) << 32);*/
+            //GG
+			var rnd1 = (ulong)VRandom.Random(0, int.MaxValue);
+			var rnd2 = ((ulong)VRandom.Random(0, int.MaxValue) << 32);
 
 			uniqueID = rnd1 | rnd2;
 			usedIDs[uniqueID] = this;

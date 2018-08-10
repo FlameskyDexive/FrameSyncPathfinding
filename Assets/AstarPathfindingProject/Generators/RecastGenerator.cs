@@ -430,6 +430,7 @@ namespace Pathfinding {
 			return o.updatePhysics ? GraphUpdateThreading.UnityInit | GraphUpdateThreading.SeparateThread | GraphUpdateThreading.UnityPost : GraphUpdateThreading.SeparateThread;
 		}
 
+		//Good Game Translate 更新的区域初始化，
 		void IUpdatableGraph.UpdateAreaInit (GraphUpdateObject o) {
 			if (!o.updatePhysics) {
 				return;
@@ -461,7 +462,8 @@ namespace Pathfinding {
 			AstarProfiler.EndProfile("UpdateAreaInit");
 		}
 
-		void IUpdatableGraph.UpdateArea (GraphUpdateObject guo) {
+	    //Good Game Translate 静态更新寻路点的障碍，不重新计算recast navmesh生成，除了传入的边界点未整型化，计算过程已全部整型化
+        void IUpdatableGraph.UpdateArea (GraphUpdateObject guo) {
 			// Figure out which tiles are affected
 			var affectedTiles = GetTouchingTiles(guo.bounds);
 
@@ -620,6 +622,7 @@ namespace Pathfinding {
 			return result;
 		}
 
+        //Good Game Translate 场景初始化自动扫描场景数据，初始化边界，查找mesh，并构建对应的navmesh
 		protected IEnumerable<Progress> ScanAllTiles () {
 			transform = CalculateTransform();
 			InitializeTileInfo();
@@ -652,7 +655,8 @@ namespace Pathfinding {
 			var workQueue = new ParallelWorkQueue<Int2>(tileQueue);
 			// Create the voxelizers and set all settings (one for each thread)
 			var voxelizers = new Voxelize[workQueue.threadCount];
-			for (int i = 0; i < voxelizers.Length; i++) voxelizers[i] = new Voxelize(CellHeight, cellSize, walkableClimb, walkableHeight, maxSlope, maxEdgeLength);
+			for (int i = 0; i < voxelizers.Length; i++)
+			    voxelizers[i] = new Voxelize(CellHeight, cellSize, walkableClimb, walkableHeight, maxSlope, maxEdgeLength);
 			workQueue.action = (tile, threadIndex) => {
 				voxelizers[threadIndex].inputMeshes = buckets[tile.x + tile.y*tileXCount];
 				tiles[tile.x + tile.y*tileXCount] = BuildTileMesh(voxelizers[threadIndex], tile.x, tile.y, threadIndex);
@@ -715,9 +719,13 @@ namespace Pathfinding {
 			// while taking NavmeshCuts into account after the graph has been completely recalculated.
 			if (OnRecalculatedTiles != null) {
 				OnRecalculatedTiles(tiles.Clone() as NavmeshTile[]);
-			}
-		}
+		    }
 
+		    //Good Game 
+		    Debug.Log("---tile count---" + tiles.Length);
+        }
+
+        //Good Game Translate 通过Mesh来生成recast navmesh
 		List<RasterizationMesh> CollectMeshes (Bounds bounds) {
 			Profiler.BeginSample("Find Meshes for rasterization");
 			var result = ListPool<RasterizationMesh>.Claim();
@@ -800,6 +808,7 @@ namespace Pathfinding {
 			return bounds;
 		}
 
+        //Good Game Translate 开始铺设mesh
 		protected NavmeshTile BuildTileMesh (Voxelize vox, int x, int z, int threadIndex = 0) {
 			AstarProfiler.StartProfile("Build Tile");
 			AstarProfiler.StartProfile("Init");
@@ -858,7 +867,17 @@ namespace Pathfinding {
 
 			NavmeshTile tile = CreateTile(vox, mesh, x, z, threadIndex);
 
-			AstarProfiler.EndProfile("Build Nodes");
+            //Good Game 
+            //Debug.Log("---create tile---" +tile.verts[0] + "\n" + tile.verts[1] + "\n" + tile.verts[2]);
+
+		    //Good Game 
+		    /*Debug.Log("---tile triangle count---" + tile.nodes.Length + "\n---tile vertices count---" + tile.verts.Length);
+		    for (int i = 0; i < tile.nodes.Length; i++)
+		    {
+		        //Debug.Log("--" + i + "--" + tile.nodes[i].GetVertex(0) + "--" + tile.nodes[i].GetVertex(1) + "--" + tile.nodes[i].GetVertex(2));
+		    }*/
+
+            AstarProfiler.EndProfile("Build Nodes");
 
 			AstarProfiler.EndProfile("Build Tile");
 			return tile;

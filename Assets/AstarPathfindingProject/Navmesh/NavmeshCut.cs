@@ -174,6 +174,7 @@ namespace Pathfinding {
 		[UnityEngine.Serialization.FormerlySerializedAsAttribute("useRotation")]
 		public bool useRotationAndScale;
 
+        // mesh的边界坐标集合，整型化只需要直接客户端传入这个数据即可
 		Vector3[][] contours;
 
 		/** cached transform component */
@@ -235,6 +236,7 @@ namespace Pathfinding {
 			}
 		}
 
+        //GG 计算三角面边界，假设是客户端传入mesh的边界，这里可以不做计算，只需要做对应的转换
 		void CalculateMeshContour () {
 			if (mesh == null) return;
 

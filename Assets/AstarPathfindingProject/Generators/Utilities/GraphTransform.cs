@@ -69,6 +69,7 @@ namespace Pathfinding.Util {
 			return up;
 		}
 
+        //Good Game Translate 矩阵是否是平移
 		static bool MatrixIsTranslational (Matrix4x4 matrix) {
 			return matrix.GetColumn(0) == new Vector4(1, 0, 0, 0) && matrix.GetColumn(1) == new Vector4(0, 1, 0, 0) && matrix.GetColumn(2) == new Vector4(0, 0, 1, 0) && matrix.m33 == 1;
 		}
@@ -84,7 +85,7 @@ namespace Pathfinding.Util {
 		}
 
 	    //Good Game
-        //Need To Log
+        //Need To Log, may be this is the reason why grid path way doesn't work normal
         public Int3 Transform (Int3 point) {
             PathDebug.LogError(1, "transform origin point--" + point);
             if (onlyTranslational)
@@ -148,6 +149,7 @@ namespace Pathfinding.Util {
 			return new GraphTransform(lhs * rhs.matrix);
 		}
 
+        //Good Game Translate 检测边界，每个顶点的坐标比对求出最小点作为边界
 		public Bounds Transform (Bounds bounds) {
 			if (onlyTranslational) return new Bounds(bounds.center + translation, bounds.size);
 

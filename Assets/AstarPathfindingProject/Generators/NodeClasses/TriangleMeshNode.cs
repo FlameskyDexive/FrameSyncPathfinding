@@ -293,8 +293,9 @@ namespace Pathfinding {
 	        }
 	    }
 
-
-        public override bool ContainsPoint (Vector3 p) {
+        //GG
+        //public override bool ContainsPoint (Vector3 p) {
+        public override bool ContainsPoint (Int3 p) {
 			return ContainsPointInGraphSpace((Int3)GetNavmeshHolder(GraphIndex).transform.InverseTransform(p));
 		}
 
@@ -530,21 +531,32 @@ namespace Pathfinding {
 			return System.Math.Abs(VectorMath.SignedTriangleAreaTimes2XZ(holder.GetVertex(v0), holder.GetVertex(v1), holder.GetVertex(v2))) * 0.5f;
 		}
 
-		public override Vector3 RandomPointOnSurface () {
+        //GG
+		public override Int3 RandomPointOnSurface () {
 			// Find a random point inside the triangle
 			// This generates uniformly distributed trilinear coordinates
 			// See http://mathworld.wolfram.com/TrianglePointPicking.html
-			float r1;
+			/*float r1;
 			float r2;
 
 			do {
 				r1 = Random.value;
 				r2 = Random.value;
-			} while (r1+r2 > 1);
+			} while (r1+r2 > 1);*/
+            //GG
+			int r1;
+			int r2;
+
+			do {
+				r1 = VRandom.Random(0, 1000);
+				r2 = VRandom.Random(0, 1000);
+            } while (r1+r2 > 1000);
 
 			var holder = GetNavmeshHolder(GraphIndex);
-			// Pick the point corresponding to the trilinear coordinate
-			return ((Vector3)(holder.GetVertex(v1)-holder.GetVertex(v0)))*r1 + ((Vector3)(holder.GetVertex(v2)-holder.GetVertex(v0)))*r2 + (Vector3)holder.GetVertex(v0);
+            // Pick the point corresponding to the trilinear coordinate
+		    //GG
+            //return ((Vector3)(holder.GetVertex(v1)-holder.GetVertex(v0)))*r1 + ((Vector3)(holder.GetVertex(v2)-holder.GetVertex(v0)))*r2 + (Vector3)holder.GetVertex(v0);
+            return ((holder.GetVertex(v1)-holder.GetVertex(v0)))*r1 / 1000 + ((holder.GetVertex(v2)-holder.GetVertex(v0)))* r2 / 1000 + holder.GetVertex(v0);
 		}
 
 		public override void SerializeNode (GraphSerializationContext ctx) {

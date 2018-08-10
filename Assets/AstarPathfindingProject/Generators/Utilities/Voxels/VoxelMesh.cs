@@ -186,8 +186,11 @@ namespace Pathfinding.Voxels {
 				// Triangulate the contour
 				int ntris = Triangulate(cont.nverts, cont.verts, ref indices, ref tris);
 
-				// Assign the correct vertex indices
-				int startIndex = vertexIndex;
+			    //Good Game 
+			    //Debug.Log("---tile2222---" + cont.verts[0] + "\n" + cont.verts[1] + "\n" + cont.verts[2]);
+
+                // Assign the correct vertex indices
+                int startIndex = vertexIndex;
 				for (int j = 0; j < ntris*3; polyIndex++, j++) {
 					//@Error sometimes
 					polys[polyIndex] = tris[j]+startIndex;

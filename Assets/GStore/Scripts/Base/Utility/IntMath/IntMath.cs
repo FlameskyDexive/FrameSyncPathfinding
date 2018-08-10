@@ -990,10 +990,10 @@ public class IntMath
         if (d3 >= 0 && d4 <= d3)
             return b;
 
-        CheckIntOverFlow(d1);
+        /*CheckIntOverFlow(d1);
         CheckIntOverFlow(d2);
         CheckIntOverFlow(d3);
-        CheckIntOverFlow(d4);
+        CheckIntOverFlow(d4);*/
         // Check if p is in edge region outside AB, if so return a projection of p onto AB
         var vc = d1 * d4 - d3 * d2;
         if (d1 >= 0 && d3 <= 0 && vc <= 0)
@@ -1012,8 +1012,8 @@ public class IntMath
         var d5 = Int3.DotLongSafe(ab, cp);
         var d6 = Int3.DotLongSafe(ac, cp);
 
-        CheckIntOverFlow(d5);
-        CheckIntOverFlow(d6);
+        /*CheckIntOverFlow(d5);
+        CheckIntOverFlow(d6);*/
         // Barycentric coordinates (0,0,1)
         if (d6 >= 0 && d5 <= d6)
             return c;

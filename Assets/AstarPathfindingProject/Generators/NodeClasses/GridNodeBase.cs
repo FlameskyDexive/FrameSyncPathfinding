@@ -95,13 +95,18 @@ namespace Pathfinding {
 
 			return gg.nodeSize*gg.nodeSize;
 		}
-
-		public override Vector3 RandomPointOnSurface () {
+        //GG
+		//public override Vector3 RandomPointOnSurface () {
+		public override Int3 RandomPointOnSurface () {
 			GridGraph gg = GridNode.GetGridGraph(GraphIndex);
 
-			var graphSpacePosition = gg.transform.InverseTransform((Vector3)position);
+		    //GG
+            //var graphSpacePosition = gg.transform.InverseTransform((Vector3)position);
+            var graphSpacePosition = gg.transform.InverseTransform(position);
 
-			return gg.transform.Transform(graphSpacePosition + new Vector3(Random.value - 0.5f, 0, Random.value - 0.5f));
+		    //GG
+            //return gg.transform.Transform(graphSpacePosition + new Vector3(Random.value - 0.5f, 0, Random.value - 0.5f));
+            return gg.transform.Transform(graphSpacePosition + new Int3(VRandom.Random(1, 1000) -500, 0, VRandom.Random(1, 1000) - 500));
 		}
 
 		public override int GetGizmoHashCode () {

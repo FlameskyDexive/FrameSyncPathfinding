@@ -1757,7 +1757,7 @@ MonoBehaviour:
   - 31
   heuristic: 2
   heuristicScale: 1
-  threadCount: 0
+  threadCount: -1
   maxFrameTime: 10
   minAreaSize: 10
   batchGraphUpdates: 0

@@ -29,7 +29,7 @@ namespace Pathfinding {
 		public int d;
 
 		/** All nodes in the tile */
-		public TriangleMeshNode[] nodes;
+		public TriangleMeshNode[] nodes { get; set; }
 
 		/** Bounding Box Tree for node lookups */
 		public BBTree bbTree;
