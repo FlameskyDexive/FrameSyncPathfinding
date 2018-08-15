@@ -895,7 +895,9 @@ namespace Pathfinding {
 				script.prioritizeGraphs);
 			if (script.prioritizeGraphs) {
 				EditorGUI.indentLevel++;
-				script.prioritizeGraphsLimit = EditorGUILayout.FloatField("Priority Limit", script.prioritizeGraphsLimit);
+                //GG
+				//script.prioritizeGraphsLimit = EditorGUILayout.FloatField("Priority Limit", script.prioritizeGraphsLimit);
+				script.prioritizeGraphsLimit = EditorGUILayout.IntField("Priority Limit", (int)script.prioritizeGraphsLimit);
 				EditorGUI.indentLevel--;
 			}
 

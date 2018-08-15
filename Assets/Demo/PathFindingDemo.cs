@@ -17,6 +17,8 @@ public class PathFindingDemo : MonoBehaviour
     private Transform robotRoot;
     private Transform pointRoot;
 
+    private Transform dynamicRoot;
+
     private GameObject ball;
     Seeker seeker;
     Path path;
@@ -30,6 +32,7 @@ public class PathFindingDemo : MonoBehaviour
     {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Application.runInBackground = true;
+        Application.targetFrameRate = 30;
     }
 
     // Use this for initialization
@@ -41,13 +44,13 @@ public class PathFindingDemo : MonoBehaviour
             alignment = TextAnchor.MiddleCenter,
             normal = new GUIStyleState() { textColor = Color.white}
         };
-        
+        dynamicRoot = GameObject.Find("DynamicObstacles").transform;
         seeker = GetComponent<Seeker>();
         /*wallRoot = GameObject.Find("Wall").transform;
         playersRoot = GameObject.Find("Players").transform;
         robotRoot = GameObject.Find("Robots").transform;
-        pointRoot = GameObject.Find("Points").transform;
-        ball = GameObject.Find("Ball");*/
+        pointRoot = GameObject.Find("Points").transform;*/
+        ball = GameObject.Find("Ball");
 
 #if UNITY_EDITOR || UNITY_STANDALONE
         intervalTime = 0.11f;
@@ -100,9 +103,15 @@ public class PathFindingDemo : MonoBehaviour
 
     void SpawnPathPoint()
     {
-        for (int i = 1; i <= 6; i++)
+        //先固定一些斜坡的点，这些点比较特殊，斜坡高度与其他不同
+        listPaths.Add(new Int3(8024, 6132, 46522));
+        listPaths.Add(new Int3(-11252, 3765, 32511));
+        listPaths.Add(new Int3(-5423, 6045, 4687));
+        listPaths.Add(new Int3(16254, 2357, 24562));
+
+        for (int i = 1; i <= 10; i++)
         {
-            for (int j = 1; j <= 6; j++)
+            for (int j = 1; j <= 10; j++)
             {
                 /*GameObject go = Instantiate(ball);
                 go.transform.position = new Vector3(i * 15, 0, j * 15);
@@ -112,10 +121,10 @@ public class PathFindingDemo : MonoBehaviour
                 go2.transform.position = new Vector3(i * 15, 0, j * -15);
                 GameObject go3 = Instantiate(ball);
                 go3.transform.position = new Vector3(i * -15, 0, j * -15);*/
-                listPaths.Add(new Int3(i * 23241, 2000, j * 25482));
-                listPaths.Add(new Int3(i * -24573, 2000, j * 26644));
-                listPaths.Add(new Int3(i * 23765, 2000, j * -25276));
-                listPaths.Add(new Int3(i * -24687, 2000, j * -26878));
+                listPaths.Add(new Int3(i * 43241, 2000, j * 45482));
+                listPaths.Add(new Int3(i * -44573, 2000, j * 46644));
+                listPaths.Add(new Int3(i * 43765, 2000, j * -45276));
+                listPaths.Add(new Int3(i * -44687, 2000, j * -46878));
             }
         }
 
@@ -123,9 +132,16 @@ public class PathFindingDemo : MonoBehaviour
         for (int i = 0; i < listPaths.Count; i++)
         {
             content += listPaths[i] + "\n";
+            if (Application.platform == RuntimePlatform.WindowsEditor)
+            {
+
+                GameObject go3 = Instantiate(ball);
+                go3.transform.position = (Vector3)listPaths[i];
+            }
         }
         totalpathCount = listPaths.Count * (listPaths.Count + 1) / 2;
         content += "\n";
+        CalculatePath();
     }
 
     private bool isPathing = false;
@@ -193,19 +209,22 @@ public class PathFindingDemo : MonoBehaviour
         if (isPathing)
         {
             GUI.Label(new Rect(Screen.width / 2 - 80, Screen.height/2, 200, 70), "On Finding The Path..\n-group- " + groupId + " -path id- " 
-                + pathId + " -total path- " + totalpathCount+ "\n预计耗时 " + (totalpathCount * intervalTime).ToString("f0") + "s", style);
+                + pathId + " / " + totalpathCount/*+ "\n预计耗时 " + (totalpathCount * intervalTime).ToString("f0") + "s"*/, style);
         }
         else
         {
             if (GUI.Button(new Rect(Screen.width - 190, 2, 180, 60), "SeekPaths-TotalGroup-" + listPaths.Count))
             {
                 //Debug.Log("--start position--" + (Int3)startObj.position + "--end position--" + (Int3)endObj.position);
+                Debug.Log("--path group--" + listPaths.Count);
                 isPathing = true;
-                StartCoroutine(Seeking(listPaths.Count));
+                //StartCoroutine(Seeking());
+                SeekPath(listPaths[0], listPaths[0]);
             }
         }
     }
 
+    private int singleGroupPathId = 0;
     //寻路结束;
     public void OnPathComplete(Path p)
     {
@@ -219,12 +238,55 @@ public class PathFindingDemo : MonoBehaviour
             //pathFindingTimes++;
         }
 
+        StartCoroutine(NextPathfinding());
         /*for (int index = 0; index < path.vectorPath.Count; index++)
         {
             //UnityEngine.Debug.Log(gameObject.name + "-path.vectorPath[" + index + "]=" + path.vectorPath[index]);
         }*/
     }
-    
+
+    private int dynamicId = 0;
+    IEnumerator NextPathfinding()
+    {
+        yield return new WaitForEndOfFrame();
+        if (pathId < totalpathCount)
+        {
+            if (singleGroupPathId < listPaths.Count - 1)
+            {
+                singleGroupPathId++;
+            }
+            else
+            {
+                groupId++;
+                singleGroupPathId = groupId;
+                if (dynamicId < dynamicRoot.childCount)
+                {
+                    dynamicRoot.GetChild(dynamicId).gameObject.SetActive(true);
+                    Debug.Log("---show dynamic obstacle---" + dynamicRoot.GetChild(dynamicId).name);
+                    dynamicId++;
+                    yield return new WaitForSeconds(1.6f);
+                }
+            }
+            //GC.Collect();
+            pathId++;
+            if (groupId < listPaths.Count)
+            {
+                SeekPath(listPaths[groupId], listPaths[singleGroupPathId]);
+            }
+            else
+            {
+                string positionLog = PathHelper.AppHotfixResPath + "/" + fileName;
+                File.WriteAllText(positionLog, content, Encoding.UTF8);
+                isPathing = false;
+            }
+        }
+        else
+        {
+            string positionLog = PathHelper.AppHotfixResPath + "/" + fileName;
+            File.WriteAllText(positionLog, content, Encoding.UTF8);
+            isPathing = false;
+        }
+    }
     
     /// <summary>
     /// Log Test path finding points 
@@ -232,23 +294,47 @@ public class PathFindingDemo : MonoBehaviour
     //private int pathFindingTimes = 0;
     private int pathId = 0;
     string content = String.Empty;
+    string log = String.Empty;
     private void PositionsLog(List<Int3> p)
     {
         for (int i = 0; i < p.Count; i++)
         {
-            string log = "-group-" + groupId +  "-path-" + pathId + "-pos-" + i + "-" + p[i];
+            log = String.Empty;
+            log = "-group-" + groupId +  "-path-" + pathId + "-pos-" + i + "-" + p[i];
 
             //Debug.Log(log);
             content += log + "\n";
         }
 
         content += "\n";
-        pathId++;
+        //pathId++;
+    }
+
+    private int pathCount = 0;
+    private int testgroup = 0;
+    void CalculatePath()
+    {
+
+        for (int i = testgroup; i < listPaths.Count; i++)
+        {
+            pathCount++;
+        }
+
+        testgroup++;
+        if (testgroup < listPaths.Count)
+        {
+            CalculatePath();
+        }
+        else
+        {
+            Debug.Log("total path count--" + pathCount);
+        }
+
     }
     
     private List<Int3> listPaths = new List<Int3>();
         int groupId = 0;
-    IEnumerator Seeking(int id)
+    IEnumerator Seeking()
     {
         for (int i = groupId; i < listPaths.Count; i++)
         {
@@ -259,7 +345,7 @@ public class PathFindingDemo : MonoBehaviour
             groupId++;
         if (groupId < listPaths.Count)
         {
-            StartCoroutine(Seeking(groupId));
+            StartCoroutine(Seeking());
         }
         else
         {

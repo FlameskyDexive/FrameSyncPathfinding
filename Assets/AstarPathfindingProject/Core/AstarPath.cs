@@ -212,7 +212,9 @@ public class AstarPath : VersionedMonoBehaviour {
 	/** Distance limit for #prioritizeGraphs.
 	 * \see #prioritizeGraphs
 	 */
-	public float prioritizeGraphsLimit = 1F;
+    //GG
+	//public float prioritizeGraphsLimit = 1F;
+	public long prioritizeGraphsLimit = 10000000;
 
 	/** Reference to the color settings for this AstarPath object.
 	 * Color settings include for example which color the nodes should be in, in the sceneview. */
@@ -1855,7 +1857,9 @@ public class AstarPath : VersionedMonoBehaviour {
 		// Cache property lookup
 		var graphs = this.graphs;
 
-		float minDist = float.PositiveInfinity;
+        //GG
+		//float minDist = float.PositiveInfinity;
+		long minDist = long.MaxValue;
 		NNInfoInternal nearestNode = new NNInfoInternal();
 		int nearestGraph = -1;
 
@@ -1890,7 +1894,7 @@ public class AstarPath : VersionedMonoBehaviour {
                 // Distance to the closest point on the node from the requested position
 			    //Good Game
                 //float dist = ((Vector3)nnInfo.clampedPosition-position).magnitude;
-                float dist = (nnInfo.clampedPosition-position).magnitude;
+                long dist = (nnInfo.clampedPosition-position).magnitude;
 
 				if (prioritizeGraphs && dist < prioritizeGraphsLimit) {
 					// The node is close enough, choose this graph and discard all others

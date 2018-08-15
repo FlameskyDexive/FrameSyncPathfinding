@@ -146,7 +146,7 @@ namespace Pathfinding {
             {
                 c = right[2];
             }
-            while (Polygon.IsColinear(left[0], left[1], right[1]) || (Polygon.Left(left[1], right[1], c) == Polygon.Left(left[1], right[1], left[0])))
+            while (VectorMath.IsColinearXZ(left[0], left[1], right[1]) || (VectorMath.RightOrColinearXZ(left[1], right[1], c) == VectorMath.RightOrColinearXZ(left[1], right[1], left[0])))
             {
                 left.RemoveAt(1);
                 right.RemoveAt(1);
@@ -160,7 +160,7 @@ namespace Pathfinding {
                     c = right[2];
                 }
             }
-            if (!Polygon.IsClockwise(left[0], left[1], right[1]) && !Polygon.IsColinear(left[0], left[1], right[1]))
+            if (!VectorMath.IsClockwiseXZ(left[0], left[1], right[1]) && !VectorMath.IsColinearXZ(left[0], left[1], right[1]))
             {
                 List<Int3> list = left;
                 left = right;
@@ -182,9 +182,9 @@ namespace Pathfinding {
                 }
                 Int3 num9 = left[i];
                 Int3 num10 = right[i];
-                if (Polygon.TriangleArea2(a, num4, num10) >= 0L)
+                if (VectorMath.SignedTriangleAreaTimes2XZ(a, num4, num10) >= 0L)
                 {
-                    if ((a == num4) || (Polygon.TriangleArea2(a, b, num10) <= 0L))
+                    if ((a == num4) || (VectorMath.SignedTriangleAreaTimes2XZ(a, b, num10) <= 0L))
                     {
                         num4 = num10;
                         num6 = i;
@@ -202,9 +202,9 @@ namespace Pathfinding {
                         continue;
                     }
                 }
-                if (Polygon.TriangleArea2(a, b, num9) <= 0L)
+                if (VectorMath.SignedTriangleAreaTimes2XZ(a, b, num9) <= 0L)
                 {
-                    if ((a == b) || (Polygon.TriangleArea2(a, num4, num9) >= 0L))
+                    if ((a == b) || (VectorMath.SignedTriangleAreaTimes2XZ(a, num4, num9) >= 0L))
                     {
                         b = num9;
                         num7 = i;
