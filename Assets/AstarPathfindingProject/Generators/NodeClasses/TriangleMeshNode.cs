@@ -128,7 +128,7 @@ namespace Pathfinding {
             VInt3 closestVInt3 = IntMath.ClosestPointOnTriangle(a, b, c, p);
             //VInt3 closestVInt3 = ClosestPointOnTriangleXZ(a, b, c, p);
             //VInt3 closestVInt3 = (VInt3) ClosestPointOnNodeXZ(a, b, c, (Vector3) p);
-            PathDebug.LogError(4, "--ClosestPointOnNodeXZ--" + closestVInt3);
+            //PathDebug.LogError(4, "--ClosestPointOnNodeXZ--" + closestVInt3);
             //return (VInt3)Pathfinding.Polygon.ClosestPointOnTriangle((Vector3)a, (Vector3)b, (Vector3)c, (Vector3)p);
             //return ClosestPointOnTriangleXZ(a, b, c, p);
             return closestVInt3;
@@ -201,7 +201,7 @@ namespace Pathfinding {
         //public override VInt3 ClosestPointOnNodeXZ (VInt3 p) {
 			// Get all 3 vertices for this node
 			VInt3 tp1, tp2, tp3;
-            PathDebug.LogError(3, "--ClosestPointOnNodeXZ--" + p.ToString());
+            //PathDebug.LogError(3, "--ClosestPointOnNodeXZ--" + p.ToString());
 			GetVertices(out tp1, out tp2, out tp3);
             //Good Game
             //return Polygon.ClosestPointOnTriangleXZ(tp1, tp2, tp3, p);

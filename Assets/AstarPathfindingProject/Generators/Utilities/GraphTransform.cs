@@ -87,13 +87,13 @@ namespace Pathfinding.Util {
 	    //Good Game
         //Need To Log, may be this is the reason why grid path way doesn't work normal
         public VInt3 Transform (VInt3 point) {
-            PathDebug.LogError(1, "transform origin point--" + point);
+            //PathDebug.LogError(1, "transform origin point--" + point);
             if (onlyTranslational)
             {
-                PathDebug.LogError(1, "transform cal point--" + point + i3translation);
+                //PathDebug.LogError(1, "transform cal point--" + point + i3translation);
                 return point + i3translation;
             }
-            PathDebug.LogError(1, "transform cal point--" + (VInt3)matrix.MultiplyPoint3x4((Vector3)point));
+            //PathDebug.LogError(1, "transform cal point--" + (VInt3)matrix.MultiplyPoint3x4((Vector3)point));
             return (VInt3)matrix.MultiplyPoint3x4((Vector3)point);
 	    }
 
@@ -127,13 +127,13 @@ namespace Pathfinding.Util {
 
 		public VInt3 InverseTransform (VInt3 point)
 		{
-		    PathDebug.LogError(2, "inverse origin point--" + point);
+		    //PathDebug.LogError(2, "inverse origin point--" + point);
             if (onlyTranslational)
 		    {
-		        PathDebug.LogError(2, "inverse cal point--" + point);
+		        //PathDebug.LogError(2, "inverse cal point--" + point);
                 return point - i3translation;
 		    }
-		    PathDebug.LogError(2, "inverse cal point--" + point);
+		    //PathDebug.LogError(2, "inverse cal point--" + point);
             return (VInt3)inverseMatrix.MultiplyPoint3x4((Vector3)point);
 		}
 
