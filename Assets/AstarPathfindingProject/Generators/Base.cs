@@ -159,7 +159,7 @@ namespace Pathfinding {
 		 * happens for other - less extreme - values as well, but to a lesser degree.
 		 */
 		public virtual void RelocateNodes (Matrix4x4 deltaMatrix) {
-			GetNodes(node => node.position = ((Int3)deltaMatrix.MultiplyPoint((Vector3)node.position)));
+			GetNodes(node => node.position = ((VInt3)deltaMatrix.MultiplyPoint((Vector3)node.position)));
 		}
 
         /** Returns the nearest node to a position.
@@ -168,7 +168,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public NNInfoInternal GetNearest (Vector3 position) {
-        public NNInfoInternal GetNearest (Int3 position) {
+        public NNInfoInternal GetNearest (VInt3 position) {
 			return GetNearest(position, NNConstraint.None);
 		}
 
@@ -177,7 +177,7 @@ namespace Pathfinding {
 		 * \param constraint Can for example tell the function to try to return a walkable node. If you do not get a good node back, consider calling GetNearestForce. */
 	    //Good Game
         //public NNInfoInternal GetNearest (Vector3 position, NNConstraint constraint) {
-        public NNInfoInternal GetNearest (Int3 position, NNConstraint constraint) {
+        public NNInfoInternal GetNearest (VInt3 position, NNConstraint constraint) {
 			return GetNearest(position, constraint, null);
 		}
 
@@ -188,7 +188,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public virtual NNInfoInternal GetNearest (Vector3 position, NNConstraint constraint, GraphNode hint) {
-        public virtual NNInfoInternal GetNearest (Int3 position, NNConstraint constraint, GraphNode hint) {
+        public virtual NNInfoInternal GetNearest (VInt3 position, NNConstraint constraint, GraphNode hint) {
 			// This is a default implementation and it is pretty slow
 			// Graphs usually override this to provide faster and more specialised implementations
 
@@ -242,7 +242,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public virtual NNInfoInternal GetNearestForce (Vector3 position, NNConstraint constraint) {
-        public virtual NNInfoInternal GetNearestForce (Int3 position, NNConstraint constraint) {
+        public virtual NNInfoInternal GetNearestForce (VInt3 position, NNConstraint constraint) {
 			return GetNearest(position, constraint);
 		}
 

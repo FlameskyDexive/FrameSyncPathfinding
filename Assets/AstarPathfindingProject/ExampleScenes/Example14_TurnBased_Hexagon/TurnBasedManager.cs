@@ -84,8 +84,8 @@ namespace Pathfinding.Examples {
 		IEnumerator MoveToNode (TurnBasedAI unit, GraphNode node)
 		{
 		    //Good Game
-            //var path = ABPath.Construct((Int3)unit.transform.position, (Vector3)node.position);
-            var path = ABPath.Construct((Int3)unit.transform.position, node.position);
+            //var path = ABPath.Construct((VInt3)unit.transform.position, (Vector3)node.position);
+            var path = ABPath.Construct((VInt3)unit.transform.position, node.position);
 
 			path.traversalProvider = unit.traversalProvider;
 
@@ -166,7 +166,7 @@ namespace Pathfinding.Examples {
 		{
 		    //Good Game
             //var path = ConstantPath.Construct(unit.transform.position, unit.movementPoints * 1000 + 1);
-            var path = ConstantPath.Construct((Int3)unit.transform.position, unit.movementPoints * 1000 + 1);
+            var path = ConstantPath.Construct((VInt3)unit.transform.position, unit.movementPoints * 1000 + 1);
 
 			path.traversalProvider = unit.traversalProvider;
 

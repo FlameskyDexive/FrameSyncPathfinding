@@ -180,7 +180,7 @@ namespace Pathfinding {
 			if (dir == Vector3.zero) yield break;
 
 			// Number of nodes to offset in each direction
-			Int2 offset = new Int2(-Mathf.RoundToInt(dir.x), -Mathf.RoundToInt(dir.z));
+			VInt2 offset = new VInt2(-Mathf.RoundToInt(dir.x), -Mathf.RoundToInt(dir.z));
 
 			// Move the center (this is in world units, so we need to convert it back from graph space)
 			graph.center += graph.transform.TransformVector(dir);

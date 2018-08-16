@@ -494,8 +494,8 @@ namespace Pathfinding {
 		 * This will give you the node position for the node at the given x and z coordinate
 		 * if it is at the specified height above the base of the graph.
 		 */
-		public Int3 GraphPointToWorld (int x, int z, float height) {
-			return (Int3)transform.Transform(new Vector3(x+0.5f, height, z+0.5f));
+		public VInt3 GraphPointToWorld (int x, int z, float height) {
+			return (VInt3)transform.Transform(new Vector3(x+0.5f, height, z+0.5f));
 		}
 
 		public int Width {
@@ -716,7 +716,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //public override NNInfoInternal GetNearest (Vector3 position, NNConstraint constraint, GraphNode hint) {
-        public override NNInfoInternal GetNearest (Int3 position, NNConstraint constraint, GraphNode hint) {
+        public override NNInfoInternal GetNearest (VInt3 position, NNConstraint constraint, GraphNode hint) {
 			if (nodes == null || depth*width != nodes.Length) {
 				return new NNInfoInternal();
 			}
@@ -739,14 +739,14 @@ namespace Pathfinding {
             int y = transform.InverseTransform(nodes[z*width+x].position).y;
             //Good Game
             //nn.clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, x, x+1f), y, Mathf.Clamp(zf, z, z+1f)));
-            nn.clampedPosition = transform.Transform(new Int3(Mathf.Clamp(xf, x, x+1), y, Mathf.Clamp(zf, z, z+1)));
+            nn.clampedPosition = transform.Transform(new VInt3(Mathf.Clamp(xf, x, x+1), y, Mathf.Clamp(zf, z, z+1)));
 
 			return nn;
 		}
 
 	    //Good Game
         //public override NNInfoInternal GetNearestForce (Vector3 position, NNConstraint constraint) {
-        public override NNInfoInternal GetNearestForce (Int3 position, NNConstraint constraint) {
+        public override NNInfoInternal GetNearestForce (VInt3 position, NNConstraint constraint) {
 			if (nodes == null || depth*width != nodes.Length) {
 				return new NNInfoInternal();
 			}
@@ -754,7 +754,7 @@ namespace Pathfinding {
             // Position in global space
             //Good Game
             //Vector3 globalPosition = position;
-            Int3 globalPosition = position;
+            VInt3 globalPosition = position;
 
 			// Position in graph space
 			position = transform.InverseTransform(position);
@@ -777,7 +777,7 @@ namespace Pathfinding {
 
             //Good Game
             //Vector3 clampedPosition = Vector3.zero;
-            Int3 clampedPosition = Int3.zero;
+            VInt3 clampedPosition = VInt3.zero;
 			var nn = new NNInfoInternal(null);
 
 			// If the closest node was suitable
@@ -791,7 +791,7 @@ namespace Pathfinding {
                 int y = transform.InverseTransform(node.position).y;
 			    //Good Game
                 //clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, x, x+1f), y, Mathf.Clamp(zf, z, z+1f)));
-                clampedPosition = transform.Transform(new Int3(Mathf.Clamp(xf, x, x+1), y, Mathf.Clamp(zf, z, z+1)));
+                clampedPosition = transform.Transform(new VInt3(Mathf.Clamp(xf, x, x+1), y, Mathf.Clamp(zf, z, z+1)));
 			}
 
 			if (minNode != null) {
@@ -837,7 +837,7 @@ namespace Pathfinding {
                             // Closest point on the node if the node is treated as a square
 						    //Good Game
                             //clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, nx, nx+1f), transform.InverseTransform((Vector3)minNode.position).y, Mathf.Clamp(zf, nz, nz+1f)));
-                            clampedPosition = transform.Transform(new Int3(Mathf.Clamp(xf, nx, nx+1), transform.InverseTransform(minNode.position).y, Mathf.Clamp(zf, nz, nz+1)));
+                            clampedPosition = transform.Transform(new VInt3(Mathf.Clamp(xf, nx, nx+1), transform.InverseTransform(minNode.position).y, Mathf.Clamp(zf, nz, nz+1)));
 						}
 					}
 				}
@@ -859,7 +859,7 @@ namespace Pathfinding {
 							minNode = nodes[nx+nz2];
 						    //Good Game
                             //clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, nx, nx+1f), transform.InverseTransform((Vector3)minNode.position).y, Mathf.Clamp(zf, nz, nz+1f)));
-                            clampedPosition = transform.Transform(new Int3(Mathf.Clamp(xf, nx, nx+1), transform.InverseTransform(minNode.position).y, Mathf.Clamp(zf, nz, nz+1)));
+                            clampedPosition = transform.Transform(new VInt3(Mathf.Clamp(xf, nx, nx+1), transform.InverseTransform(minNode.position).y, Mathf.Clamp(zf, nz, nz+1)));
 						}
 					}
 				}
@@ -880,7 +880,7 @@ namespace Pathfinding {
 							minNode = nodes[nx+nz*width];
 						    //Good Game
                             //clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, nx, nx+1f), transform.InverseTransform((Vector3)minNode.position).y, Mathf.Clamp(zf, nz, nz+1f)));
-                            clampedPosition = transform.Transform(new Int3(Mathf.Clamp(xf, nx, nx+1), transform.InverseTransform(minNode.position).y, Mathf.Clamp(zf, nz, nz+1)));
+                            clampedPosition = transform.Transform(new VInt3(Mathf.Clamp(xf, nx, nx+1), transform.InverseTransform(minNode.position).y, Mathf.Clamp(zf, nz, nz+1)));
 						}
 					}
 				}
@@ -901,7 +901,7 @@ namespace Pathfinding {
 							minNode = nodes[nx+nz*width];
 						    //Good Game
                             //clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, nx, nx+1f), transform.InverseTransform((Vector3)minNode.position).y, Mathf.Clamp(zf, nz, nz+1f)));
-                            clampedPosition = transform.Transform(new Int3(Mathf.Clamp(xf, nx, nx+1), transform.InverseTransform(minNode.position).y, Mathf.Clamp(zf, nz, nz+1)));
+                            clampedPosition = transform.Transform(new VInt3(Mathf.Clamp(xf, nx, nx+1), transform.InverseTransform(minNode.position).y, Mathf.Clamp(zf, nz, nz+1)));
 						}
 					}
 				}
@@ -931,8 +931,8 @@ namespace Pathfinding {
 		}
 
 		/** Sets up #neighbourOffsets with the current settings. #neighbourOffsets, #neighbourCosts, #neighbourXOffsets and #neighbourZOffsets are set up.\n
-		 * The cost for a non-diagonal movement between two adjacent nodes is RoundToInt (#nodeSize * Int3.Precision)\n
-		 * The cost for a diagonal movement between two adjacent nodes is RoundToInt (#nodeSize * Sqrt (2) * Int3.Precision)
+		 * The cost for a non-diagonal movement between two adjacent nodes is RoundToInt (#nodeSize * VInt3.Precision)\n
+		 * The cost for a diagonal movement between two adjacent nodes is RoundToInt (#nodeSize * Sqrt (2) * VInt3.Precision)
 		 */
 		public virtual void SetUpOffsetsAndCosts () {
 			//First 4 are for the four directly adjacent nodes the last 4 are for the diagonals
@@ -945,10 +945,10 @@ namespace Pathfinding {
 			neighbourOffsets[6] = width-1;
 			neighbourOffsets[7] = -width-1;
 
-			uint straightCost = (uint)Mathf.RoundToInt(nodeSize*Int3.Precision);
+			uint straightCost = (uint)Mathf.RoundToInt(nodeSize*VInt3.Precision);
 
 			// Diagonals normally cost sqrt(2) (approx 1.41) times more
-			uint diagonalCost = uniformEdgeCosts ? straightCost : (uint)Mathf.RoundToInt(nodeSize*Mathf.Sqrt(2F)*Int3.Precision);
+			uint diagonalCost = uniformEdgeCosts ? straightCost : (uint)Mathf.RoundToInt(nodeSize*Mathf.Sqrt(2F)*VInt3.Precision);
 
 			neighbourCosts[0] = straightCost;
 			neighbourCosts[1] = straightCost;
@@ -1125,7 +1125,7 @@ namespace Pathfinding {
 			// Calculate the actual position using physics raycasting (if enabled)
 			// walkable will be set to false if no ground was found (unless that setting has been disabled)
 			Vector3 position = collision.CheckHeight((Vector3)node.position, out hit, out walkable);
-			node.position = (Int3)position;
+			node.position = (VInt3)position;
 
 			if (resetPenalties) {
 				node.Penalty = initialPenalty;
@@ -1325,7 +1325,7 @@ namespace Pathfinding {
 				// If the transformation is only translational, that is if the graph is not rotated or transformed
 				// in any other way than changing its center. Then we can use this simplified code.
 				// This code is hot when scanning so it does have an impact.
-				return System.Math.Abs(node1.position.y - node2.position.y) <= maxClimb*Int3.Precision;
+				return System.Math.Abs(node1.position.y - node2.position.y) <= maxClimb*VInt3.Precision;
 			} else {
 				var p1 = (Vector3)node1.position;
 				var p2 = (Vector3)node2.position;
@@ -2066,7 +2066,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public bool Linecast (Vector3 from, Vector3 to) {
-        public bool Linecast (Int3 from, Int3 to) {
+        public bool Linecast (VInt3 from, VInt3 to) {
 			GraphHitInfo hit;
 
 			return Linecast(from, to, null, out hit);
@@ -2087,7 +2087,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public bool Linecast (Vector3 from, Vector3 to, GraphNode hint) {
-        public bool Linecast (Int3 from, Int3 to, GraphNode hint) {
+        public bool Linecast (VInt3 from, VInt3 to, GraphNode hint) {
 			GraphHitInfo hit;
 
 			return Linecast(from, to, hint, out hit);
@@ -2109,7 +2109,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public bool Linecast (Vector3 from, Vector3 to, GraphNode hint, out GraphHitInfo hit) {
-        public bool Linecast (Int3 from, Int3 to, GraphNode hint, out GraphHitInfo hit) {
+        public bool Linecast (VInt3 from, VInt3 to, GraphNode hint, out GraphHitInfo hit) {
 			return Linecast(from, to, hint, out hit, null);
 		}
 
@@ -2119,7 +2119,7 @@ namespace Pathfinding {
 		}
 
 		/** Magnitude of the cross product a x b */
-		protected static long CrossMagnitude (Int2 a, Int2 b) {
+		protected static long CrossMagnitude (VInt2 a, VInt2 b) {
 			return (long)a.x*b.y - (long)b.x*a.y;
 		}
 
@@ -2131,23 +2131,23 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //protected bool ClipLineSegmentToBounds (Vector3 a, Vector3 b, out Vector3 outA, out Vector3 outB) {
-        protected bool ClipLineSegmentToBounds (Int3 a, Int3 b, out Int3 outA, out Int3 outB) {
+        protected bool ClipLineSegmentToBounds (VInt3 a, VInt3 b, out VInt3 outA, out VInt3 outB) {
 			// If the start or end points are outside
 			// the graph then clamping is needed
 			if (a.x < 0 || a.z < 0 || a.x > width || a.z > depth ||
 				b.x < 0 || b.z < 0 || b.x > width || b.z > depth) {
 				// Boundary of the grid
-				var p1 = new Int3(0, 0,  0);
-				var p2 = new Int3(0, 0,  depth);
-				var p3 = new Int3(width, 0,  depth);
-				var p4 = new Int3(width, 0,  0);
+				var p1 = new VInt3(0, 0,  0);
+				var p2 = new VInt3(0, 0,  depth);
+				var p3 = new VInt3(width, 0,  depth);
+				var p4 = new VInt3(width, 0,  0);
 
 				int intersectCount = 0;
 
 				bool intersect;
 			    //Good Game
                 //Vector3 intersection;
-                Int3 intersection;
+                VInt3 intersection;
 
 			    //Good Game
                 //intersection = VectorMath.SegmentIntersectionPointXZ(a, b, p1, p2, out intersect);
@@ -2203,8 +2203,8 @@ namespace Pathfinding {
 				    //Good Game
                     /*outA = Vector3.zero;
 					outB = Vector3.zero;*/
-                    outA = Int3.zero;
-					outB = Int3.zero;
+                    outA = VInt3.zero;
+					outB = VInt3.zero;
 					return false;
 				}
 			}
@@ -2235,7 +2235,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public bool Linecast (Vector3 from, Vector3 to, GraphNode hint, out GraphHitInfo hit, List<GraphNode> trace) {
-        public bool Linecast (Int3 from, Int3 to, GraphNode hint, out GraphHitInfo hit, List<GraphNode> trace) {
+        public bool Linecast (VInt3 from, VInt3 to, GraphNode hint, out GraphHitInfo hit, List<GraphNode> trace) {
 			hit = new GraphHitInfo();
 
 			hit.origin = from;
@@ -2243,8 +2243,8 @@ namespace Pathfinding {
 		    //Good Game
             //Vector3 fromInGraphSpace = transform.InverseTransform(from);
 			//Vector3 toInGraphSpace = transform.InverseTransform(to);
-            Int3 fromInGraphSpace = transform.InverseTransform(from);
-			Int3 toInGraphSpace = transform.InverseTransform(to);
+            VInt3 fromInGraphSpace = transform.InverseTransform(from);
+			VInt3 toInGraphSpace = transform.InverseTransform(to);
 
 			// Clip the line so that the start and end points are on the graph
 			if (!ClipLineSegmentToBounds(fromInGraphSpace, toInGraphSpace, out fromInGraphSpace, out toInGraphSpace)) {
@@ -2258,8 +2258,8 @@ namespace Pathfinding {
 		    //Good Game
             //var startNode = GetNearest(transform.Transform(fromInGraphSpace), NNConstraint.None).node as GridNodeBase;
 			//var endNode = GetNearest(transform.Transform(toInGraphSpace), NNConstraint.None).node as GridNodeBase;
-            var startNode = GetNearest((Int3)transform.Transform(fromInGraphSpace), NNConstraint.None).node as GridNodeBase;
-			var endNode = GetNearest((Int3)transform.Transform(toInGraphSpace), NNConstraint.None).node as GridNodeBase;
+            var startNode = GetNearest((VInt3)transform.Transform(fromInGraphSpace), NNConstraint.None).node as GridNodeBase;
+			var endNode = GetNearest((VInt3)transform.Transform(toInGraphSpace), NNConstraint.None).node as GridNodeBase;
 
 			if (!startNode.Walkable) {
 				hit.node = startNode;
@@ -2277,8 +2277,8 @@ namespace Pathfinding {
             //Good Game
             //var start = new Vector2(fromInGraphSpace.x - 0.5f, fromInGraphSpace.z - 0.5f);
 			//var end = new Vector2(toInGraphSpace.x - 0.5f, toInGraphSpace.z - 0.5f);
-            var start = new Int2(fromInGraphSpace.x, fromInGraphSpace.z);
-			var end = new Int2(toInGraphSpace.x, toInGraphSpace.z);
+            var start = new VInt2(fromInGraphSpace.x, fromInGraphSpace.z);
+			var end = new VInt2(toInGraphSpace.x, toInGraphSpace.z);
 
 			// Couldn't find a valid node
 			// This shouldn't really happen unless there are NO nodes in the graph
@@ -2294,7 +2294,7 @@ namespace Pathfinding {
             // (e.g up and right or down and left)
             //Good Game
             //var sign = new Vector2(Mathf.Sign(dir.x), Mathf.Sign(dir.y));
-            var sign = new Int2(Math.Sign(dir.x), Math.Sign(dir.y));
+            var sign = new VInt2(Math.Sign(dir.x), Math.Sign(dir.y));
 
 			// How much further we move away from (or towards) the line when walking along #sign
 			// This isn't an actual distance. It is a signed distance so it can be negative (other side of the line)
@@ -2338,7 +2338,7 @@ namespace Pathfinding {
 				// Here the first node in the graph is at (0,0)
                 //Good Game
 				//var p = new Vector2(current.XCoordinateInGrid, current.ZCoordinateInGrid);
-				var p = new Int2(current.XCoordinateInGrid, current.ZCoordinateInGrid);
+				var p = new VInt2(current.XCoordinateInGrid, current.ZCoordinateInGrid);
 
 				// Calculate the error
 				// This is proportional to the distance between the line and the node
@@ -2366,10 +2366,10 @@ namespace Pathfinding {
 					var d2 = new Vector2(neighbourXOffsets[(ndir-1+4) & 0x3], neighbourZOffsets[(ndir-1+4) & 0x3]);
 					Vector2 lineDirection = new Vector2(neighbourXOffsets[(ndir+1) & 0x3], neighbourZOffsets[(ndir+1) & 0x3]);
 					Vector2 lineOrigin = p + (d1 + d2) * 0.5f;*/
-				    var d1 = new Int2(neighbourXOffsets[ndir], neighbourZOffsets[ndir]);
-					var d2 = new Int2(neighbourXOffsets[(ndir-1+4) & 0x3], neighbourZOffsets[(ndir-1+4) & 0x3]);
-					Int2 lineDirection = new Int2(neighbourXOffsets[(ndir+1) & 0x3], neighbourZOffsets[(ndir+1) & 0x3]);
-					Int2 lineOrigin = p + (d1 + d2) / 2;
+				    var d1 = new VInt2(neighbourXOffsets[ndir], neighbourZOffsets[ndir]);
+					var d2 = new VInt2(neighbourXOffsets[(ndir-1+4) & 0x3], neighbourZOffsets[(ndir-1+4) & 0x3]);
+					VInt2 lineDirection = new VInt2(neighbourXOffsets[(ndir+1) & 0x3], neighbourZOffsets[(ndir+1) & 0x3]);
+					VInt2 lineOrigin = p + (d1 + d2) / 2;
 
                     // Find the intersection
 				    //Good Game
@@ -2383,14 +2383,14 @@ namespace Pathfinding {
 				    //Good Game
                     /*var intersection3D = new Vector3(intersection.x + 0.5f, currentNodePositionInGraphSpace.y, intersection.y + 0.5f);
 					var lineOrigin3D = new Vector3(lineOrigin.x + 0.5f, currentNodePositionInGraphSpace.y, lineOrigin.y + 0.5f);*/
-                    var intersection3D = new Int3(intersection.x, currentNodePositionInGraphSpace.y, intersection.y);
-					var lineOrigin3D = new Int3(lineOrigin.x, currentNodePositionInGraphSpace.y, lineOrigin.y);
+                    var intersection3D = new VInt3(intersection.x, currentNodePositionInGraphSpace.y, intersection.y);
+					var lineOrigin3D = new VInt3(lineOrigin.x, currentNodePositionInGraphSpace.y, lineOrigin.y);
 
 					hit.point = transform.Transform(intersection3D);
 					hit.tangentOrigin = transform.Transform(lineOrigin3D);
 				    //Good Game
                     //hit.tangent = transform.TransformVector(new Vector3(lineDirection.x, 0, lineDirection.y));
-                    hit.tangent = transform.TransformVector(new Int3(lineDirection.x, 0, lineDirection.y));
+                    hit.tangent = transform.TransformVector(new VInt3(lineDirection.x, 0, lineDirection.y));
 					hit.node = current;
 
 					return true;
@@ -2436,7 +2436,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public bool SnappedLinecast (Vector3 from, Vector3 to, GraphNode hint, out GraphHitInfo hit) {
-        public bool SnappedLinecast (Int3 from, Int3 to, GraphNode hint, out GraphHitInfo hit) {
+        public bool SnappedLinecast (VInt3 from, VInt3 to, GraphNode hint, out GraphHitInfo hit) {
 			return Linecast(
 			    //Good Game
                 //(Vector3)GetNearest(from, NNConstraint.None).node.position,
@@ -2457,13 +2457,13 @@ namespace Pathfinding {
 		 * \astarpro
 		 */
 		public bool Linecast (GridNodeBase fromNode, GridNodeBase toNode) {
-			var dir = new Int2(toNode.XCoordinateInGrid - fromNode.XCoordinateInGrid, toNode.ZCoordinateInGrid - fromNode.ZCoordinateInGrid);
+			var dir = new VInt2(toNode.XCoordinateInGrid - fromNode.XCoordinateInGrid, toNode.ZCoordinateInGrid - fromNode.ZCoordinateInGrid);
 
 			// How much further we move away from (or towards) the line when walking along the primary direction (e.g up and right or down and left).
 			// This isn't an actual distance. It is a signed distance so it can be negative (other side of the line)
 			// Also it includes an additional factor, but the same factor is used everywhere
 			// and we only check for if the signed distance is greater or equal to zero so it is ok
-			long primaryDirectionError = CrossMagnitude(dir, new Int2(System.Math.Sign(dir.x), System.Math.Sign(dir.y)));
+			long primaryDirectionError = CrossMagnitude(dir, new VInt2(System.Math.Sign(dir.x), System.Math.Sign(dir.y)));
 
 			/*            Y/Z
 			 *             |
@@ -2493,7 +2493,7 @@ namespace Pathfinding {
 			// This is the direction which moves further to the left of the segment (when looking from the start)
 			int directionToIncreaseError = (quadrant + 2) & 0x3;
 			int directionDiagonal = (dir.x != 0 && dir.y != 0) ? 4 + ((quadrant + 1) & 0x3) : -1;
-			Int2 offset = new Int2(0, 0);
+			VInt2 offset = new VInt2(0, 0);
 			while (fromNode != null && fromNode.NodeInGridIndex != toNode.NodeInGridIndex) {
 				// This is proportional to the distance between the line and the node
 				var error = CrossMagnitude(dir, offset) * 2;
@@ -2507,7 +2507,7 @@ namespace Pathfinding {
 				if (nerror == 0 && directionDiagonal != -1) ndir = directionDiagonal;
 
 				fromNode = fromNode.GetNeighbourAlongDirection(ndir);
-				offset += new Int2(neighbourXOffsets[ndir], neighbourZOffsets[ndir]);
+				offset += new VInt2(neighbourXOffsets[ndir], neighbourZOffsets[ndir]);
 			}
 			return fromNode != toNode;
 		}

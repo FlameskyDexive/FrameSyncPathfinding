@@ -195,7 +195,7 @@ namespace Pathfinding {
 		}
 
 		/** Cached variable, to avoid allocations */
-		static readonly Dictionary<Int2, int> edges = new Dictionary<Int2, int>();
+		static readonly Dictionary<VInt2, int> edges = new Dictionary<VInt2, int>();
 		/** Cached variable, to avoid allocations */
 		static readonly Dictionary<int, int> pointers = new Dictionary<int, int>();
 
@@ -253,15 +253,15 @@ namespace Pathfinding {
 					tris[i+2] = tmp;
 				}
 
-				edges[new Int2(tris[i+0], tris[i+1])] = i;
-				edges[new Int2(tris[i+1], tris[i+2])] = i;
-				edges[new Int2(tris[i+2], tris[i+0])] = i;
+				edges[new VInt2(tris[i+0], tris[i+1])] = i;
+				edges[new VInt2(tris[i+1], tris[i+2])] = i;
+				edges[new VInt2(tris[i+2], tris[i+0])] = i;
 			}
 
 			// Construct a list of pointers along all edges
 			for (int i = 0; i < tris.Length; i += 3) {
 				for (int j = 0; j < 3; j++) {
-					if (!edges.ContainsKey(new Int2(tris[i+((j+1)%3)], tris[i+((j+0)%3)]))) {
+					if (!edges.ContainsKey(new VInt2(tris[i+((j+1)%3)], tris[i+((j+0)%3)]))) {
 						pointers[tris[i+((j+0)%3)]] = tris[i+((j+1)%3)];
 					}
 				}

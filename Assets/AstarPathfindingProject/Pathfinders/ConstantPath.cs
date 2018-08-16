@@ -30,8 +30,8 @@ namespace Pathfinding {
 	    //Good Game
         /*public Vector3 startPoint;
 		public Vector3 originalStartPoint;*/
-        public Int3 startPoint;
-		public Int3 originalStartPoint;
+        public VInt3 startPoint;
+		public VInt3 originalStartPoint;
 
 		/** Contains all nodes the path found.
 		 * This list will be sorted by G score (cost/distance to reach the node).
@@ -61,7 +61,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public static ConstantPath Construct (Vector3 start, int maxGScore, OnPathDelegate callback = null) {
-        public static ConstantPath Construct (Int3 start, int maxGScore, OnPathDelegate callback = null) {
+        public static ConstantPath Construct (VInt3 start, int maxGScore, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<ConstantPath>();
 
 			p.Setup(start, maxGScore, callback);
@@ -71,7 +71,7 @@ namespace Pathfinding {
         /** Sets up a ConstantPath starting from the specified point */
 	    //Good Game
         //protected void Setup (Vector3 start, int maxGScore, OnPathDelegate callback) {
-        protected void Setup (Int3 start, int maxGScore, OnPathDelegate callback) {
+        protected void Setup (VInt3 start, int maxGScore, OnPathDelegate callback) {
 			this.callback = callback;
 			startPoint = start;
 			originalStartPoint = startPoint;
@@ -94,8 +94,8 @@ namespace Pathfinding {
 			base.Reset();
 			allNodes = Util.ListPool<GraphNode>.Claim();
 			endingCondition = null;
-			originalStartPoint = Int3.zero;
-			startPoint = Int3.zero;
+			originalStartPoint = VInt3.zero;
+			startPoint = VInt3.zero;
 			startNode = null;
 			heuristic = Heuristic.None;
 		}

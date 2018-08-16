@@ -169,7 +169,7 @@ namespace Pathfinding {
             // Clamp the new position to the navmesh
 		    //Good Game
             //var nearest = AstarPath.active != null ? AstarPath.active.GetNearest(newPosition) : new NNInfo();
-            var nearest = AstarPath.active != null ? AstarPath.active.GetNearest((Int3)newPosition) : new NNInfo();
+            var nearest = AstarPath.active != null ? AstarPath.active.GetNearest((VInt3)newPosition) : new NNInfo();
 			float elevation;
 
 			movementPlane.ToPlane(newPosition, out elevation);

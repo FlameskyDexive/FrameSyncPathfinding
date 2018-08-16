@@ -1824,7 +1824,7 @@ public class AstarPath : VersionedMonoBehaviour {
 	 */
     //Good Game
     //public NNInfo GetNearest (Vector3 position) {
-    public NNInfo GetNearest (Int3 position) {
+    public NNInfo GetNearest (VInt3 position) {
 		return GetNearest(position, NNConstraint.None);
 	}
 
@@ -1841,7 +1841,7 @@ public class AstarPath : VersionedMonoBehaviour {
 	 */
     //Good Game
     //public NNInfo GetNearest (Vector3 position, NNConstraint constraint) {
-    public NNInfo GetNearest (Int3 position, NNConstraint constraint) {
+    public NNInfo GetNearest (VInt3 position, NNConstraint constraint) {
 		return GetNearest(position, constraint, null);
 	}
 
@@ -1853,7 +1853,7 @@ public class AstarPath : VersionedMonoBehaviour {
 	 */
     //Good Game
     //public NNInfo GetNearest (Vector3 position, NNConstraint constraint, GraphNode hint) {
-    public NNInfo GetNearest (Int3 position, NNConstraint constraint, GraphNode hint) {
+    public NNInfo GetNearest (VInt3 position, NNConstraint constraint, GraphNode hint) {
 		// Cache property lookup
 		var graphs = this.graphs;
 

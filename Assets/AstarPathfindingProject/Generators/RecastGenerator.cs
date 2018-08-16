@@ -379,7 +379,7 @@ namespace Pathfinding {
         //Good Game
 		[System.Obsolete("Use node.ClosestPointOnNode instead")]
 		//public Vector3 ClosestPointOnNode (TriangleMeshNode node, Vector3 pos) {
-		public Int3 ClosestPointOnNode (TriangleMeshNode node, Int3 pos) {
+		public VInt3 ClosestPointOnNode (TriangleMeshNode node, VInt3 pos) {
 			return node.ClosestPointOnNode(pos);
 		}
 
@@ -389,7 +389,7 @@ namespace Pathfinding {
 		[System.Obsolete("Use node.ContainsPoint instead")]
 		//Good Game
         //public bool ContainsPoint (TriangleMeshNode node, Vector3 pos) {
-        public bool ContainsPoint (TriangleMeshNode node, Int3 pos) {
+        public bool ContainsPoint (TriangleMeshNode node, VInt3 pos) {
 			return node.ContainsPoint(pos);
 		}
 
@@ -643,16 +643,16 @@ namespace Pathfinding {
 			var meshes = CollectMeshes(bounds);
 			var buckets = PutMeshesIntoTileBuckets(meshes);
 
-			Queue<Int2> tileQueue = new Queue<Int2>();
+			Queue<VInt2> tileQueue = new Queue<VInt2>();
 
 			// Put all tiles in the queue
 			for (int z = 0; z < tileZCount; z++) {
 				for (int x = 0; x < tileXCount; x++) {
-					tileQueue.Enqueue(new Int2(x, z));
+					tileQueue.Enqueue(new VInt2(x, z));
 				}
 			}
 
-			var workQueue = new ParallelWorkQueue<Int2>(tileQueue);
+			var workQueue = new ParallelWorkQueue<VInt2>(tileQueue);
 			// Create the voxelizers and set all settings (one for each thread)
 			var voxelizers = new Voxelize[workQueue.threadCount];
 			for (int i = 0; i < voxelizers.Length; i++)
@@ -691,11 +691,11 @@ namespace Pathfinding {
 				for (int direction = 0; direction <= 1; direction++) {
 					for (int i = 0; i < tiles.Length; i++) {
 						if ((tiles[i].x + tiles[i].z) % 2 == coordinateSum) {
-							tileQueue.Enqueue(new Int2(tiles[i].x, tiles[i].z));
+							tileQueue.Enqueue(new VInt2(tiles[i].x, tiles[i].z));
 						}
 					}
 
-					workQueue = new ParallelWorkQueue<Int2>(tileQueue);
+					workQueue = new ParallelWorkQueue<VInt2>(tileQueue);
 					workQueue.action = (tile, threadIndex) => {
 						// Connect with tile at (x+1,z) and (x,z+1)
 						if (direction == 0 && tile.x < tileXCount - 1)
@@ -861,7 +861,7 @@ namespace Pathfinding {
 
 			// Position the vertices correctly in graph space (all tiles are laid out on the xz plane with the (0,0) tile at the origin)
 			for (int i = 0; i < mesh.verts.Length; i++) {
-				mesh.verts[i] *= Int3.Precision;
+				mesh.verts[i] *= VInt3.Precision;
 			}
 			vox.transformVoxel2Graph.Transform(mesh.verts);
 
@@ -912,7 +912,7 @@ namespace Pathfinding {
 			};
 
 			tile.vertsInGraphSpace = Utility.RemoveDuplicateVertices(mesh.verts, tile.tris);
-			tile.verts = (Int3[])tile.vertsInGraphSpace.Clone();
+			tile.verts = (VInt3[])tile.vertsInGraphSpace.Clone();
 			transform.Transform(tile.verts);
 
 			// Here we are faking a new graph

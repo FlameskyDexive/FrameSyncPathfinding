@@ -102,7 +102,7 @@ namespace Pathfinding {
 	    //Good Game
         [System.NonSerialized]
 		//List<Vector3> lastCompletedVectorPath;
-		List<Int3> lastCompletedVectorPath;
+		List<VInt3> lastCompletedVectorPath;
 
 		/** Used for drawing gizmos */
 		[System.NonSerialized]
@@ -342,7 +342,7 @@ namespace Pathfinding {
 		[System.Obsolete("Use ABPath.Construct(start, end, null) instead")]
 		//Good Game
         //public ABPath GetNewPath (Vector3 start, Vector3 end) {
-        public ABPath GetNewPath (Int3 start, Int3 end) {
+        public ABPath GetNewPath (VInt3 start, VInt3 end) {
 			// Construct a path with start and end points
 			return ABPath.Construct(start, end, null);
 		}
@@ -355,7 +355,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public Path StartPath (Vector3 start, Vector3 end) {
-        public Path StartPath (Int3 start, Int3 end) {
+        public Path StartPath (VInt3 start, VInt3 end) {
 			return StartPath(start, end, null);
 		}
 
@@ -369,7 +369,7 @@ namespace Pathfinding {
 		 * \a Callback will not be called if the path is canceled (e.g when a new path is requested before the previous one has completed) */
 	    //Good Game
         //public Path StartPath (Vector3 start, Vector3 end, OnPathDelegate callback) {
-        public Path StartPath (Int3 start, Int3 end, OnPathDelegate callback) {
+        public Path StartPath (VInt3 start, VInt3 end, OnPathDelegate callback) {
 			return StartPath(ABPath.Construct(start, end, null), callback);
 		}
 
@@ -384,7 +384,7 @@ namespace Pathfinding {
 		 * \a Callback will not be called if the path is canceled (e.g when a new path is requested before the previous one has completed) */
 	    //Good Game
         //public Path StartPath (Vector3 start, Vector3 end, OnPathDelegate callback, int graphMask) {
-        public Path StartPath (Int3 start, Int3 end, OnPathDelegate callback, int graphMask) {
+        public Path StartPath (VInt3 start, VInt3 end, OnPathDelegate callback, int graphMask) {
 			return StartPath(ABPath.Construct(start, end, null), callback, graphMask);
 		}
 
@@ -491,7 +491,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public MultiTargetPath StartMultiTargetPath (Vector3 start, Vector3[] endPoints, bool pathsForAll, OnPathDelegate callback = null, int graphMask = -1) {
-        public MultiTargetPath StartMultiTargetPath (Int3 start, Int3[] endPoints, bool pathsForAll, OnPathDelegate callback = null, int graphMask = -1) {
+        public MultiTargetPath StartMultiTargetPath (VInt3 start, VInt3[] endPoints, bool pathsForAll, OnPathDelegate callback = null, int graphMask = -1) {
 			MultiTargetPath p = MultiTargetPath.Construct(start, endPoints, null, null);
 
 			p.pathsForAll = pathsForAll;
@@ -515,7 +515,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public MultiTargetPath StartMultiTargetPath (Vector3[] startPoints, Vector3 end, bool pathsForAll, OnPathDelegate callback = null, int graphMask = -1) {
-        public MultiTargetPath StartMultiTargetPath (Int3[] startPoints, Int3 end, bool pathsForAll, OnPathDelegate callback = null, int graphMask = -1) {
+        public MultiTargetPath StartMultiTargetPath (VInt3[] startPoints, VInt3 end, bool pathsForAll, OnPathDelegate callback = null, int graphMask = -1) {
 			MultiTargetPath p = MultiTargetPath.Construct(startPoints, end, null, null);
 
 			p.pathsForAll = pathsForAll;

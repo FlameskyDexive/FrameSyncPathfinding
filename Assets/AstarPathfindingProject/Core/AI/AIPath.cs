@@ -276,15 +276,15 @@ namespace Pathfinding {
 		    //Good Game
             /*interpolator.MoveToLocallyClosestPoint((GetFeetPosition() + p.originalStartPoint) * 0.5f);
 			interpolator.MoveToLocallyClosestPoint(GetFeetPosition());*/
-            interpolator.MoveToLocallyClosestPoint(((Int3)GetFeetPosition() + p.originalStartPoint) / 2);
-			interpolator.MoveToLocallyClosestPoint((Int3)GetFeetPosition());
+            interpolator.MoveToLocallyClosestPoint(((VInt3)GetFeetPosition() + p.originalStartPoint) / 2);
+			interpolator.MoveToLocallyClosestPoint((VInt3)GetFeetPosition());
 
             // Update which point we are moving towards.
             // Note that we need to do this here because otherwise the remainingDistance field might be incorrect for 1 frame.
             // (due to interpolator.remainingDistance being incorrect).
 		    //Good Game
             //interpolator.MoveToCircleIntersection2D(position, pickNextWaypointDist, movementPlane);
-            interpolator.MoveToCircleIntersection2D((Int3)position, pickNextWaypointDist, movementPlane);
+            interpolator.MoveToCircleIntersection2D((VInt3)position, pickNextWaypointDist, movementPlane);
 
 			var distanceToEnd = remainingDistance;
 			if (distanceToEnd <= endReachedDistance) {
@@ -312,7 +312,7 @@ namespace Pathfinding {
             // Update which point we are moving towards
 		    //Good Game
             //interpolator.MoveToCircleIntersection2D(currentPosition, pickNextWaypointDist, movementPlane);
-            interpolator.MoveToCircleIntersection2D((Int3)currentPosition, pickNextWaypointDist, movementPlane);
+            interpolator.MoveToCircleIntersection2D((VInt3)currentPosition, pickNextWaypointDist, movementPlane);
 			var dir = movementPlane.ToPlane(steeringTarget - currentPosition);
 
 			// Calculate the distance to the end of the path
@@ -402,7 +402,7 @@ namespace Pathfinding {
 				cachedNNConstraint.distanceXZ = true;
 			    //Good Game
                 //var clampedPosition = AstarPath.active.GetNearest(position, cachedNNConstraint).position;
-                var clampedPosition = AstarPath.active.GetNearest((Int3)position, cachedNNConstraint).position;
+                var clampedPosition = AstarPath.active.GetNearest((VInt3)position, cachedNNConstraint).position;
 
                 // We cannot simply check for equality because some precision may be lost
                 // if any coordinate transformations are used.

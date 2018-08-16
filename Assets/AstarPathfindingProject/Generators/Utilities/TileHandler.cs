@@ -35,7 +35,7 @@ namespace Pathfinding.Util {
 		readonly Clipper clipper = new Clipper();
 
 		/** Cached dictionary to avoid excessive allocations */
-		readonly Dictionary<Int2, int> cached_Int2_int_dict = new Dictionary<Int2, int>();
+		readonly Dictionary<VInt2, int> cached_Int2_int_dict = new Dictionary<VInt2, int>();
 
 		/** Which tile type is active on each tile index.
 		 * This array will be tileXCount*tileZCount elements long.
@@ -87,7 +87,7 @@ namespace Pathfinding.Util {
 			activeTileRotations = new int[activeTileTypes.Length];
 			activeTileOffsets = new int[activeTileTypes.Length];
 			reloadedInBatch = new bool[activeTileTypes.Length];
-			cuts = new GridLookup<NavmeshClipper>(new Int2(tileXCount, tileZCount));
+			cuts = new GridLookup<NavmeshClipper>(new VInt2(tileXCount, tileZCount));
 			this.graph = graph;
 		}
 
@@ -115,7 +115,7 @@ namespace Pathfinding.Util {
 		/** Rotation of the specified tile relative to the original rotation of the tile type.
 		 * A result N means that the tile has been rotated N*90 degrees.
 		 */
-		public int GetActiveRotation (Int2 p) {
+		public int GetActiveRotation (VInt2 p) {
 			return activeTileRotations[p.x + p.y*tileXCount];
 		}
 
@@ -133,9 +133,9 @@ namespace Pathfinding.Util {
 
 		/** A template for a single tile in a navmesh/recast graph */
 		public class TileType {
-			Int3[] verts;
+			VInt3[] verts;
 			int[] tris;
-			Int3 offset;
+			VInt3 offset;
 			int lastYOffset;
 			int lastRotation;
 			int width;
@@ -176,14 +176,14 @@ namespace Pathfinding.Util {
 				1, 0
 			};
 
-			public TileType (Int3[] sourceVerts, int[] sourceTris, Int3 tileSize, Int3 centerOffset, int width = 1, int depth = 1) {
+			public TileType (VInt3[] sourceVerts, int[] sourceTris, VInt3 tileSize, VInt3 centerOffset, int width = 1, int depth = 1) {
 				if (sourceVerts == null) throw new ArgumentNullException("sourceVerts");
 				if (sourceTris == null) throw new ArgumentNullException("sourceTris");
 
 				tris = new int[sourceTris.Length];
 				for (int i = 0; i < tris.Length; i++) tris[i] = sourceTris[i];
 
-				verts = new Int3[sourceVerts.Length];
+				verts = new VInt3[sourceVerts.Length];
 
 				for (int i = 0; i < sourceVerts.Length; i++) {
 					verts[i] = sourceVerts[i] + centerOffset;
@@ -216,15 +216,15 @@ namespace Pathfinding.Util {
 			 * \param tileSize Size of a single tile, the y-coordinate will be ignored.
 			 * \param centerOffset This offset will be added to all vertices
 			 */
-			public TileType (Mesh source, Int3 tileSize, Int3 centerOffset, int width = 1, int depth = 1) {
+			public TileType (Mesh source, VInt3 tileSize, VInt3 centerOffset, int width = 1, int depth = 1) {
 				if (source == null) throw new ArgumentNullException("source");
 
 				Vector3[] vectorVerts = source.vertices;
 				tris = source.triangles;
-				verts = new Int3[vectorVerts.Length];
+				verts = new VInt3[vectorVerts.Length];
 
 				for (int i = 0; i < vectorVerts.Length; i++) {
-					verts[i] = (Int3)vectorVerts[i] + centerOffset;
+					verts[i] = (VInt3)vectorVerts[i] + centerOffset;
 				}
 
 				offset = tileSize/2;
@@ -249,7 +249,7 @@ namespace Pathfinding.Util {
 			 * different rotations and y offsets can be applied.
 			 * If you need persistent arrays, please copy the returned ones.
 			 */
-			public void Load (out Int3[] verts, out int[] tris, int rotation, int yoffset) {
+			public void Load (out VInt3[] verts, out int[] tris, int rotation, int yoffset) {
 				//Make sure it is a number 0 <= x < 4
 				rotation = ((rotation % 4) + 4) % 4;
 
@@ -265,8 +265,8 @@ namespace Pathfinding.Util {
 
 				if (rotation != 0 || relYOffset != 0) {
 					for (int i = 0; i < verts.Length; i++) {
-						Int3 op = verts[i] - offset;
-						Int3 p = op;
+						VInt3 op = verts[i] - offset;
+						VInt3 p = op;
 						p.y += relYOffset;
 						p.x = op.x * Rotations[rotation*4 + 0] + op.z * Rotations[rotation*4 + 1];
 						p.z = op.x * Rotations[rotation*4 + 2] + op.z * Rotations[rotation*4 + 3];
@@ -288,8 +288,8 @@ namespace Pathfinding.Util {
 		 *
 		 * \returns Identifier for loading that tile type
 		 */
-		public TileType RegisterTileType (Mesh source, Int3 centerOffset, int width = 1, int depth = 1) {
-			return new TileType(source, (Int3) new Vector3(graph.TileWorldSizeX, 0, graph.TileWorldSizeZ), centerOffset, width, depth);
+		public TileType RegisterTileType (Mesh source, VInt3 centerOffset, int width = 1, int depth = 1) {
+			return new TileType(source, (VInt3) new Vector3(graph.TileWorldSizeX, 0, graph.TileWorldSizeZ), centerOffset, width, depth);
 		}
 
 		public void CreateTileTypesFromGraph () {
@@ -313,9 +313,9 @@ namespace Pathfinding.Util {
 			int x = tile.x;
 			int z = tile.z;
 
-			Int3 size = (Int3) new Vector3(graph.TileWorldSizeX, 0, graph.TileWorldSizeZ);
+			VInt3 size = (VInt3) new Vector3(graph.TileWorldSizeX, 0, graph.TileWorldSizeZ);
 			Bounds b = graph.GetTileBoundsInGraphSpace(x, z);
-			var centerOffset = -((Int3)b.min + new Int3(size.x*tile.w/2, 0, size.z*tile.d/2));
+			var centerOffset = -((VInt3)b.min + new VInt3(size.x*tile.w/2, 0, size.z*tile.d/2));
 
 			var tileType = new TileType(tile.vertsInGraphSpace, tile.tris, size, centerOffset, tile.w, tile.d);
 
@@ -376,7 +376,7 @@ namespace Pathfinding.Util {
 			public IntRect bounds;
 
 			/** X is the lower bound on the y axis, Y is the upper bounds on the Y axis */
-			public Int2 boundsY;
+			public VInt2 boundsY;
 			public bool isDual;
 			public bool cutsAddedGeom;
 			public List<IntPoint> contour;
@@ -384,7 +384,7 @@ namespace Pathfinding.Util {
 
 		/** Internal class representing a mesh which is the result of the CutPoly method */
 		struct CuttingResult {
-			public Int3[] verts;
+			public VInt3[] verts;
 			public int[] tris;
 		}
 
@@ -403,11 +403,11 @@ namespace Pathfinding.Util {
 		 * \param perturbate Move navmesh cuts around randomly a bit, the larger the value the more they are moved around.
 		 *      Used to prevent edge cases that can cause the clipping to fail.
 		 */
-		CuttingResult CutPoly (Int3[] verts, int[] tris, Int3[] extraShape, GraphTransform graphTransform, IntRect tiles, CutMode mode = CutMode.CutAll | CutMode.CutDual, int perturbate = -1) {
+		CuttingResult CutPoly (VInt3[] verts, int[] tris, VInt3[] extraShape, GraphTransform graphTransform, IntRect tiles, CutMode mode = CutMode.CutAll | CutMode.CutDual, int perturbate = -1) {
 			// Nothing to do here
 			if (verts.Length == 0 || tris.Length == 0) {
 				return new CuttingResult {
-						   verts = ArrayPool<Int3>.Claim(0),
+						   verts = ArrayPool<VInt3>.Claim(0),
 						   tris = ArrayPool<int>.Claim(0)
 				};
 			}
@@ -470,7 +470,7 @@ namespace Pathfinding.Util {
 
 			var cutInfos = PrepareNavmeshCutsForCutting(navmeshCuts, transform, bounds, perturbate, navmeshAdds.Count > 0);
 
-			var outverts = ListPool<Int3>.Claim(verts.Length*2);
+			var outverts = ListPool<VInt3>.Claim(verts.Length*2);
 			var outtris = ListPool<int>.Claim(tris.Length);
 
 			if (navmeshCuts.Count == 0 && navmeshAdds.Count == 0 && (mode & ~(CutMode.CutAll | CutMode.CutDual)) == 0 && (mode & CutMode.CutAll) != 0) {
@@ -491,23 +491,23 @@ namespace Pathfinding.Util {
 				clipper.StrictlySimple = perturbate > -1;
 				clipper.ReverseSolution = true;
 
-				Int3[] clipIn = null;
-				Int3[] clipOut = null;
-				Int2 clipSize = new Int2();
+				VInt3[] clipIn = null;
+				VInt3[] clipOut = null;
+				VInt2 clipSize = new VInt2();
 
 				if (navmeshAdds.Count > 0) {
-					clipIn = new Int3[7];
-					clipOut = new Int3[7];
+					clipIn = new VInt3[7];
+					clipOut = new VInt3[7];
 					// TODO: What if the size is odd?
-					// Convert cutRegionSize to an Int2 (all the casting is used to scale it appropriately, Int2 does not have an explicit conversion)
-					clipSize = new Int2(((Int3)(Vector3)cutRegionSize).x, ((Int3)(Vector3)cutRegionSize).y);
+					// Convert cutRegionSize to an VInt2 (all the casting is used to scale it appropriately, VInt2 does not have an explicit conversion)
+					clipSize = new VInt2(((VInt3)(Vector3)cutRegionSize).x, ((VInt3)(Vector3)cutRegionSize).y);
 				}
 
 				// Iterate over all meshes that will make up the navmesh surface
-				Int3[] vertexBuffer = null;
+				VInt3[] vertexBuffer = null;
 				for (int meshIndex = -1; meshIndex < navmeshAdds.Count; meshIndex++) {
 					// Current array of vertices and triangles that are being processed
-					Int3[] cverts;
+					VInt3[] cverts;
 					int[] ctris;
 					if (meshIndex == -1) {
 						cverts = verts;
@@ -518,9 +518,9 @@ namespace Pathfinding.Util {
 					}
 
 					for (int tri = 0; tri < ctris.Length; tri += 3) {
-						Int3 tp1 = cverts[ctris[tri + 0]];
-						Int3 tp2 = cverts[ctris[tri + 1]];
-						Int3 tp3 = cverts[ctris[tri + 2]];
+						VInt3 tp1 = cverts[ctris[tri + 0]];
+						VInt3 tp2 = cverts[ctris[tri + 1]];
+						VInt3 tp3 = cverts[ctris[tri + 2]];
 
 						if (VectorMath.IsColinearXZ(tp1, tp2, tp3)) {
 							Debug.LogWarning("Skipping degenerate triangle.");
@@ -543,9 +543,9 @@ namespace Pathfinding.Util {
 							int ymax = cutInfos[i].boundsY.y;
 
 							if (IntRect.Intersects(triBounds, cutInfos[i].bounds) && !(ymax< tpYMin || ymin > tpYMax) && (cutInfos[i].cutsAddedGeom || meshIndex == -1)) {
-								Int3 p1 = tp1;
+								VInt3 p1 = tp1;
 								p1.y = ymin;
-								Int3 p2 = tp1;
+								VInt3 p2 = tp1;
 								p2.y = ymax;
 
 								intersectingCuts.Add(i);
@@ -620,7 +620,7 @@ namespace Pathfinding.Util {
 
 								if (holes.Count == 0 && outer.Count == 3 && meshIndex == -1) {
 									for (int i = 0; i < 3; i++) {
-										var p = new Int3((int)outer[i].X, 0, (int)outer[i].Y);
+										var p = new VInt3((int)outer[i].X, 0, (int)outer[i].Y);
 										p.y = Pathfinding.Polygon.SampleYCoordinateInTriangle(tp1, tp2, tp3, p);
 
 										outtris.Add(outverts.Count);
@@ -640,7 +640,7 @@ namespace Pathfinding.Util {
 											// Add the point to the polygon
 											polypoints.Add(pp);
 
-											var p = new Int3((int)contour[i].X, 0, (int)contour[i].Y);
+											var p = new VInt3((int)contour[i].X, 0, (int)contour[i].Y);
 											p.y = Pathfinding.Polygon.SampleYCoordinateInTriangle(tp1, tp2, tp3, p);
 
 											// Prepare a lookup table for pp -> vertex index
@@ -699,7 +699,7 @@ namespace Pathfinding.Util {
 					}
 				}
 
-				if (vertexBuffer != null) ArrayPool<Int3>.Release(ref vertexBuffer);
+				if (vertexBuffer != null) ArrayPool<VInt3>.Release(ref vertexBuffer);
 				StackPool<Poly2Tri.Polygon>.Release(polyCache);
 				ListPool<List<IntPoint> >.Release(ref intermediateClipResult);
 				ListPool<IntPoint>.Release(ref poly);
@@ -717,7 +717,7 @@ namespace Pathfinding.Util {
 			}
 
 			// Release back to pools
-			ListPool<Int3>.Release(ref outverts);
+			ListPool<VInt3>.Release(ref outverts);
 			ListPool<int>.Release(ref outtris);
 			ListPool<int>.Release(ref intersectingCuts);
 
@@ -745,7 +745,7 @@ namespace Pathfinding.Util {
 			var result = ListPool<Cut>.Claim();
 			for (int i = 0; i < navmeshCuts.Count; i++) {
 				// Generate random perturbation for this obstacle if required
-				Int2 perturbation = new Int2(0, 0);
+				VInt2 perturbation = new VInt2(0, 0);
 				if (perturbate > 0) {
 					// Create a perturbation vector, choose a point with coordinates in the set [-3*perturbate,3*perturbate]
 					// makes sure none of the coordinates are zero
@@ -760,7 +760,7 @@ namespace Pathfinding.Util {
 				contourBuffer.Clear();
 				navmeshCuts[i].GetContour(contourBuffer);
 
-				var y0 = (int)(navmeshCuts[i].GetY(transform) * Int3.FloatPrecision);
+				var y0 = (int)(navmeshCuts[i].GetY(transform) * VInt3.FloatPrecision);
 				for (int j = 0; j < contourBuffer.Count; j++) {
 					List<Vector3> worldContour = contourBuffer[j];
 
@@ -772,7 +772,7 @@ namespace Pathfinding.Util {
 					// TODO: transform should include cutting offset
 					List<IntPoint> contour = ListPool<IntPoint>.Claim(worldContour.Count);
 					for (int q = 0; q < worldContour.Count; q++) {
-						var p = (Int3)transform.InverseTransform(worldContour[q]);
+						var p = (VInt3)transform.InverseTransform(worldContour[q]);
 						if (perturbate > 0) {
 							p.x += perturbation.x;
 							p.z += perturbation.y;
@@ -791,8 +791,8 @@ namespace Pathfinding.Util {
 					Cut cut = new Cut();
 
 					// Calculate bounds on the y axis
-					int halfHeight = (int)(navmeshCuts[i].height * 0.5f * Int3.Precision);
-					cut.boundsY = new Int2(y0 - halfHeight, y0 + halfHeight);
+					int halfHeight = (int)(navmeshCuts[i].height * 0.5f * VInt3.Precision);
+					cut.boundsY = new VInt2(y0 - halfHeight, y0 + halfHeight);
 					cut.bounds = contourBounds;
 					cut.isDual = navmeshCuts[i].isDual;
 					cut.cutsAddedGeom = navmeshCuts[i].cutsAddedGeom;
@@ -888,7 +888,7 @@ namespace Pathfinding.Util {
 		 *
 		 * \returns Number of output vertices
 		 */
-		int ClipAgainstRectangle (Int3[] clipIn, Int3[] clipOut, Int2 size) {
+		int ClipAgainstRectangle (VInt3[] clipIn, VInt3[] clipOut, VInt2 size) {
 			int ct;
 
 			ct = simpleClipper.ClipPolygon(clipIn, 3, clipOut, 1, 0, 0);
@@ -908,7 +908,7 @@ namespace Pathfinding.Util {
 		}
 
 		/** Copy mesh from (vertices, triangles) to (outVertices, outTriangles) */
-		static void CopyMesh (Int3[] vertices, int[] triangles, List<Int3> outVertices, List<int> outTriangles) {
+		static void CopyMesh (VInt3[] vertices, int[] triangles, List<VInt3> outVertices, List<int> outTriangles) {
 			outTriangles.Capacity = Math.Max(outTriangles.Capacity, triangles.Length);
 			outVertices.Capacity = Math.Max(outVertices.Capacity, vertices.Length);
 
@@ -930,10 +930,10 @@ namespace Pathfinding.Util {
 		 *
 		 * \see https://en.wikipedia.org/wiki/Delaunay_triangulation
 		 */
-		void DelaunayRefinement (Int3[] verts, int[] tris, ref int tCount, bool delaunay, bool colinear) {
+		void DelaunayRefinement (VInt3[] verts, int[] tris, ref int tCount, bool delaunay, bool colinear) {
 			if (tCount % 3 != 0) throw new System.ArgumentException("Triangle array length must be a multiple of 3");
 
-			Dictionary<Int2, int> lookup = cached_Int2_int_dict;
+			Dictionary<VInt2, int> lookup = cached_Int2_int_dict;
 			lookup.Clear();
 
 			for (int i = 0; i < tCount; i += 3) {
@@ -943,27 +943,27 @@ namespace Pathfinding.Util {
 					tris[i+2] = tmp;
 				}
 
-				lookup[new Int2(tris[i+0], tris[i+1])] = i+2;
-				lookup[new Int2(tris[i+1], tris[i+2])] = i+0;
-				lookup[new Int2(tris[i+2], tris[i+0])] = i+1;
+				lookup[new VInt2(tris[i+0], tris[i+1])] = i+2;
+				lookup[new VInt2(tris[i+1], tris[i+2])] = i+0;
+				lookup[new VInt2(tris[i+2], tris[i+0])] = i+1;
 			}
 
 			for (int i = 0; i < tCount; i += 3) {
 				for (int j = 0; j < 3; j++) {
 					int opp;
 
-					if (lookup.TryGetValue(new Int2(tris[i+((j+1)%3)], tris[i+((j+0)%3)]), out opp)) {
+					if (lookup.TryGetValue(new VInt2(tris[i+((j+1)%3)], tris[i+((j+0)%3)]), out opp)) {
 						// The vertex which we are using as the viewpoint
-						Int3 po = verts[tris[i+((j+2)%3)]];
+						VInt3 po = verts[tris[i+((j+2)%3)]];
 
 						// Right vertex of the edge
-						Int3 pr = verts[tris[i+((j+1)%3)]];
+						VInt3 pr = verts[tris[i+((j+1)%3)]];
 
 						// Left vertex of the edge
-						Int3 pl = verts[tris[i+((j+3)%3)]];
+						VInt3 pl = verts[tris[i+((j+3)%3)]];
 
 						// Opposite vertex (in the other triangle)
-						Int3 popp = verts[tris[opp]];
+						VInt3 popp = verts[tris[opp]];
 
 						po.y = 0;
 						pr.y = 0;
@@ -986,8 +986,8 @@ namespace Pathfinding.Util {
 							// Check if op - right shared - opposite in other - is colinear
 							// and if the edge right-op is not shared and if the edge opposite in other - right shared is not shared
 							if (VectorMath.SqrDistancePointSegmentApproximate(po, popp, pr) < MaxError &&
-								!lookup.ContainsKey(new Int2(tris[i+((j+2)%3)], tris[i+((j+1)%3)])) &&
-								!lookup.ContainsKey(new Int2(tris[i+((j+1)%3)], tris[opp]))) {
+								!lookup.ContainsKey(new VInt2(tris[i+((j+2)%3)], tris[i+((j+1)%3)])) &&
+								!lookup.ContainsKey(new VInt2(tris[i+((j+1)%3)], tris[opp]))) {
 								tCount -= 3;
 
 								int root = (opp/3)*3;
@@ -1000,9 +1000,9 @@ namespace Pathfinding.Util {
 									tris[root+0] = tris[tCount+0];
 									tris[root+1] = tris[tCount+1];
 									tris[root+2] = tris[tCount+2];
-									lookup[new Int2(tris[root+0], tris[root+1])] = root+2;
-									lookup[new Int2(tris[root+1], tris[root+2])] = root+0;
-									lookup[new Int2(tris[root+2], tris[root+0])] = root+1;
+									lookup[new VInt2(tris[root+0], tris[root+1])] = root+2;
+									lookup[new VInt2(tris[root+1], tris[root+2])] = root+0;
+									lookup[new VInt2(tris[root+2], tris[root+0])] = root+1;
 
 									tris[tCount+0] = 0;
 									tris[tCount+1] = 0;
@@ -1015,18 +1015,18 @@ namespace Pathfinding.Util {
 
 								// However some need to be updated
 								// left - new right (previously opp) should have opposite vertex po
-								//lookup[new Int2(tris[i+((j+3)%3)],tris[i+((j+1)%3)])] = i+((j+2)%3);
+								//lookup[new VInt2(tris[i+((j+3)%3)],tris[i+((j+1)%3)])] = i+((j+2)%3);
 
-								lookup[new Int2(tris[i+0], tris[i+1])] = i+2;
-								lookup[new Int2(tris[i+1], tris[i+2])] = i+0;
-								lookup[new Int2(tris[i+2], tris[i+0])] = i+1;
+								lookup[new VInt2(tris[i+0], tris[i+1])] = i+2;
+								lookup[new VInt2(tris[i+1], tris[i+2])] = i+0;
+								lookup[new VInt2(tris[i+2], tris[i+0])] = i+1;
 								continue;
 							}
 						}
 
 						if (delaunay && !noDelaunay) {
-							float beta = Int3.Angle(pr-po, pl-po);
-							float alpha = Int3.Angle(pr-popp, pl-popp);
+							float beta = VInt3.Angle(pr-po, pl-po);
+							float alpha = VInt3.Angle(pr-popp, pl-popp);
 
 							if (alpha > (2*Mathf.PI - 2*beta)) {
 								// Denaunay condition not holding, refine please
@@ -1036,13 +1036,13 @@ namespace Pathfinding.Util {
 								int off = opp-root;
 								tris[root+((off-1+3) % 3)] = tris[i+((j+2)%3)];
 
-								lookup[new Int2(tris[i+0], tris[i+1])] = i+2;
-								lookup[new Int2(tris[i+1], tris[i+2])] = i+0;
-								lookup[new Int2(tris[i+2], tris[i+0])] = i+1;
+								lookup[new VInt2(tris[i+0], tris[i+1])] = i+2;
+								lookup[new VInt2(tris[i+1], tris[i+2])] = i+0;
+								lookup[new VInt2(tris[i+2], tris[i+0])] = i+1;
 
-								lookup[new Int2(tris[root+0], tris[root+1])] = root+2;
-								lookup[new Int2(tris[root+1], tris[root+2])] = root+0;
-								lookup[new Int2(tris[root+2], tris[root+0])] = root+1;
+								lookup[new VInt2(tris[root+0], tris[root+1])] = root+2;
+								lookup[new VInt2(tris[root+1], tris[root+2])] = root+0;
+								lookup[new VInt2(tris[root+2], tris[root+0])] = root+1;
 							}
 						}
 					}
@@ -1058,7 +1058,7 @@ namespace Pathfinding.Util {
 
 			AstarPath.active.AddWorkItem(new AstarWorkItem((context, force) => {
 				//Replace the tile using the final vertices and triangles
-				graph.ReplaceTile(x, z, new Int3[0], new int[0]);
+				graph.ReplaceTile(x, z, new VInt3[0], new int[0]);
 
 				activeTileTypes[x + z*tileXCount] = null;
 
@@ -1106,7 +1106,7 @@ namespace Pathfinding.Util {
 		}
 
 #if FALSE
-		public void CutShapeWithTile (int x, int z, Int3[] shape, ref Int3[] verts, ref int[] tris, out int vCount, out int tCount) {
+		public void CutShapeWithTile (int x, int z, VInt3[] shape, ref VInt3[] verts, ref int[] tris, out int vCount, out int tCount) {
 			if (isBatching) {
 				throw new Exception("Cannot cut with shape when batching. Please stop batching first.");
 			}
@@ -1114,14 +1114,14 @@ namespace Pathfinding.Util {
 			int index = x + z*tileXCount;
 
 			if (x < 0 || z < 0 || x >= tileXCount || z >= tileZCount || activeTileTypes[index] == null) {
-				verts = new Int3[0];
+				verts = new VInt3[0];
 				tris = new int[0];
 				vCount = 0;
 				tCount = 0;
 				return;
 			}
 
-			Int3[] tverts;
+			VInt3[] tverts;
 			int[] ttris;
 
 			activeTileTypes[index].Load(out tverts, out ttris, activeTileRotations[index], activeTileOffsets[index]);
@@ -1130,7 +1130,7 @@ namespace Pathfinding.Util {
 			//The tile will be cut in local space (i.e it is at the world origin) so cuts need to be translated
 			//to that point from their world space coordinates
 			Bounds r = graph.GetTileBounds(x, z);
-			var cutOffset = (Int3)r.min;
+			var cutOffset = (VInt3)r.min;
 			cutOffset = -cutOffset;
 
 			CutPoly(tverts, ttris, ref verts, ref tris, out vCount, out tCount, shape, cutOffset, r, CutMode.CutExtra);
@@ -1145,8 +1145,8 @@ namespace Pathfinding.Util {
 		 * \param x Tile x coordinate (first tile is at (0,0), second at (1,0) etc.. ).
 		 * \param z Tile z coordinate.
 		 * \param rotation Rotate tile by 90 degrees * value.
-		 * \param yoffset Offset Y coordinates by this amount. In Int3 space, so if you have a world space
-		 *      offset, multiply by Int3.Precision and round to the nearest integer before calling this function.
+		 * \param yoffset Offset Y coordinates by this amount. In VInt3 space, so if you have a world space
+		 *      offset, multiply by VInt3.Precision and round to the nearest integer before calling this function.
 		 */
 		public void LoadTile (TileType tile, int x, int z, int rotation, int yoffset) {
 			if (tile == null) throw new ArgumentNullException("tile");
@@ -1176,7 +1176,7 @@ namespace Pathfinding.Util {
 
 				GraphModifier.TriggerEvent(GraphModifier.EventType.PreUpdate);
 
-				Int3[] verts;
+				VInt3[] verts;
 				int[] tris;
 
 				tile.Load(out verts, out tris, rotation, yoffset);

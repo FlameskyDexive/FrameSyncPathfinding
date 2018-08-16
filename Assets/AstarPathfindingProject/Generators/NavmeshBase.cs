@@ -128,14 +128,14 @@ namespace Pathfinding {
 		 *
 		 * \see NavmeshTile.GetVertex
 		 */
-		public Int3 GetVertex (int index) {
+		public VInt3 GetVertex (int index) {
 			int tileIndex = (index >> TileIndexOffset) & TileIndexMask;
 
 			return tiles[tileIndex].GetVertex(index);
 		}
 
 		/** Vertex coordinate in graph space for the specified vertex index */
-		public Int3 GetVertexInGraphSpace (int index) {
+		public VInt3 GetVertexInGraphSpace (int index) {
 			int tileIndex = (index >> TileIndexOffset) & TileIndexMask;
 
 			return tiles[tileIndex].GetVertexInGraphSpace(index);
@@ -198,7 +198,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public Int2 GetTileCoordinates (Vector3 position) {
-        public Int2 GetTileCoordinates (Int3 position)
+        public VInt2 GetTileCoordinates (VInt3 position)
         {
             //Good Game
             //position = transform.InverseTransform(position);
@@ -209,7 +209,7 @@ namespace Pathfinding {
 			return new Int2((int)position.x, (int)position.z);*/
 			p.x /= TileWorldSizeX;
 			p.z /= TileWorldSizeZ;
-			return new Int2((int)p.x, (int)p.z);
+			return new VInt2((int)p.x, (int)p.z);
 		}
 
 		protected override void OnDestroy () {
@@ -276,8 +276,8 @@ namespace Pathfinding {
 					   z = z,
 					   w = 1,
 					   d = 1,
-					   verts = new Int3[0],
-					   vertsInGraphSpace = new Int3[0],
+					   verts = new VInt3[0],
+					   vertsInGraphSpace = new VInt3[0],
 					   tris = new int[0],
 					   nodes = new TriangleMeshNode[0],
 					   bbTree = ObjectPool<BBTree>.Claim(),
@@ -418,13 +418,13 @@ namespace Pathfinding {
 
 	    //Good Game
         //public override NNInfoInternal GetNearest (Vector3 position, NNConstraint constraint, GraphNode hint) {
-        public override NNInfoInternal GetNearest (Int3 position, NNConstraint constraint, GraphNode hint) {
+        public override NNInfoInternal GetNearest (VInt3 position, NNConstraint constraint, GraphNode hint) {
 			return GetNearestForce(position, constraint != null && constraint.distanceXZ ? NNConstraintDistanceXZ : null);
 		}
 
         //Good Game
 		//public override NNInfoInternal GetNearestForce (Vector3 position, NNConstraint constraint) {
-		public override NNInfoInternal GetNearestForce (Int3 position, NNConstraint constraint) {
+		public override NNInfoInternal GetNearestForce (VInt3 position, NNConstraint constraint) {
 			if (tiles == null) return new NNInfoInternal();
 
 			var tileCoords = GetTileCoordinates(position);
@@ -502,7 +502,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public GraphNode PointOnNavmesh (Vector3 position, NNConstraint constraint) {
-        public GraphNode PointOnNavmesh (Int3 position, NNConstraint constraint) {
+        public GraphNode PointOnNavmesh (VInt3 position, NNConstraint constraint) {
 			if (tiles == null) return null;
 
 			var tileCoords = GetTileCoordinates(position);
@@ -538,7 +538,7 @@ namespace Pathfinding {
 		protected static void CreateNodeConnections (TriangleMeshNode[] nodes) {
 			List<Connection> connections = ListPool<Connection>.Claim();
 
-			var nodeRefs = ObjectPoolSimple<Dictionary<Int2, int> >.Claim();
+			var nodeRefs = ObjectPoolSimple<Dictionary<VInt2, int> >.Claim();
 			nodeRefs.Clear();
 
 			// Build node neighbours
@@ -551,7 +551,7 @@ namespace Pathfinding {
 					// Recast can in some very special cases generate degenerate triangles which are simply lines
 					// In that case, duplicate keys might be added and thus an exception will be thrown
 					// It is safe to ignore the second edge though... I think (only found one case where this happens)
-					var key = new Int2(node.GetVertexIndex(a), node.GetVertexIndex((a+1) % av));
+					var key = new VInt2(node.GetVertexIndex(a), node.GetVertexIndex((a+1) % av));
 					if (!nodeRefs.ContainsKey(key)) {
 						nodeRefs.Add(key, i);
 					}
@@ -570,7 +570,7 @@ namespace Pathfinding {
 					int second = node.GetVertexIndex((a+1) % av);
 					int connNode;
 
-					if (nodeRefs.TryGetValue(new Int2(second, first), out connNode)) {
+					if (nodeRefs.TryGetValue(new VInt2(second, first), out connNode)) {
 						TriangleMeshNode other = nodes[connNode];
 
 						int bv = other.GetVertexCount();
@@ -593,7 +593,7 @@ namespace Pathfinding {
 			}
 
 			nodeRefs.Clear();
-			ObjectPoolSimple<Dictionary<Int2, int> >.Release(ref nodeRefs);
+			ObjectPoolSimple<Dictionary<VInt2, int> >.Release(ref nodeRefs);
 			ListPool<Connection>.Release(ref connections);
 		}
 
@@ -639,7 +639,7 @@ namespace Pathfinding {
 			}
 
 			// Midpoint between the two tiles
-			int midpoint = (int)Math.Round((Math.Max(t1coord, t2coord) * tileWorldSize) * Int3.Precision);
+			int midpoint = (int)Math.Round((Math.Max(t1coord, t2coord) * tileWorldSize) * VInt3.Precision);
 
 			#if ASTARDEBUG
 			Vector3 v1 = new Vector3(-100, 0, -100);
@@ -660,9 +660,9 @@ namespace Pathfinding {
 
 				// Loop through all *sides* of the node
 				for (int a = 0; a < aVertexCount; a++) {
-					// Vertices that the segment consists of
-					Int3 aVertex1 = nodeA.GetVertexInGraphSpace(a);
-					Int3 aVertex2 = nodeA.GetVertexInGraphSpace((a+1) % aVertexCount);
+                    // Vertices that the segment consists of
+				    VInt3 aVertex1 = nodeA.GetVertexInGraphSpace(a);
+				    VInt3 aVertex2 = nodeA.GetVertexInGraphSpace((a+1) % aVertexCount);
 
 					// Check if it is really close to the tile border
 					if (Math.Abs(aVertex1[coord] - midpoint) < 2 && Math.Abs(aVertex2[coord] - midpoint) < 2) {
@@ -676,8 +676,8 @@ namespace Pathfinding {
 							TriangleMeshNode nodeB = nodes2[j];
 							int bVertexCount = nodeB.GetVertexCount();
 							for (int b = 0; b < bVertexCount; b++) {
-								Int3 bVertex1 = nodeB.GetVertexInGraphSpace(b);
-								Int3 bVertex2 = nodeB.GetVertexInGraphSpace((b+1) % aVertexCount);
+							    VInt3 bVertex1 = nodeB.GetVertexInGraphSpace(b);
+							    VInt3 bVertex2 = nodeB.GetVertexInGraphSpace((b+1) % aVertexCount);
 								if (Math.Abs(bVertex1[coord] - midpoint) < 2 && Math.Abs(bVertex2[coord] - midpoint) < 2) {
 									int minalt2 = Math.Min(bVertex1[altcoord], bVertex2[altcoord]);
 									int maxalt2 = Math.Max(bVertex1[altcoord], bVertex2[altcoord]);
@@ -803,7 +803,7 @@ namespace Pathfinding {
 		 *
 		 * \see #ReplaceTile
 		 */
-		void PrepareNodeRecycling (int x, int z, Int3[] verts, int[] tris, TriangleMeshNode[] recycledNodeBuffer) {
+		void PrepareNodeRecycling (int x, int z, VInt3[] verts, int[] tris, TriangleMeshNode[] recycledNodeBuffer) {
 			NavmeshTile tile = GetTile(x, z);
 
 			if (tile == null || tile.nodes.Length == 0) return;
@@ -816,7 +816,7 @@ namespace Pathfinding {
 
 			for (int i = 0; i < nodes.Length; i++) {
 				var node = nodes[i];
-				Int3 v0, v1, v2;
+			    VInt3 v0, v1, v2;
 				node.GetVerticesInGraphSpace(out v0, out v1, out v2);
 				var hash = v0.GetHashCode() + v1.GetHashCode() + v2.GetHashCode();
 				int newNodeIndex;
@@ -858,7 +858,7 @@ namespace Pathfinding {
 		 *
 		 * \see #StartBatchTileUpdate
 		 */
-		public void ReplaceTile (int x, int z, Int3[] verts, int[] tris) {
+		public void ReplaceTile (int x, int z, VInt3[] verts, int[] tris) {
 			int w = 1, d = 1;
 
 			if (x + w > tileXCount || z+d > tileZCount || x < 0 || z < 0) {
@@ -868,7 +868,7 @@ namespace Pathfinding {
 			if (tris.Length % 3 != 0) throw new System.ArgumentException("Triangle array's length must be a multiple of 3 (tris)");
 			if (verts.Length > VertexIndexMask) {
 				Debug.LogError("Too many vertices in the tile (" + verts.Length + " > " + VertexIndexMask +")\nYou can enable ASTAR_RECAST_LARGER_TILES under the 'Optimizations' tab in the A* Inspector to raise this limit. Or you can use a smaller tile size to reduce the likelihood of this happening.");
-				verts = new Int3[0];
+				verts = new VInt3[0];
 				tris = new int[0];
 			}
 
@@ -887,16 +887,16 @@ namespace Pathfinding {
 				graph = this,
 			};
 
-			if (!Mathf.Approximately(x*TileWorldSizeX*Int3.FloatPrecision, (float)Math.Round(x*TileWorldSizeX*Int3.FloatPrecision))) Debug.LogWarning("Possible numerical imprecision. Consider adjusting tileSize and/or cellSize");
-			if (!Mathf.Approximately(z*TileWorldSizeZ*Int3.FloatPrecision, (float)Math.Round(z*TileWorldSizeZ*Int3.FloatPrecision))) Debug.LogWarning("Possible numerical imprecision. Consider adjusting tileSize and/or cellSize");
+			if (!Mathf.Approximately(x*TileWorldSizeX* VInt3.FloatPrecision, (float)Math.Round(x*TileWorldSizeX* VInt3.FloatPrecision))) Debug.LogWarning("Possible numerical imprecision. Consider adjusting tileSize and/or cellSize");
+			if (!Mathf.Approximately(z*TileWorldSizeZ* VInt3.FloatPrecision, (float)Math.Round(z*TileWorldSizeZ* VInt3.FloatPrecision))) Debug.LogWarning("Possible numerical imprecision. Consider adjusting tileSize and/or cellSize");
 
-			var offset = (Int3) new Vector3((x * TileWorldSizeX), 0, (z * TileWorldSizeZ));
+			var offset = (VInt3) new Vector3((x * TileWorldSizeX), 0, (z * TileWorldSizeZ));
 
 			for (int i = 0; i < verts.Length; i++) {
 				verts[i] += offset;
 			}
 			tile.vertsInGraphSpace = verts;
-			tile.verts = (Int3[])verts.Clone();
+			tile.verts = (VInt3[])verts.Clone();
 			transform.Transform(tile.verts);
 
 			Profiler.BeginSample("Clear Previous Tiles");
@@ -976,7 +976,7 @@ namespace Pathfinding {
 		 *
 		 * \shadowimage{linecast.png}
 		 */
-		public bool Linecast (Int3 origin, Int3 end) {
+		public bool Linecast (VInt3 origin, VInt3 end) {
 			return Linecast(origin, end, GetNearest(origin, NNConstraint.None).node);
 		}
 
@@ -991,7 +991,7 @@ namespace Pathfinding {
 		 *
 		 * \shadowimage{linecast.png}
 		 */
-		public bool Linecast (Int3 origin, Int3 end, GraphNode hint, out GraphHitInfo hit) {
+		public bool Linecast (VInt3 origin, VInt3 end, GraphNode hint, out GraphHitInfo hit) {
 			return Linecast(this, origin, end, hint, out hit, null);
 		}
 
@@ -1005,7 +1005,7 @@ namespace Pathfinding {
 		 *
 		 * \shadowimage{linecast.png}
 		 */
-		public bool Linecast (Int3 origin, Int3 end, GraphNode hint) {
+		public bool Linecast (VInt3 origin, VInt3 end, GraphNode hint) {
 			GraphHitInfo hit;
 
 			return Linecast(this, origin, end, hint, out hit, null);
@@ -1023,7 +1023,7 @@ namespace Pathfinding {
 		 *
 		 * \shadowimage{linecast.png}
 		 */
-		public bool Linecast (Int3 origin, Int3 end, GraphNode hint, out GraphHitInfo hit, List<GraphNode> trace) {
+		public bool Linecast (VInt3 origin, VInt3 end, GraphNode hint, out GraphHitInfo hit, List<GraphNode> trace) {
 			return Linecast(this, origin, end, hint, out hit, trace);
 		}
 
@@ -1039,7 +1039,7 @@ namespace Pathfinding {
 		 *
 		 * \shadowimage{linecast.png}
 		 */
-		public static bool Linecast (NavmeshBase graph, Int3 origin, Int3 end, GraphNode hint, out GraphHitInfo hit) {
+		public static bool Linecast (NavmeshBase graph, VInt3 origin, VInt3 end, GraphNode hint, out GraphHitInfo hit) {
 			return Linecast(graph, origin, end, hint, out hit, null);
 		}
 
@@ -1102,7 +1102,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public static bool Linecast (NavmeshBase graph, Vector3 origin, Vector3 end, GraphNode hint, out GraphHitInfo hit, List<GraphNode> trace) {
-        public static bool Linecast (NavmeshBase graph, Int3 origin, Int3 end, GraphNode hint, out GraphHitInfo hit, List<GraphNode> trace) {
+        public static bool Linecast (NavmeshBase graph, VInt3 origin, VInt3 end, GraphNode hint, out GraphHitInfo hit, List<GraphNode> trace) {
 			hit = new GraphHitInfo();
 
 			if (float.IsNaN(origin.x + origin.y + origin.z)) throw new System.ArgumentException("origin is NaN");
@@ -1134,7 +1134,7 @@ namespace Pathfinding {
 			}
 
 			var endInGraphSpace = graph.transform.InverseTransform(end);
-			var i3endInGraphSpace = (Int3)endInGraphSpace;
+			var i3endInGraphSpace = (VInt3)endInGraphSpace;
 
 			// Fast early out check
 			if (i3originInGraphSpace == i3endInGraphSpace) {
@@ -1153,7 +1153,7 @@ namespace Pathfinding {
 
 				if (trace != null) trace.Add(node);
 
-				Int3 a0, a1, a2;
+			    VInt3 a0, a1, a2;
 				node.GetVerticesInGraphSpace(out a0, out a1, out a2);
 				int sideOfLine = (byte)VectorMath.SideXZ(i3originInGraphSpace, i3endInGraphSpace, a0);
 				sideOfLine |= (byte)VectorMath.SideXZ(i3originInGraphSpace, i3endInGraphSpace, a1) << 2;
@@ -1308,7 +1308,7 @@ namespace Pathfinding {
 
 			for (int j = 0; j < tile.nodes.Length; j++) {
 				var node = tile.nodes[j];
-				Int3 v0, v1, v2;
+			    VInt3 v0, v1, v2;
 				node.GetVertices(out v0, out v1, out v2);
 				vertices[j*3 + 0] = (Vector3)v0;
 				vertices[j*3 + 1] = (Vector3)v1;
@@ -1476,20 +1476,20 @@ namespace Pathfinding {
 					tile.tris = new int[trisCount];
 					for (int i = 0; i < tile.tris.Length; i++) tile.tris[i] = reader.ReadInt32();
 
-					tile.verts = new Int3[reader.ReadInt32()];
+					tile.verts = new VInt3[reader.ReadInt32()];
 					for (int i = 0; i < tile.verts.Length; i++) {
 						tile.verts[i] = ctx.DeserializeInt3();
 					}
 
 					if (ctx.meta.version.Major >= 4) {
-						tile.vertsInGraphSpace = new Int3[reader.ReadInt32()];
+						tile.vertsInGraphSpace = new VInt3[reader.ReadInt32()];
 						if (tile.vertsInGraphSpace.Length != tile.verts.Length) throw new System.Exception("Corrupt data. Array lengths did not match");
 						for (int i = 0; i < tile.verts.Length; i++) {
 							tile.vertsInGraphSpace[i] = ctx.DeserializeInt3();
 						}
 					} else {
 						// Compatibility
-						tile.vertsInGraphSpace = new Int3[tile.verts.Length];
+						tile.vertsInGraphSpace = new VInt3[tile.verts.Length];
 						tile.verts.CopyTo(tile.vertsInGraphSpace, 0);
 						transform.InverseTransform(tile.vertsInGraphSpace);
 					}

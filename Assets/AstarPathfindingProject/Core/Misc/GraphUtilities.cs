@@ -60,12 +60,12 @@ namespace Pathfinding {
 		 *
 		 * \see #GetContours(NavGraph)
 		 */
-		public static void GetContours (INavmesh navmesh, System.Action<List<Int3>, bool> results) {
+		public static void GetContours (INavmesh navmesh, System.Action<List<VInt3>, bool> results) {
 			// Assume 3 vertices per node
 			var uses = new bool[3];
 
 			var outline = new Dictionary<int, int>();
-			var vertexPositions = new Dictionary<int, Int3>();
+			var vertexPositions = new Dictionary<int, VInt3>();
 			var hasInEdge = new HashSet<int>();
 
 			navmesh.GetNodes(_node => {
@@ -103,7 +103,7 @@ namespace Pathfinding {
 			});
 
 			Polygon.TraceContours(outline, hasInEdge, (chain, cycle) => {
-				List<Int3> vertices = ListPool<Int3>.Claim();
+				List<VInt3> vertices = ListPool<VInt3>.Claim();
 				for (int i = 0; i < chain.Count; i++) vertices.Add(vertexPositions[chain[i]]);
 				results(vertices, cycle);
 			});

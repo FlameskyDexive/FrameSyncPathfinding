@@ -307,12 +307,12 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public static void GetPointsAroundPointWorld (Vector3 p, IRaycastableGraph g, List<Vector3> previousPoints, float radius, float clearanceRadius) {
-        public static void GetPointsAroundPointWorld (Int3 p, IRaycastableGraph g, List<Int3> previousPoints, float radius, float clearanceRadius) {
+        public static void GetPointsAroundPointWorld (VInt3 p, IRaycastableGraph g, List<VInt3> previousPoints, float radius, float clearanceRadius) {
 			if (previousPoints.Count == 0) return;
 
             //Good Game
             //Vector3 avg = Vector3.zero;
-            Int3 avg = Int3.zero;
+            VInt3 avg = VInt3.zero;
 			for (int i = 0; i < previousPoints.Count; i++) avg += previousPoints[i];
 			avg /= previousPoints.Count;
 
@@ -340,7 +340,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public static void GetPointsAroundPoint (Vector3 center, IRaycastableGraph g, List<Vector3> previousPoints, float radius, float clearanceRadius) {
-        public static void GetPointsAroundPoint (Int3 center, IRaycastableGraph g, List<Int3> previousPoints, float radius, float clearanceRadius) {
+        public static void GetPointsAroundPoint (VInt3 center, IRaycastableGraph g, List<VInt3> previousPoints, float radius, float clearanceRadius) {
 			if (g == null) throw new System.ArgumentNullException("g");
 
 			var graph = g as NavGraph;
@@ -364,7 +364,7 @@ namespace Pathfinding {
 			{
 			    //Good Game
                 //Vector3 dir = previousPoints[i];
-                Int3 dir = previousPoints[i];
+                VInt3 dir = previousPoints[i];
 				float magn = dir.magnitude;
 
 				if (magn > 0) dir /= magn;
@@ -379,13 +379,13 @@ namespace Pathfinding {
 				{
 				    //Good Game
                     //Vector3 pt = center + dir;
-                    Int3 pt = center + dir;
+                    VInt3 pt = center + dir;
 
 					if (g.Linecast(center, pt, nn.node, out hit))
 					{
 					    //Good Game
                         //if (hit.point == Vector3.zero)
-                        if (hit.point == Int3.zero)
+                        if (hit.point == VInt3.zero)
 						{
 							// Oops, linecast actually failed completely
 							// try again unless we have tried lots of times
@@ -406,7 +406,7 @@ namespace Pathfinding {
 					{
 					    //Good Game
                         //Vector3 qt = Vector3.Lerp(center, pt, q);
-                        Int3 qt = Int3.Lerp(center, pt, q);
+                        VInt3 qt = VInt3.Lerp(center, pt, q);
 						worked = true;
 						for (int j = 0; j < i; j++) {
 							if ((previousPoints[j] - qt).sqrMagnitude < clearanceRadius) {
@@ -434,7 +434,7 @@ namespace Pathfinding {
                     // This will pick points in 2D closer to the edge of the circle with a higher probability
 				    //Good Game
                     //dir = (Random.onUnitSphere * Mathf.Lerp(newMagn, radius, tests / 5));
-					dir = (Int3)(Random.onUnitSphere * Mathf.Lerp(newMagn, radius, tests / 5f));
+					dir = (VInt3)(Random.onUnitSphere * Mathf.Lerp(newMagn, radius, tests / 5f));
 					dir.y = 0;
 					tests++;
 				}

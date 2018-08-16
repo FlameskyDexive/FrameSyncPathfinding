@@ -20,7 +20,7 @@ public class Float2Int : EditorWindow
         FileInfo[] files = direction.GetFiles("*.cs", SearchOption.AllDirectories);
         for (int i = 0; i < files.Length; i++)
         {
-            if (files[i].FullName.Contains("Int3.cs"))
+            if (files[i].FullName.Contains("VInt3.cs"))
             {
                 continue;
             }
@@ -34,7 +34,7 @@ public class Float2Int : EditorWindow
                 }
                 if (codeLines[j].Contains("Vector2") || codeLines[j].Contains("Vector3") ||
                     codeLines[j].Contains("float")|| codeLines[j].Contains("double") || 
-                    codeLines[j].Contains("Int3"))
+                    codeLines[j].Contains("VInt3"))
                 {
                     codeLines[j] = "//【整型转换】" + codeLines[j] + "\n" + codeLines[j];
                 }

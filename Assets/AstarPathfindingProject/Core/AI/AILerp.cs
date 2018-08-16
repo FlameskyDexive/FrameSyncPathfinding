@@ -260,7 +260,7 @@ namespace Pathfinding {
 			// path has been calculated. This is also good because if a long path is requested, it may take
 			// a few frames for it to be calculated so we could have moved some distance during that time
             //Good Game
-			seeker.startEndModifier.adjustStartPoint = () => (Int3)simulatedPosition;
+			seeker.startEndModifier.adjustStartPoint = () => (VInt3)simulatedPosition;
 		}
 
 		/** Starts searching for paths.
@@ -358,7 +358,7 @@ namespace Pathfinding {
             // The OnPathComplete method will later be called with the result
 		    //Good Game
             //seeker.StartPath(currentPosition, destination);
-            seeker.StartPath((Int3)currentPosition, (Int3)destination);
+            seeker.StartPath((VInt3)currentPosition, (VInt3)destination);
 		}
 
 		/** The end of the path has been reached.
@@ -408,7 +408,7 @@ namespace Pathfinding {
 			{
 			    //Good Game
                 //path.vectorPath.Insert(0, GetFeetPosition());
-                path.vectorPath.Insert(0, (Int3)GetFeetPosition());
+                path.vectorPath.Insert(0, (VInt3)GetFeetPosition());
 			}
 
 			// Reset some variables
@@ -477,12 +477,12 @@ namespace Pathfinding {
 			var hadValidPath = interpolator.valid;
 		    //Good Game
             //var prevTangent = hadValidPath ? interpolator.tangent : Vector3.zero;
-            var prevTangent = hadValidPath ? interpolator.tangent : Int3.zero;
+            var prevTangent = hadValidPath ? interpolator.tangent : VInt3.zero;
 		    
 			interpolator.SetPath(path.vectorPath);
 		    //Good Game
             //interpolator.MoveToClosestPoint(GetFeetPosition());
-            interpolator.MoveToClosestPoint((Int3)GetFeetPosition());
+            interpolator.MoveToClosestPoint((VInt3)GetFeetPosition());
 
 			if (interpolatePathSwitches && switchPathInterpolationSpeed > 0.01f && hadValidPath)
 			{

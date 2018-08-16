@@ -46,7 +46,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public System.Func<Vector3> adjustStartPoint;
-        public System.Func<Int3> adjustStartPoint;
+        public System.Func<VInt3> adjustStartPoint;
 
 		/** Sets where the start and end points of a path should be placed.
 		 *
@@ -126,8 +126,8 @@ namespace Pathfinding {
             //Good Game
 			/*Vector3 pStart = Snap(p, exactStartPoint, true, out forceAddStartPoint);
 			Vector3 pEnd = Snap(p, exactEndPoint, false, out forceAddEndPoint);*/
-			Int3 pStart = Snap(p, exactStartPoint, true, out forceAddStartPoint);
-			Int3 pEnd = Snap(p, exactEndPoint, false, out forceAddEndPoint);
+			VInt3 pStart = Snap(p, exactStartPoint, true, out forceAddStartPoint);
+			VInt3 pEnd = Snap(p, exactEndPoint, false, out forceAddEndPoint);
 
 			// Add or replace the start point
 			// Disable adding of points if the mode is SnapToNode since then
@@ -148,7 +148,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //Vector3 Snap (ABPath path, Exactness mode, bool start, out bool forceAddPoint) {
-        Int3 Snap (ABPath path, Exactness mode, bool start, out bool forceAddPoint) {
+        VInt3 Snap (ABPath path, Exactness mode, bool start, out bool forceAddPoint) {
 			var index = start ? 0 : path.path.Count - 1;
 			var node = path.path[index];
             //Good Game
@@ -167,7 +167,7 @@ namespace Pathfinding {
 			case Exactness.NodeConnection:
 			    //Good Game
                     //Vector3 relevantPoint;
-                    Int3 relevantPoint;
+                    VInt3 relevantPoint;
 				if (start) {
 					relevantPoint = adjustStartPoint != null ? adjustStartPoint() : path.originalStartPoint;
 				} else {
@@ -255,9 +255,9 @@ namespace Pathfinding {
 			return point;
 		}*/
         
-	    public Int3 GetClampedPoint(Int3 from, Int3 to, GraphNode hint)
+	    public VInt3 GetClampedPoint(VInt3 from, VInt3 to, GraphNode hint)
 	    {
-	        Int3 end = to;
+	        VInt3 end = to;
 	        if (this.useGraphRaycasting && (hint != null))
 	        {
 	            NavGraph graph = AstarData.GetGraph(hint);

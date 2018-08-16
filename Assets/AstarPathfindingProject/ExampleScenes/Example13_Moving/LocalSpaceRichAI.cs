@@ -49,7 +49,7 @@ namespace Pathfinding.Examples {
 
 	    //Good Game
         //protected override void CalculatePathRequestEndpoints (out Vector3 start, out Vector3 end) {
-        protected override void CalculatePathRequestEndpoints (out Int3 start, out Int3 end) {
+        protected override void CalculatePathRequestEndpoints (out VInt3 start, out VInt3 end) {
 			RefreshTransform();
 			base.CalculatePathRequestEndpoints(out start, out end);
 			start = graph.transformation.InverseTransform(start);

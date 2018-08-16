@@ -55,7 +55,7 @@ namespace Pathfinding {
 		GraphNode connectedNode1, connectedNode2;
 	    //Good Game
         //Vector3 clamped1, clamped2;
-        Int3 clamped1, clamped2;
+        VInt3 clamped1, clamped2;
 		bool postScanCalled = false;
 
 		[System.Obsolete("Use startNode instead (lowercase s)")]
@@ -94,8 +94,8 @@ namespace Pathfinding {
 			}
 
 			// Create new nodes on the point graph
-			if (startNode == null) startNode = AstarPath.active.data.pointGraph.AddNode((Int3)StartTransform.position);
-			if (endNode == null) endNode = AstarPath.active.data.pointGraph.AddNode((Int3)EndTransform.position);
+			if (startNode == null) startNode = AstarPath.active.data.pointGraph.AddNode((VInt3)StartTransform.position);
+			if (endNode == null) endNode = AstarPath.active.data.pointGraph.AddNode((VInt3)EndTransform.position);
 
 			connectedNode1 = null;
 			connectedNode2 = null;
@@ -189,13 +189,13 @@ namespace Pathfinding {
 			//Search all graphs but the one which start and end nodes are on
 			nn.graphMask = ~(1 << graph);
 
-			startNode.SetPosition((Int3)StartTransform.position);
-			endNode.SetPosition((Int3)EndTransform.position);
+			startNode.SetPosition((VInt3)StartTransform.position);
+			endNode.SetPosition((VInt3)EndTransform.position);
 
 			RemoveConnections(startNode);
 			RemoveConnections(endNode);
 
-			uint cost = (uint)Mathf.RoundToInt(((Int3)(StartTransform.position-EndTransform.position)).costMagnitude*costFactor);
+			uint cost = (uint)Mathf.RoundToInt(((VInt3)(StartTransform.position-EndTransform.position)).costMagnitude*costFactor);
 			startNode.AddConnection(endNode, cost);
 			endNode.AddConnection(startNode, cost);
 
@@ -203,7 +203,7 @@ namespace Pathfinding {
 			{
 			    //Good Game
                 //var info = AstarPath.active.GetNearest(StartTransform.position, nn);
-                var info = AstarPath.active.GetNearest((Int3)StartTransform.position, nn);
+                var info = AstarPath.active.GetNearest((VInt3)StartTransform.position, nn);
 				connectedNode1 = info.node;
 				clamped1 = info.position;
 			}
@@ -212,7 +212,7 @@ namespace Pathfinding {
 			{
 			    //Good Game
                 //var info = AstarPath.active.GetNearest(EndTransform.position, nn);
-                var info = AstarPath.active.GetNearest((Int3)EndTransform.position, nn);
+                var info = AstarPath.active.GetNearest((VInt3)EndTransform.position, nn);
 				connectedNode2 = info.node;
 				clamped2 = info.position;
 			}
@@ -221,16 +221,16 @@ namespace Pathfinding {
 
             //Add connections between nodes, or replace old connections if existing
 		    //Good Game
-            /*connectedNode1.AddConnection(startNode, (uint)Mathf.RoundToInt(((Int3)(clamped1 - StartTransform.position)).costMagnitude*costFactor));
-			if (!oneWay) connectedNode2.AddConnection(endNode, (uint)Mathf.RoundToInt(((Int3)(clamped2 - EndTransform.position)).costMagnitude*costFactor));
+            /*connectedNode1.AddConnection(startNode, (uint)Mathf.RoundToInt(((VInt3)(clamped1 - StartTransform.position)).costMagnitude*costFactor));
+			if (!oneWay) connectedNode2.AddConnection(endNode, (uint)Mathf.RoundToInt(((VInt3)(clamped2 - EndTransform.position)).costMagnitude*costFactor));
 
-			if (!oneWay) startNode.AddConnection(connectedNode1, (uint)Mathf.RoundToInt(((Int3)(clamped1 - StartTransform.position)).costMagnitude*costFactor));
-			endNode.AddConnection(connectedNode2, (uint)Mathf.RoundToInt(((Int3)(clamped2 - EndTransform.position)).costMagnitude*costFactor));*/
-            connectedNode1.AddConnection(startNode, (uint)Mathf.RoundToInt(((clamped1 - (Int3)StartTransform.position)).costMagnitude*costFactor));
-			if (!oneWay) connectedNode2.AddConnection(endNode, (uint)Mathf.RoundToInt(((clamped2 - (Int3)EndTransform.position)).costMagnitude*costFactor));
+			if (!oneWay) startNode.AddConnection(connectedNode1, (uint)Mathf.RoundToInt(((VInt3)(clamped1 - StartTransform.position)).costMagnitude*costFactor));
+			endNode.AddConnection(connectedNode2, (uint)Mathf.RoundToInt(((VInt3)(clamped2 - EndTransform.position)).costMagnitude*costFactor));*/
+            connectedNode1.AddConnection(startNode, (uint)Mathf.RoundToInt(((clamped1 - (VInt3)StartTransform.position)).costMagnitude*costFactor));
+			if (!oneWay) connectedNode2.AddConnection(endNode, (uint)Mathf.RoundToInt(((clamped2 - (VInt3)EndTransform.position)).costMagnitude*costFactor));
 
-			if (!oneWay) startNode.AddConnection(connectedNode1, (uint)Mathf.RoundToInt(((clamped1 - (Int3)StartTransform.position)).costMagnitude*costFactor));
-			endNode.AddConnection(connectedNode2, (uint)Mathf.RoundToInt(((clamped2 - (Int3)EndTransform.position)).costMagnitude*costFactor));
+			if (!oneWay) startNode.AddConnection(connectedNode1, (uint)Mathf.RoundToInt(((clamped1 - (VInt3)StartTransform.position)).costMagnitude*costFactor));
+			endNode.AddConnection(connectedNode2, (uint)Mathf.RoundToInt(((clamped2 - (VInt3)EndTransform.position)).costMagnitude*costFactor));
 		}
 
 		private readonly static Color GizmosColor = new Color(206.0f/255.0f, 136.0f/255.0f, 48.0f/255.0f, 0.5f);

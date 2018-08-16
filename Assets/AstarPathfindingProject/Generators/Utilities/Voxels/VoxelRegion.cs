@@ -508,7 +508,7 @@ namespace Pathfinding.Voxels {
 			return dst;
 		}
 
-		void FloodOnes (List<Int3> st1, ushort[] regs, uint level, ushort reg) {
+		void FloodOnes (List<VInt3> st1, ushort[] regs, uint level, ushort reg) {
 			for (int j = 0; j < st1.Count; j++) {
 				int x = st1[j].x;
 				int i = st1[j].y;
@@ -531,7 +531,7 @@ namespace Pathfinding.Voxels {
 
 					if (regs[ni] == 1) {
 						regs[ni] = reg;
-						st1.Add(new Int3(nx, ni, nz));
+						st1.Add(new VInt3(nx, ni, nz));
 					}
 				}
 			}
@@ -577,7 +577,7 @@ namespace Pathfinding.Voxels {
 #if ASTAR_RECAST_BFS
 			uint level = 0;
 
-			List<Int3> basins = Pathfinding.Util.ListPool<Int3>.Claim(100);
+			List<VInt3> basins = Pathfinding.Util.ListPool<VInt3>.Claim(100);
 
 			// Find "basins"
 			for (int z = 0, pz = 0; z < wd; z += w, pz++) {
@@ -607,7 +607,7 @@ namespace Pathfinding.Voxels {
 							}
 						}
 						if (!anyBelow) {
-							basins.Add(new Int3(x, i, z));
+							basins.Add(new VInt3(x, i, z));
 							level = System.Math.Max(level, voxelArea.dist[i]);
 						}
 					}
@@ -618,8 +618,8 @@ namespace Pathfinding.Voxels {
 			level = (uint)((level+1) & ~1);
 
 
-			List<Int3> st1 = Pathfinding.Util.ListPool<Int3>.Claim(300);
-			List<Int3> st2 = Pathfinding.Util.ListPool<Int3>.Claim(300);
+			List<VInt3> st1 = Pathfinding.Util.ListPool<VInt3>.Claim(300);
+			List<VInt3> st2 = Pathfinding.Util.ListPool<VInt3>.Claim(300);
 
 			// Some debug code
 			//bool visited = new bool[voxelArea.compactSpanCount];
@@ -683,7 +683,7 @@ namespace Pathfinding.Voxels {
 								srcReg[ni] = r;
 								//Debug.DrawRay (ConvertPosition(x,z,i),Vector3.up,AstarMath.IntToColor((int)level,0.6f));
 
-								st1.Add(new Int3(nx, ni, nz));
+								st1.Add(new VInt3(nx, ni, nz));
 							}
 						}
 					}
@@ -715,7 +715,7 @@ namespace Pathfinding.Voxels {
 
 
 
-				List<Int3> tmpList = st1;
+				List<VInt3> tmpList = st1;
 				st1 = st2;
 				st2 = tmpList;
 				st2.Clear();
@@ -735,9 +735,9 @@ namespace Pathfinding.Voxels {
 			}
 
 
-			Pathfinding.Util.ListPool<Int3>.Release(st1);
-			Pathfinding.Util.ListPool<Int3>.Release(st2);
-			Pathfinding.Util.ListPool<Int3>.Release(basins);
+			Pathfinding.Util.ListPool<VInt3>.Release(st1);
+			Pathfinding.Util.ListPool<VInt3>.Release(st2);
+			Pathfinding.Util.ListPool<VInt3>.Release(basins);
 			// Filter out small regions.
 			voxelArea.maxRegions = regionId;
 

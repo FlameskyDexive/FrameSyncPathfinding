@@ -27,7 +27,7 @@ namespace Pathfinding {
 		{
 		    //Good Game
             //BlockAt(transform.position);
-            BlockAt((Int3)transform.position);
+            BlockAt((VInt3)transform.position);
 		}
 
         /** Block node closest to the specified position.
@@ -36,7 +36,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public void BlockAt (Vector3 position) {
-        public void BlockAt (Int3 position) {
+        public void BlockAt (VInt3 position) {
 			Unblock();
 			var node = AstarPath.active.GetNearest(position, NNConstraint.None).node;
 			if (node != null) {

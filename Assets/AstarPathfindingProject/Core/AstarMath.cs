@@ -137,11 +137,11 @@ namespace Pathfinding {
 		 * Returned value is in the range [0,1] if the point lies on the segment otherwise it just lies on the line.
 		 * The closest point can be calculated using (end-start)*factor + start
 		 */
-		public static float ClosestPointOnLineFactor (Int3 lineStart, Int3 lineEnd, Int3 point) {
+		public static float ClosestPointOnLineFactor (VInt3 lineStart, VInt3 lineEnd, VInt3 point) {
 			var lineDirection = lineEnd - lineStart;
 			float magn = lineDirection.sqrMagnitude;
 
-			float closestPoint = Int3.Dot((point - lineStart), lineDirection);
+			float closestPoint = VInt3.Dot((point - lineStart), lineDirection);
 
 			if (magn != 0) closestPoint /= magn;
 
@@ -152,11 +152,11 @@ namespace Pathfinding {
 		 * Returned value is in the range [0,1] if the point lies on the segment otherwise it just lies on the line.
 		 * The closest point can be calculated using (end-start)*factor + start;
 		 */
-		public static float ClosestPointOnLineFactor (Int2 lineStart, Int2 lineEnd, Int2 point) {
+		public static float ClosestPointOnLineFactor (VInt2 lineStart, VInt2 lineEnd, VInt2 point) {
 			var lineDirection = lineEnd - lineStart;
 			double magn = lineDirection.sqrMagnitudeLong;
 
-			double closestPoint = Int2.DotLong(point - lineStart, lineDirection);
+			double closestPoint = VInt2.DotLong(point - lineStart, lineDirection);
 
 			if (magn != 0) closestPoint /= magn;
 
@@ -229,7 +229,7 @@ namespace Pathfinding {
 		 * This function is not entirely exact, but it is about twice as fast as DistancePointSegment2.
 		 * \todo Is this actually approximate? It looks exact.
 		 */
-		public static float SqrDistancePointSegmentApproximate (Int3 a, Int3 b, Int3 p) {
+		public static float SqrDistancePointSegmentApproximate (VInt3 a, VInt3 b, VInt3 p) {
 			float pqx = (float)(b.x - a.x);
 			float pqz = (float)(b.z - a.z);
 			float dx = (float)(p.x - a.x);
@@ -339,7 +339,7 @@ namespace Pathfinding {
 		/** Signed area of a triangle in the XZ plane multiplied by 2.
 		 * This will be negative for clockwise triangles and positive for counter-clockwise ones
 		 */
-		public static long SignedTriangleAreaTimes2XZ (Int3 a, Int3 b, Int3 c) {
+		public static long SignedTriangleAreaTimes2XZ (VInt3 a, VInt3 b, VInt3 c) {
 			return (long)(b.x - a.x) * (long)(c.z - a.z) - (long)(c.x - a.x) * (long)(b.z - a.z);
 		}
 
@@ -360,14 +360,14 @@ namespace Pathfinding {
 		/** Returns if \a p lies on the right side of the line \a a - \a b.
 		 * Uses XZ space. Does not return true if the points are colinear.
 		 */
-		public static bool RightXZ (Int3 a, Int3 b, Int3 p) {
+		public static bool RightXZ (VInt3 a, VInt3 b, VInt3 p) {
 			return (long)(b.x - a.x) * (long)(p.z - a.z) - (long)(p.x - a.x) * (long)(b.z - a.z) < 0;
 		}
 
 		/** Returns which side of the line \a a - \a b that \a p lies on.
 		 * Uses XZ space.
 		 */
-		public static Side SideXZ (Int3 a, Int3 b, Int3 p) {
+		public static Side SideXZ (VInt3 a, VInt3 b, VInt3 p) {
 			var s = (long)(b.x - a.x) * (long)(p.z - a.z) - (long)(p.x - a.x) * (long)(b.z - a.z);
 
 			return s > 0 ? Side.Left : (s < 0 ? Side.Right : Side.Colinear);
@@ -383,7 +383,7 @@ namespace Pathfinding {
 		/** Returns if \a p lies on the right side of the line \a a - \a b.
 		 * Also returns true if the points are colinear.
 		 */
-		public static bool RightOrColinear (Int2 a, Int2 b, Int2 p) {
+		public static bool RightOrColinear (VInt2 a, VInt2 b, VInt2 p) {
 			return (long)(b.x - a.x) * (long)(p.y - a.y) - (long)(p.x - a.x) * (long)(b.y - a.y) <= 0;
 		}
 
@@ -397,7 +397,7 @@ namespace Pathfinding {
 		/** Returns if \a p lies on the left side of the line \a a - \a b.
 		 * Uses XZ space. Also returns true if the points are colinear.
 		 */
-		public static bool RightOrColinearXZ (Int3 a, Int3 b, Int3 p) {
+		public static bool RightOrColinearXZ (VInt3 a, VInt3 b, VInt3 p) {
 			return (long)(b.x - a.x) * (long)(p.z - a.z) - (long)(p.x - a.x) * (long)(b.z - a.z) <= 0;
 		}
 
@@ -414,17 +414,17 @@ namespace Pathfinding {
 		}
 
 		/** Returns if the points a in a clockwise order */
-		public static bool IsClockwiseXZ (Int3 a, Int3 b, Int3 c) {
+		public static bool IsClockwiseXZ (VInt3 a, VInt3 b, VInt3 c) {
 			return RightXZ(a, b, c);
 		}
 
 		/** Returns true if the points a in a clockwise order or if they are colinear */
-		public static bool IsClockwiseOrColinearXZ (Int3 a, Int3 b, Int3 c) {
+		public static bool IsClockwiseOrColinearXZ (VInt3 a, VInt3 b, VInt3 c) {
 			return RightOrColinearXZ(a, b, c);
 		}
 
 		/** Returns true if the points a in a clockwise order or if they are colinear */
-		public static bool IsClockwiseOrColinear (Int2 a, Int2 b, Int2 c) {
+		public static bool IsClockwiseOrColinear (VInt2 a, VInt2 b, VInt2 c) {
 			return RightOrColinear(a, b, c);
 		}
 
@@ -452,7 +452,7 @@ namespace Pathfinding {
 		}
 
 		/** Returns if the points are colinear (lie on a straight line) */
-		public static bool IsColinearXZ (Int3 a, Int3 b, Int3 c) {
+		public static bool IsColinearXZ (VInt3 a, VInt3 b, VInt3 c) {
 			return (long)(b.x - a.x) * (long)(c.z - a.z) - (long)(c.x - a.x) * (long)(b.z - a.z) == 0;
 		}
 
@@ -465,7 +465,7 @@ namespace Pathfinding {
 		}
 
 		/** Returns if the points are colinear (lie on a straight line) */
-		public static bool IsColinearAlmostXZ (Int3 a, Int3 b, Int3 c) {
+		public static bool IsColinearAlmostXZ (VInt3 a, VInt3 b, VInt3 c) {
 			long v = (long)(b.x - a.x) * (long)(c.z - a.z) - (long)(c.x - a.x) * (long)(b.z - a.z);
 
 			return v > -1 && v < 1;
@@ -474,7 +474,7 @@ namespace Pathfinding {
 		/** Returns if the line segment \a start2 - \a end2 intersects the line segment \a start1 - \a end1.
 		 * If only the endpoints coincide, the result is undefined (may be true or false).
 		 */
-		public static bool SegmentsIntersect (Int2 start1, Int2 end1, Int2 start2, Int2 end2) {
+		public static bool SegmentsIntersect (VInt2 start1, VInt2 end1, VInt2 start2, VInt2 end2) {
 			return RightOrColinear(start1, end1, start2) != RightOrColinear(start1, end1, end2) && RightOrColinear(start2, end2, start1) != RightOrColinear(start2, end2, end1);
 		}
 
@@ -483,7 +483,7 @@ namespace Pathfinding {
 		 *
 		 * \note XZ space
 		 */
-		public static bool SegmentsIntersectXZ (Int3 start1, Int3 end1, Int3 start2, Int3 end2) {
+		public static bool SegmentsIntersectXZ (VInt3 start1, VInt3 end1, VInt3 start2, VInt3 end2) {
 			return RightOrColinearXZ(start1, end1, start2) != RightOrColinearXZ(start1, end1, end2) && RightOrColinearXZ(start2, end2, start1) != RightOrColinearXZ(start2, end2, end1);
 		}
 
@@ -559,9 +559,9 @@ namespace Pathfinding {
 		 * Only the XZ coordinates are used.
 		 * \todo Double check that this actually works
 		 */
-		public static bool RaySegmentIntersectXZ (Int3 start1, Int3 end1, Int3 start2, Int3 end2) {
-			Int3 dir1 = end1-start1;
-			Int3 dir2 = end2-start2;
+		public static bool RaySegmentIntersectXZ (VInt3 start1, VInt3 end1, VInt3 start2, VInt3 end2) {
+			VInt3 dir1 = end1-start1;
+			VInt3 dir2 = end2-start2;
 
 			long den = dir2.z*dir1.x - dir2.x * dir1.z;
 
@@ -597,9 +597,9 @@ namespace Pathfinding {
 		 * false is returned if the lines are parallel and true if they are not.
 		 * Only the XZ coordinates are used.
 		 */
-		public static bool LineIntersectionFactorXZ (Int3 start1, Int3 end1, Int3 start2, Int3 end2, out float factor1, out float factor2) {
-			Int3 dir1 = end1-start1;
-			Int3 dir2 = end2-start2;
+		public static bool LineIntersectionFactorXZ (VInt3 start1, VInt3 end1, VInt3 start2, VInt3 end2, out float factor1, out float factor2) {
+			VInt3 dir1 = end1-start1;
+			VInt3 dir2 = end2-start2;
 
 			long den = dir2.z*dir1.x - dir2.x * dir1.z;
 
@@ -658,9 +658,9 @@ namespace Pathfinding {
 		 * If the point lies on the wrong side of the ray start, Nan will be returned.
 		 *
 		 * NaN is returned if the lines are parallel. */
-		public static float LineRayIntersectionFactorXZ (Int3 start1, Int3 end1, Int3 start2, Int3 end2) {
-			Int3 dir1 = end1-start1;
-			Int3 dir2 = end2-start2;
+		public static float LineRayIntersectionFactorXZ (VInt3 start1, VInt3 end1, VInt3 start2, VInt3 end2) {
+			VInt3 dir1 = end1-start1;
+			VInt3 dir2 = end2-start2;
 
 			int den = dir2.z*dir1.x - dir2.x * dir1.z;
 
@@ -967,7 +967,7 @@ namespace Pathfinding {
 		 * The closest point can be got by (end-start)*factor + start;
 		 */
 		[System.Obsolete("Use VectorMath.ClosestPointOnLineFactor instead")]
-		public static float NearestPointFactor (Int3 lineStart, Int3 lineEnd, Int3 point) {
+		public static float NearestPointFactor (VInt3 lineStart, VInt3 lineEnd, VInt3 point) {
 			return VectorMath.ClosestPointOnLineFactor(lineStart, lineEnd, point);
 		}
 
@@ -976,7 +976,7 @@ namespace Pathfinding {
 		 * The closest point can be got by (end-start)*factor + start;
 		 */
 		[System.Obsolete("Use VectorMath.ClosestPointOnLineFactor instead")]
-		public static float NearestPointFactor (Int2 lineStart, Int2 lineEnd, Int2 point) {
+		public static float NearestPointFactor (VInt2 lineStart, VInt2 lineEnd, VInt2 point) {
 			return VectorMath.ClosestPointOnLineFactor(lineStart, lineEnd, point);
 		}
 
@@ -1010,7 +1010,7 @@ namespace Pathfinding {
 		 * This function is not entirely exact, but it is about twice as fast as DistancePointSegment2.
 		 */
 		[System.Obsolete("Use VectorMath.SqrDistancePointSegmentApproximate instead")]
-		public static float DistancePointSegment (Int3 a, Int3 b, Int3 p) {
+		public static float DistancePointSegment (VInt3 a, VInt3 b, VInt3 p) {
 			return VectorMath.SqrDistancePointSegmentApproximate(a, b, p);
 		}
 
@@ -1132,8 +1132,8 @@ namespace Pathfinding {
 			throw new System.NotImplementedException("Obsolete");
 		}
 
-		/** \deprecated Use Int3.GetHashCode instead */
-		[System.Obsolete("Use Int3.GetHashCode instead", true)]
+		/** \deprecated Use VInt3.GetHashCode instead */
+		[System.Obsolete("Use VInt3.GetHashCode instead", true)]
 		public static int ComputeVertexHash (int x, int y, int z) {
 			throw new System.NotImplementedException("Obsolete");
 		}
@@ -1292,7 +1292,7 @@ namespace Pathfinding {
 		/** Signed area of a triangle in the XZ plane multiplied by 2.
 		 * This will be negative for clockwise triangles and positive for counter-clockwise ones */
 		[System.Obsolete("Use VectorMath.SignedTriangleAreaTimes2XZ instead")]
-		public static long TriangleArea2 (Int3 a, Int3 b, Int3 c) {
+		public static long TriangleArea2 (VInt3 a, VInt3 b, VInt3 c) {
 			return VectorMath.SignedTriangleAreaTimes2XZ(a, b, c);
 		}
 
@@ -1306,10 +1306,10 @@ namespace Pathfinding {
 
 		/** Signed area of a triangle in the XZ plane multiplied by 2.
 		 * This will be negative for clockwise triangles and positive for counter-clockwise ones.
-		 * This method can handle larger numbers than TriangleArea2(Int3)
+		 * This method can handle larger numbers than TriangleArea2(VInt3)
 		 */
 		[System.Obsolete("Use TriangleArea2 instead to avoid confusion regarding the factor 2")]
-		public static long TriangleArea (Int3 a, Int3 b, Int3 c) {
+		public static long TriangleArea (VInt3 a, VInt3 b, VInt3 c) {
 			return TriangleArea2(a, b, c);
 		}
 
@@ -1337,21 +1337,21 @@ namespace Pathfinding {
 
 		/** Returns if the triangle \a ABC contains the point \a p */
 		[System.Obsolete("Use ContainsPointXZ instead")]
-		public static bool ContainsPoint (Int3 a, Int3 b, Int3 c, Int3 p) {
+		public static bool ContainsPoint (VInt3 a, VInt3 b, VInt3 c, VInt3 p) {
 			return ContainsPointXZ(a, b, c, p);
 		}
 
 		/** Returns if the triangle \a ABC contains the point \a p.
 		 * The triangle vertices are assumed to be laid out in clockwise order.
 		 */
-		public static bool ContainsPointXZ (Int3 a, Int3 b, Int3 c, Int3 p) {
+		public static bool ContainsPointXZ (VInt3 a, VInt3 b, VInt3 c, VInt3 p) {
 			return VectorMath.IsClockwiseOrColinearXZ(a, b, p) && VectorMath.IsClockwiseOrColinearXZ(b, c, p) && VectorMath.IsClockwiseOrColinearXZ(c, a, p);
 		}
 
 		/** Returns if the triangle \a ABC contains the point \a p.
 		 * The triangle vertices are assumed to be laid out in clockwise order.
 		 */
-		public static bool ContainsPoint (Int2 a, Int2 b, Int2 c, Int2 p) {
+		public static bool ContainsPoint (VInt2 a, VInt2 b, VInt2 c, VInt2 p) {
 			return VectorMath.IsClockwiseOrColinear(a, b, p) && VectorMath.IsClockwiseOrColinear(b, c, p) && VectorMath.IsClockwiseOrColinear(c, a, p);
 		}
 
@@ -1400,7 +1400,7 @@ namespace Pathfinding {
 		 *
 		 * \see https://en.wikipedia.org/wiki/Barycentric_coordinate_system
 		 */
-		public static int SampleYCoordinateInTriangle (Int3 p1, Int3 p2, Int3 p3, Int3 p) {
+		public static int SampleYCoordinateInTriangle (VInt3 p1, VInt3 p2, VInt3 p3, VInt3 p) {
 			double det = ((double)(p2.z - p3.z)) * (p1.x - p3.x) + ((double)(p3.x - p2.x)) * (p1.z - p3.z);
 
 			double lambda1 = ((((double)(p2.z - p3.z)) * (p.x - p3.x) + ((double)(p3.x - p2.x)) * (p.z - p3.z)) / det);
@@ -1438,7 +1438,7 @@ namespace Pathfinding {
 		 * \deprecated Use VectorMath.RightOrColinearXZ instead. Note that it now uses a left handed coordinate system (same as Unity)
 		 */
 		[System.Obsolete("Use VectorMath.RightOrColinearXZ instead. Note that it now uses a left handed coordinate system (same as Unity)")]
-		public static bool Left (Int3 a, Int3 b, Int3 p) {
+		public static bool Left (VInt3 a, VInt3 b, VInt3 p) {
 			return VectorMath.RightOrColinearXZ(a, b, p);
 		}
 
@@ -1446,7 +1446,7 @@ namespace Pathfinding {
 		 * \deprecated Use VectorMath.RightXZ instead. Note that it now uses a left handed coordinate system (same as Unity)
 		 */
 		[System.Obsolete("Use VectorMath.RightXZ instead. Note that it now uses a left handed coordinate system (same as Unity)")]
-		public static bool LeftNotColinear (Int3 a, Int3 b, Int3 p) {
+		public static bool LeftNotColinear (VInt3 a, VInt3 b, VInt3 p) {
 			return VectorMath.RightXZ(a, b, p);
 		}
 
@@ -1454,7 +1454,7 @@ namespace Pathfinding {
 		 * \deprecated Use VectorMath.RightOrColinear instead. Note that it now uses a left handed coordinate system (same as Unity)
 		 */
 		[System.Obsolete("Use VectorMath.RightOrColinear instead. Note that it now uses a left handed coordinate system (same as Unity)")]
-		public static bool Left (Int2 a, Int2 b, Int2 p) {
+		public static bool Left (VInt2 a, VInt2 b, VInt2 p) {
 			return VectorMath.RightOrColinear(a, b, p);
 		}
 
@@ -1480,7 +1480,7 @@ namespace Pathfinding {
 		 * \deprecated Use VectorMath.IsClockwiseXZ instead
 		 */
 		[System.Obsolete("Use VectorMath.IsClockwiseXZ instead")]
-		public static bool IsClockwise (Int3 a, Int3 b, Int3 c) {
+		public static bool IsClockwise (VInt3 a, VInt3 b, VInt3 c) {
 			return VectorMath.IsClockwiseXZ(a, b, c);
 		}
 
@@ -1488,7 +1488,7 @@ namespace Pathfinding {
 		 * \deprecated Use VectorMath.IsClockwiseOrColinearXZ instead
 		 */
 		[System.Obsolete("Use VectorMath.IsClockwiseOrColinearXZ instead")]
-		public static bool IsClockwiseMargin (Int3 a, Int3 b, Int3 c) {
+		public static bool IsClockwiseMargin (VInt3 a, VInt3 b, VInt3 c) {
 			return VectorMath.IsClockwiseOrColinearXZ(a, b, c);
 		}
 
@@ -1496,7 +1496,7 @@ namespace Pathfinding {
 		 * \deprecated Use VectorMath.IsClockwiseOrColinear instead
 		 */
 		[System.Obsolete("Use VectorMath.IsClockwiseOrColinear instead")]
-		public static bool IsClockwiseMargin (Int2 a, Int2 b, Int2 c) {
+		public static bool IsClockwiseMargin (VInt2 a, VInt2 b, VInt2 c) {
 			return VectorMath.IsClockwiseOrColinear(a, b, c);
 		}
 
@@ -1504,7 +1504,7 @@ namespace Pathfinding {
 		 * \deprecated Use VectorMath.IsColinearXZ instead
 		 */
 		[System.Obsolete("Use VectorMath.IsColinearXZ instead")]
-		public static bool IsColinear (Int3 a, Int3 b, Int3 c) {
+		public static bool IsColinear (VInt3 a, VInt3 b, VInt3 c) {
 			return VectorMath.IsColinearXZ(a, b, c);
 		}
 
@@ -1512,7 +1512,7 @@ namespace Pathfinding {
 		 * \deprecated Use VectorMath.IsColinearAlmostXZ instead
 		 */
 		[System.Obsolete("Use VectorMath.IsColinearAlmostXZ instead")]
-		public static bool IsColinearAlmost (Int3 a, Int3 b, Int3 c) {
+		public static bool IsColinearAlmost (VInt3 a, VInt3 b, VInt3 c) {
 			return VectorMath.IsColinearAlmostXZ(a, b, c);
 		}
 
@@ -1535,7 +1535,7 @@ namespace Pathfinding {
 		 *
 		 * \deprecated Use VectorMath.SegmentsIntersect instead */
 		[System.Obsolete("Use VectorMath.SegmentsIntersect instead")]
-		public static bool Intersects (Int2 start1, Int2 end1, Int2 start2, Int2 end2) {
+		public static bool Intersects (VInt2 start1, VInt2 end1, VInt2 start2, VInt2 end2) {
 			return VectorMath.SegmentsIntersect(start1, end1, start2, end2);
 		}
 
@@ -1546,7 +1546,7 @@ namespace Pathfinding {
 		 *
 		 * \deprecated Use VectorMath.SegmentsIntersectXZ instead */
 		[System.Obsolete("Use VectorMath.SegmentsIntersectXZ instead")]
-		public static bool Intersects (Int3 start1, Int3 end1, Int3 start2, Int3 end2) {
+		public static bool Intersects (VInt3 start1, VInt3 end1, VInt3 start2, VInt3 end2) {
 			return VectorMath.SegmentsIntersectXZ(start1, end1, start2, end2);
 		}
 
@@ -1584,7 +1584,7 @@ namespace Pathfinding {
 		 *
 		 * \deprecated Use VectorMath.RaySegmentIntersectXZ instead */
 		[System.Obsolete("Use VectorMath.RaySegmentIntersectXZ instead")]
-		public static bool IntersectionFactorRaySegment (Int3 start1, Int3 end1, Int3 start2, Int3 end2) {
+		public static bool IntersectionFactorRaySegment (VInt3 start1, VInt3 end1, VInt3 start2, VInt3 end2) {
 			return VectorMath.RaySegmentIntersectXZ(start1, end1, start2, end2);
 		}
 
@@ -1597,7 +1597,7 @@ namespace Pathfinding {
 		 *
 		 * \deprecated Use VectorMath.LineIntersectionFactorXZ instead */
 		[System.Obsolete("Use VectorMath.LineIntersectionFactorXZ instead")]
-		public static bool IntersectionFactor (Int3 start1, Int3 end1, Int3 start2, Int3 end2, out float factor1, out float factor2) {
+		public static bool IntersectionFactor (VInt3 start1, VInt3 end1, VInt3 start2, VInt3 end2, out float factor1, out float factor2) {
 			return VectorMath.LineIntersectionFactorXZ(start1, end1, start2, end2, out factor1, out factor2);
 		}
 
@@ -1625,7 +1625,7 @@ namespace Pathfinding {
 		 * NaN is returned if the lines are parallel. *
 		 * \deprecated Use VectorMath.LineRayIntersectionFactorXZ instead */
 		[System.Obsolete("Use VectorMath.LineRayIntersectionFactorXZ instead")]
-		public static float IntersectionFactorRay (Int3 start1, Int3 end1, Int3 start2, Int3 end2) {
+		public static float IntersectionFactorRay (VInt3 start1, VInt3 end1, VInt3 start2, VInt3 end2) {
 			return VectorMath.LineRayIntersectionFactorXZ(start1, end1, start2, end2);
 		}
 
@@ -1968,7 +1968,7 @@ namespace Pathfinding {
 		}
 
 		/** Cached dictionary to avoid excessive allocations */
-		static readonly Dictionary<Int3, int> cached_Int3_int_dict = new Dictionary<Int3, int>();
+		static readonly Dictionary<VInt3, int> cached_Int3_int_dict = new Dictionary<VInt3, int>();
 
 		/** Compress the mesh by removing duplicate vertices.
 		 *
@@ -1980,8 +1980,8 @@ namespace Pathfinding {
 		 * Vertices that differ by only 1 along the y coordinate will also be merged together.
 		 * \warning This function is not threadsafe. It uses some cached structures to reduce allocations.
 		 */
-		public static void CompressMesh (List<Int3> vertices, List<int> triangles, out Int3[] outVertices, out int[] outTriangles) {
-			Dictionary<Int3, int> firstVerts = cached_Int3_int_dict;
+		public static void CompressMesh (List<VInt3> vertices, List<int> triangles, out VInt3[] outVertices, out int[] outTriangles) {
+			Dictionary<VInt3, int> firstVerts = cached_Int3_int_dict;
 			firstVerts.Clear();
 
 			// Use cached array to reduce memory allocations
@@ -1995,7 +1995,7 @@ namespace Pathfinding {
 				// that should end up in the same position to be offset 1 unit from each other
 				// TODO: Check along X and Z axes as well?
 				int ind;
-				if (!firstVerts.TryGetValue(vertices[i], out ind) && !firstVerts.TryGetValue(vertices[i] + new Int3(0, 1, 0), out ind) && !firstVerts.TryGetValue(vertices[i] + new Int3(0, -1, 0), out ind)) {
+				if (!firstVerts.TryGetValue(vertices[i], out ind) && !firstVerts.TryGetValue(vertices[i] + new VInt3(0, 1, 0), out ind) && !firstVerts.TryGetValue(vertices[i] + new VInt3(0, -1, 0), out ind)) {
 					firstVerts.Add(vertices[i], count);
 					compressedPointers[i] = count;
 					vertices[count] = vertices[i];
@@ -2014,7 +2014,7 @@ namespace Pathfinding {
 			}
 
 			// Create the vertex array or reuse the existing buffer
-			outVertices = new Int3[count];
+			outVertices = new VInt3[count];
 
 			for (int i = 0; i < count; i++)
 				outVertices[i] = vertices[i];
@@ -2087,10 +2087,10 @@ namespace Pathfinding {
 
 	    //Good Game
         /** Divides each segment in the list into \a subSegments segments and fills the result list with the new points */
-        public static void Subdivide (List<Int3> points, List<Int3> result, int subSegments) {
+        public static void Subdivide (List<VInt3> points, List<VInt3> result, int subSegments) {
 			for (int i = 0; i < points.Count-1; i++)
 				for (int j = 0; j < subSegments; j++)
-					result.Add(Int3.Lerp(points[i], points[i+1], j / (float)subSegments));
+					result.Add(VInt3.Lerp(points[i], points[i+1], j / (float)subSegments));
 
 			result.Add(points[points.Count-1]);
 		}

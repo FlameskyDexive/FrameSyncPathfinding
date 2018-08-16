@@ -1,31 +1,19 @@
-using System;
-using System.Runtime.InteropServices;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable, StructLayout(LayoutKind.Sequential)]
-public struct VInt2
+/** Two Dimensional Integer Coordinate Pair */
+public struct VInt2 : System.IEquatable<VInt2>
 {
-    public const int Precision = 0x3e8;//1000
-    public const float FloatPrecision = 1000f;
-    public const float PrecisionFactor = 0.001f;
-
     public int x;
     public int y;
-    public static readonly VInt2 zero;
-    public static readonly VInt2 forward;
-    private static readonly int[] Rotations;
+    public static VInt2 zero { get { return new VInt2(0, 0); } }
+    public static VInt2 forward { get { return new VInt2(0, 0x3e8); } }
 
     public VInt2(int x, int y)
     {
         this.x = x;
         this.y = y;
-    }
-
-    static VInt2()
-    {
-        zero = new VInt2(0, 0);
-        forward = new VInt2(0, 0x3e8);
-        Rotations = new int[] { 1, 0, 0, 1, 0, 1, -1, 0, -1, 0, 0, -1, 0, -1, 1, 0 };
     }
 
     public int sqrMagnitude
@@ -35,13 +23,12 @@ public struct VInt2
             return ((this.x * this.x) + (this.y * this.y));
         }
     }
+
     public long sqrMagnitudeLong
     {
         get
         {
-            long x = this.x;
-            long y = this.y;
-            return ((x * x) + (y * y));
+            return (long)x * (long)x + (long)y * (long)y;
         }
     }
     public int magnitude
@@ -53,19 +40,42 @@ public struct VInt2
             return IntMath.Sqrt((x * x) + (y * y));
         }
     }
+
+    public static VInt2 operator +(VInt2 a, VInt2 b)
+    {
+        return new VInt2(a.x + b.x, a.y + b.y);
+    }
+
+    public static VInt2 operator -(VInt2 a, VInt2 b)
+    {
+        return new VInt2(a.x - b.x, a.y - b.y);
+    }
+
+    public static bool operator ==(VInt2 a, VInt2 b)
+    {
+        return a.x == b.x && a.y == b.y;
+    }
+
+    public static bool operator !=(VInt2 a, VInt2 b)
+    {
+        return a.x != b.x || a.y != b.y;
+    }
+
     public static int Dot(VInt2 a, VInt2 b)
     {
-        return ((a.x * b.x) + (a.y * b.y));
+        return a.x * b.x + a.y * b.y;
     }
 
-    public static long DotLong(ref VInt2 a, ref VInt2 b)
-    {
-        return ((a.x * b.x) + (a.y * b.y));
-    }
-
+    /** Dot product of the two coordinates */
     public static long DotLong(VInt2 a, VInt2 b)
     {
-        return ((a.x * b.x) + (a.y * b.y));
+        return (long)a.x * (long)b.x + (long)a.y * (long)b.y;
+    }
+
+    /** Dot product of the two coordinates */
+    public static long DotLong(ref VInt2 a, ref VInt2 b)
+    {
+        return (long)a.x * (long)b.x + (long)a.y * (long)b.y;
     }
 
     public static long DetLong(ref VInt2 a, ref VInt2 b)
@@ -78,95 +88,84 @@ public struct VInt2
         return ((a.x * b.y) - (a.y * b.x));
     }
 
-    public override bool Equals(object o)
+    public static VInt2 operator *(VInt2 lhs, int rhs)
     {
-        if (o == null)
-        {
-            return false;
-        }
-        VInt2 num = (VInt2) o;
-        return ((this.x == num.x) && (this.y == num.y));
+        lhs.x *= rhs;
+        lhs.y *= rhs;
+        return lhs;
     }
+
+    public static VInt2 operator /(VInt2 lhs, int rhs)
+    {
+        lhs.x = lhs.x / rhs;
+        lhs.y = lhs.y / rhs;
+        return lhs;
+    }
+
+    public override bool Equals(System.Object o)
+    {
+        if (o == null) return false;
+        var rhs = (VInt2)o;
+
+        return x == rhs.x && y == rhs.y;
+    }
+
+    public static VInt2 operator -(VInt2 lhs)
+    {
+        lhs.x = -lhs.x;
+        lhs.y = -lhs.y;
+        return lhs;
+    }
+
+    #region IEquatable implementation
+
+    public bool Equals(VInt2 other)
+    {
+        return x == other.x && y == other.y;
+    }
+
+    #endregion
 
     public override int GetHashCode()
     {
-        return ((this.x * 0xc005) + (this.y * 0x1800d));
+        return x * 49157 + y * 98317;
     }
 
+    /** Matrices for rotation.
+     * Each group of 4 elements is a 2x2 matrix.
+     * The XZ position is multiplied by this.
+     * So
+     * \code
+     * //A rotation by 90 degrees clockwise, second matrix in the array
+     * (5,2) * ((0, 1), (-1, 0)) = (2,-5)
+     * \endcode
+     */
+    private static readonly int[] Rotations = {
+            1, 0,  //Identity matrix
+			0, 1,
+
+            0, 1,
+            -1, 0,
+
+            -1, 0,
+            0, -1,
+
+            0, -1,
+            1, 0
+        };
+
+    /** Returns a new VInt2 rotated 90*r degrees around the origin.
+     * \deprecated Deprecated becuase it is not used by any part of the A* Pathfinding Project
+     */
+    [System.Obsolete("Deprecated becuase it is not used by any part of the A* Pathfinding Project")]
     public static VInt2 Rotate(VInt2 v, int r)
     {
         r = r % 4;
-        return new VInt2((v.x * Rotations[r * 4]) + (v.y * Rotations[(r * 4) + 1]), (v.x * Rotations[(r * 4) + 2]) + (v.y * Rotations[(r * 4) + 3]));
-    }
-
-    public static VInt2 Min(VInt2 a, VInt2 b)
-    {
-        return new VInt2(Math.Min(a.x, b.x), Math.Min(a.y, b.y));
-    }
-
-    public static VInt2 Max(VInt2 a, VInt2 b)
-    {
-        return new VInt2(Math.Max(a.x, b.x), Math.Max(a.y, b.y));
-    }
-
-    public static VInt2 FromInt3XZ(VInt3 o)
-    {
-        return new VInt2(o.x, o.z);
-    }
-
-    public static VInt3 ToInt3XZ(VInt2 o)
-    {
-        return new VInt3(o.x, 0, o.y);
-    }
-
-    public override string ToString()
-    {
-        object[] objArray1 = new object[] { "(", this.x, ", ", this.y, ")" };
-        return string.Concat(objArray1);
-    }
-
-    public void Min(ref VInt2 r)
-    {
-        this.x = Mathf.Min(this.x, r.x);
-        this.y = Mathf.Min(this.y, r.y);
-    }
-
-    public void Max(ref VInt2 r)
-    {
-        this.x = Mathf.Max(this.x, r.x);
-        this.y = Mathf.Max(this.y, r.y);
-    }
-
-    public Vector2 vec2
-    {
-        get { return new Vector2(x * 0.001f, y * 0.001f); }
-    }
-
-    public void Normalize()
-    {
-        long num = this.x * 100;
-        long num2 = this.y * 100;
-        long a = (num * num) + (num2 * num2);
-        if (a != 0)
-        {
-            long b = IntMath.Sqrt(a);
-            this.x = (int) IntMath.Divide((long) (num * 0x3e8L), b);
-            this.y = (int) IntMath.Divide((long) (num2 * 0x3e8L), b);
-        }
-    }
-
-    public VInt2 normalized
-    {
-        get
-        {
-            VInt2 num = new VInt2(this.x, this.y);
-            num.Normalize();
-            return num;
-        }
+        return new VInt2(v.x * Rotations[r * 4 + 0] + v.y * Rotations[r * 4 + 1], v.x * Rotations[r * 4 + 2] + v.y * Rotations[r * 4 + 3]);
     }
 
     /// <summary>
-    /// ȡ�õ���ת��Ӧ�ǶȺ��ֵ
+    /// 取得点旋转对应角度后的值
     /// </summary>
     /// <param name="degree"></param>
     /// <returns></returns>
@@ -184,6 +183,26 @@ public struct VInt2
         return num;
     }
 
+    public static VInt2 Min(VInt2 a, VInt2 b)
+    {
+        return new VInt2(System.Math.Min(a.x, b.x), System.Math.Min(a.y, b.y));
+    }
+
+    public static VInt2 Max(VInt2 a, VInt2 b)
+    {
+        return new VInt2(System.Math.Max(a.x, b.x), System.Math.Max(a.y, b.y));
+    }
+
+    public static VInt2 FromInt3XZ(VInt3 o)
+    {
+        return new VInt2(o.x, o.z);
+    }
+
+    public static VInt3 ToInt3XZ(VInt2 o)
+    {
+        return new VInt3(o.x, 0, o.y);
+    }
+
     public static VInt2 ClampMagnitude(VInt2 v, int maxLength)
     {
         long sqrMagnitudeLong = v.sqrMagnitudeLong;
@@ -191,61 +210,43 @@ public struct VInt2
         if (sqrMagnitudeLong > (num2 * num2))
         {
             long b = IntMath.Sqrt(sqrMagnitudeLong);
-            int x = (int) IntMath.Divide((long) (v.x * maxLength), b);
-            return new VInt2(x, (int) IntMath.Divide((long) (v.x * maxLength), b));
+            int x = (int)IntMath.Divide((long)(v.x * maxLength), b);
+            return new VInt2(x, (int)IntMath.Divide((long)(v.x * maxLength), b));
         }
         return v;
     }
 
-    public static explicit operator Vector2(VInt2 ob)
+    public Vector2 vec2
     {
-        return new Vector2(ob.x * 0.001f, ob.y * 0.001f);
+        get { return new Vector2(x * 0.001f, y * 0.001f); }
     }
 
-    public static explicit operator VInt2(Vector2 ob)
+    public void Normalize()
     {
-        return new VInt2(MMGame_Math.RoundToInt((double) (ob.x * 1000f)), MMGame_Math.RoundToInt((double) (ob.y * 1000f)));
+        long num = this.x * 100;
+        long num2 = this.y * 100;
+        long a = (num * num) + (num2 * num2);
+        if (a != 0)
+        {
+            long b = IntMath.Sqrt(a);
+            this.x = (int)IntMath.Divide((long)(num * 0x3e8L), b);
+            this.y = (int)IntMath.Divide((long)(num2 * 0x3e8L), b);
+        }
     }
 
-    public static VInt2 operator +(VInt2 a, VInt2 b)
+    public VInt2 normalized
     {
-        return new VInt2(a.x + b.x, a.y + b.y);
+        get
+        {
+            VInt2 num = new VInt2(this.x, this.y);
+            num.Normalize();
+            return num;
+        }
     }
 
-    public static VInt2 operator -(VInt2 a, VInt2 b)
-    {
-        return new VInt2(a.x - b.x, a.y - b.y);
-    }
 
-    public static bool operator ==(VInt2 a, VInt2 b)
+    public override string ToString()
     {
-        return ((a.x == b.x) && (a.y == b.y));
-    }
-
-    public static bool operator !=(VInt2 a, VInt2 b)
-    {
-        return ((a.x != b.x) || (a.y != b.y));
-    }
-
-    public static VInt2 operator -(VInt2 lhs)
-    {
-        lhs.x = -lhs.x;
-        lhs.y = -lhs.y;
-        return lhs;
-    }
-
-    public static VInt2 operator *(VInt2 lhs, int rhs)
-    {
-        lhs.x *= rhs;
-        lhs.y *= rhs;
-        return lhs;
-    }
-
-    public static VInt2 operator /(VInt2 lhs, float rhs)
-    {
-        lhs.x = MMGame_Math.RoundToInt((double)(((float)lhs.x) / rhs));
-        lhs.y = MMGame_Math.RoundToInt((double)(((float)lhs.y) / rhs));
-        return lhs;
+        return "(" + x + ", " + y + ")";
     }
 }
-

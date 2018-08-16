@@ -140,7 +140,7 @@
 		- Added a 'filter' parameter to \link Pathfinding.PathUtilities.BFS PathUtilities.BFS\endlink and \link Pathfinding.PathUtilities.GetReachableNodes PathUtilities.GetReachableNodes\endlink.
 		- Added a method called \link Pathfinding.IAstarAI.SetPath SetPath\endlink to all movement scripts.
 		- Added \link Pathfinding.GraphNode.Graph GraphNode.Graph\endlink.
-		- Added #Pathfinding.MeshNode.ContainsPoint(Vector3) in addition to the already existing MeshNode.ContainsPoint(Int3).
+		- Added #Pathfinding.MeshNode.ContainsPoint(Vector3) in addition to the already existing MeshNode.ContainsPoint(VInt3).
 		- Added #Pathfinding.MeshNode.ContainsPointInGraphSpace.
 		- Added #Pathfinding.TriangleMeshNode.GetVerticesInGraphSpace.
 		- Added Pathfinding.AstarData.FindGraph(predicate).
@@ -447,7 +447,7 @@
 			- \link Pathfinding.RaycastModifier RaycastModifier \endlink now supports multi editing.
 			- Added \link Pathfinding.GraphNode.RandomPointOnSurface GraphNode.RandomPointOnSurface \endlink.
 			- Added \link Pathfinding.GraphNode.SurfaceArea GraphNode.SurfaceArea \endlink.
-			- \link Pathfinding.Int2 Int2 \endlink and \link Pathfinding.Int3 Int3 \endlink now implement IEquatable for slightly better performance and fewer allocations in some places.
+			- \link Pathfinding.VInt2 VInt2 \endlink and \link Pathfinding.VInt3 VInt3 \endlink now implement IEquatable for slightly better performance and fewer allocations in some places.
 			- \link Pathfinding.Examples.LocalSpaceRichAI LocalSpaceRichAI \endlink can now be used with any rotation (even things like moving on an object that is upside down).
 			- The \link Pathfinding.FunnelModifier funnel modifier \endlink can now handle arbitrary graphs (even graphs in the 2D plane) if the new \link Pathfinding.FunnelModifier.unwrap unwrap \endlink option is enabled.
 			- The \link Pathfinding.FunnelModifier funnel modifier \endlink can split the resulting path at each portal if the new \link Pathfinding.FunnelModifier.splitAtEveryPortal splitAtEveryPortal \endlink option is enabled.
@@ -561,7 +561,7 @@
 		- Removed ASTAR_OPTIMIZE_POOLING from Optimization tab. It is now always enabled in standalone builds and always disabled in the Unity editor.
 		- Removed various unused Recast code.
 		- Removed support for forcing the inspector skin to be dark or light. The value provided by EditorGUIUtility.isProSkin is always used now.
-		- Removed multiplication operator for Int3 with a Vector3 because it is a nonstandard operation on vectors (and it is not that useful).
+		- Removed multiplication operator for VInt3 with a Vector3 because it is a nonstandard operation on vectors (and it is not that useful).
 		- Removed the since long deprecated example script AIFollow.
 		- Removed the AdaptiveSampling algorithm for local avoidance. Only GradientDescent is used now.
 		- Removed empty PostProcess method in NavMeshGraph.
@@ -818,10 +818,10 @@
 		- Removed old IFunnelGraph interface since it was not used by anything.
 		- Removed old ConvexMeshNode class since it was not used by anything.
 		- Removed old script NavmeshController since it has been disabled since a few versions.
-		- Removed Int3.DivBy2, Int3.unsafeSqrMagnitude and Int3.NormalizeTo since they were not used anywere.
-		- Removed Int2.sqrMagnitude, Int2.Dot since they were not used anywhere and are prone to overflow (use sqrMagnitudeLong/DotLong instead)
-		- Deprecated Int2.Rotate since it was not used anywhere.
-		- Deprecated Int3.worldMagnitude since it was not used anywhere.
+		- Removed VInt3.DivBy2, VInt3.unsafeSqrMagnitude and VInt3.NormalizeTo since they were not used anywere.
+		- Removed VInt2.sqrMagnitude, VInt2.Dot since they were not used anywhere and are prone to overflow (use sqrMagnitudeLong/DotLong instead)
+		- Deprecated VInt2.Rotate since it was not used anywhere.
+		- Deprecated VInt3.worldMagnitude since it was not used anywhere.
 
 - 3.7.5 (2015-10-05)
 	- Breaking changes
@@ -936,7 +936,7 @@
 			- PathModifier and MonoModifier.ApplyOriginal
 			- Some old variants of PathModifier.Apply
 			- GridGeneratorEditor.ResourcesField
-			- Int3.safeMagnitude and safeSqrMagnitude
+			- VInt3.safeMagnitude and safeSqrMagnitude
 			- GraphUpdateUtilities.IsPathPossible (this has been since long been moved to the PathUtilities class)
 			- All constructors on path classes. The static Construct method should be used instead since that can handle path pooling.
 			- GraphNode.Position, walkable, tags, graphIndex. These had small changes made to their names (if they use upper- or lowercase letters) a long time ago.
@@ -1208,7 +1208,7 @@
 	- Most scripts are now in namespaces to avoid conflicts with other packages.
 	- GridNodes now support custom connections.
 	- Cleanups, preparing for release.
-	- Reverted to using an Int3 for GraphNode.position instead of an abstract Position property, the tiny memory gains were not worth it.
+	- Reverted to using an VInt3 for GraphNode.position instead of an abstract Position property, the tiny memory gains were not worth it.
 
 - Beta 3.3.13 ( 4.3 compatible only )
 	- Fixed an issue where deleting a NavmeshCut component would not update the underlaying graph.
@@ -1517,8 +1517,8 @@
 - 3.1
 	- Fixed bug which caused LayerMask fields (GridGraph inspector for example) to behave weirdly for custom layers on Unity 3.5 and up.
 	- The color setting "Node Connection" now actually sets the colors of the node connections when no other information should be shown using the connection colors or when no data is available.
-	- Put the Int3 class in a separate file.
-	- Casting between Int3 and Vector3 is no longer implicit. This follows the rule of "if information might be lost: use explicit casts".
+	- Put the VInt3 class in a separate file.
+	- Casting between VInt3 and Vector3 is no longer implicit. This follows the rule of "if information might be lost: use explicit casts".
 	- Renamed ListGraph to PointGraph. "ListGraph" has previously been used for historical reasons. PointGraph is a more suitable name.
 	- Graph can now have names in the editor (just click the name in the graph list)
 	- Graph Gizmos can now be selectively shown or hidden per graph (small "eye" icon to the right of the graph's name)

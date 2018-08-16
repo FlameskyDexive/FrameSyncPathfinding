@@ -76,16 +76,16 @@ namespace Pathfinding.Serialization {
 			return new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 		}
 
-		/** Write an Int3 */
-		public void SerializeInt3 (Int3 v) {
+		/** Write an VInt3 */
+		public void SerializeInt3 (VInt3 v) {
 			writer.Write(v.x);
 			writer.Write(v.y);
 			writer.Write(v.z);
 		}
 
-		/** Read an Int3 */
-		public Int3 DeserializeInt3 () {
-			return new Int3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
+		/** Read an VInt3 */
+		public VInt3 DeserializeInt3 () {
+			return new VInt3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
 		}
 
 		public int DeserializeInt (int defaultValue) {

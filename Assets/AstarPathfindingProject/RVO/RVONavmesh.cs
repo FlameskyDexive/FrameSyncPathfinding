@@ -109,7 +109,7 @@ namespace Pathfinding.RVO {
 				var verticesV3 = new Vector3[vertices.Count];
 				for (int i = 0; i < verticesV3.Length; i++) verticesV3[i] = (Vector3)vertices[i];
 				// Pool the 'vertices' list to reduce allocations
-				ListPool<Int3>.Release(vertices);
+				ListPool<VInt3>.Release(vertices);
 				obstacles.Add(simulator.AddObstacle(verticesV3, wallHeight, cycle));
 			});
 		}

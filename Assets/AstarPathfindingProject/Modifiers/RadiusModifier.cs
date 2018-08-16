@@ -68,7 +68,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //bool CalculateCircleInner (Vector3 p1, Vector3 p2, float r1, float r2, out float a, out float sigma) {
-        bool CalculateCircleInner (Int3 p1, Int3 p2, float r1, float r2, out float a, out float sigma) {
+        bool CalculateCircleInner (VInt3 p1, VInt3 p2, float r1, float r2, out float a, out float sigma) {
 			float dist = (p1-p2).magnitude;
 
 			if (r1+r2 > dist) {
@@ -97,7 +97,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //bool CalculateCircleOuter (Vector3 p1, Vector3 p2, float r1, float r2, out float a, out float sigma) {
-        bool CalculateCircleOuter (Int3 p1, Int3 p2, float r1, float r2, out float a, out float sigma) {
+        bool CalculateCircleOuter (VInt3 p1, VInt3 p2, float r1, float r2, out float a, out float sigma) {
 			float dist = (p1-p2).magnitude;
 
 			if (Math.Abs(r1 - r2) > dist) {
@@ -124,7 +124,7 @@ namespace Pathfinding {
         /*TangentType CalculateTangentType (Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4) {
 			bool l1 = VectorMath.RightOrColinearXZ(p1, p2, p3);
 			bool l2 = VectorMath.RightOrColinearXZ(p2, p3, p4);*/
-        TangentType CalculateTangentType (Int3 p1, Int3 p2, Int3 p3, Int3 p4) {
+        TangentType CalculateTangentType (VInt3 p1, VInt3 p2, VInt3 p3, VInt3 p4) {
 			bool l1 = VectorMath.RightOrColinearXZ(p1, p2, p3);
 			bool l2 = VectorMath.RightOrColinearXZ(p2, p3, p4);
 
@@ -133,7 +133,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //TangentType CalculateTangentTypeSimple (Vector3 p1, Vector3 p2, Vector3 p3) {
-        TangentType CalculateTangentTypeSimple (Int3 p1, Int3 p2, Int3 p3) {
+        TangentType CalculateTangentTypeSimple (VInt3 p1, VInt3 p2, VInt3 p3) {
 			bool l2 = VectorMath.RightOrColinearXZ(p1, p2, p3);
 			bool l1 = l2;
 
@@ -144,17 +144,17 @@ namespace Pathfinding {
 		{
 		    //Good Game
             //List<Vector3> vs = p.vectorPath;
-            List<Int3> vs = p.vectorPath;
+            List<VInt3> vs = p.vectorPath;
 
 		    //Good Game
             //List<Vector3> res = Apply(vs);
-            List<Int3> res = Apply(vs);
+            List<VInt3> res = Apply(vs);
 
 			if (res != vs)
 			{
 			    //Good Game
                 //Pathfinding.Util.ListPool<Vector3>.Release(ref p.vectorPath);
-                Pathfinding.Util.ListPool<Int3>.Release(ref p.vectorPath);
+                Pathfinding.Util.ListPool<VInt3>.Release(ref p.vectorPath);
 				p.vectorPath = res;
 			}
 		}
@@ -167,7 +167,7 @@ namespace Pathfinding {
         //Good Game
         /** Apply this modifier on a raw Vector3 list */
         //public List<Vector3> Apply (List<Vector3> vs) {
-        public List<Int3> Apply (List<Int3> vs) {
+        public List<VInt3> Apply (List<VInt3> vs) {
 			if (vs == null || vs.Count < 3) return vs;
 
 			/** \todo Do something about these allocations */
@@ -273,7 +273,7 @@ namespace Pathfinding {
 
             //Good Game
             //List<Vector3> res = Pathfinding.Util.ListPool<Vector3>.Claim();
-            List<Int3> res = Pathfinding.Util.ListPool<Int3>.Claim();
+            List<VInt3> res = Pathfinding.Util.ListPool<VInt3>.Claim();
 			res.Add(vs[0]);
 			if (detail < 1) detail = 1;
 			float step = (float)(2*Math.PI)/detail;
@@ -288,7 +288,7 @@ namespace Pathfinding {
 					{
 					    //Good Game
                         //res.Add(new Vector3((float)Math.Cos(t), 0, (float)Math.Sin(t))*rad + vs[i]);
-                        res.Add((Int3)new Vector3((float)Math.Cos(t), 0, (float)Math.Sin(t))*rad + vs[i]);
+                        res.Add((VInt3)new Vector3((float)Math.Cos(t), 0, (float)Math.Sin(t))*rad + vs[i]);
 					}
 				} else {
 					if (start < end) start += (float)Math.PI*2;
@@ -296,7 +296,7 @@ namespace Pathfinding {
 					{
 					    //Good Game
                         //res.Add(new Vector3((float)Math.Cos(t), 0, (float)Math.Sin(t))*rad + vs[i]);
-                        res.Add((Int3)new Vector3((float)Math.Cos(t), 0, (float)Math.Sin(t))*rad + vs[i]);
+                        res.Add((VInt3)new Vector3((float)Math.Cos(t), 0, (float)Math.Sin(t))*rad + vs[i]);
 					}
 				}
 			}

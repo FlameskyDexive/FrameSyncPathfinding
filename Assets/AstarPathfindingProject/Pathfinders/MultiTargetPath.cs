@@ -40,17 +40,17 @@ namespace Pathfinding {
         //Good Game
 		/** Target points specified when creating the path. These are snapped to the nearest nodes */
 		//public Vector3[] targetPoints;
-		public Int3[] targetPoints;
+		public VInt3[] targetPoints;
 
         /** Target points specified when creating the path. These are not snapped to the nearest nodes */
 	    //Good Game
         //public Vector3[] originalTargetPoints;
-        public Int3[] originalTargetPoints;
+        public VInt3[] originalTargetPoints;
 
         /** Stores all vector paths to the targets. Elements are null if no path was found */
 	    //Good Game
         //public List<Vector3>[] vectorPaths;
-        public List<Int3>[] vectorPaths;
+        public List<VInt3>[] vectorPaths;
 
 		/** Stores all paths to the targets. Elements are null if no path was found */
 		public List<GraphNode>[] nodePaths;
@@ -97,7 +97,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //public static MultiTargetPath Construct (Vector3[] startPoints, Vector3 target, OnPathDelegate[] callbackDelegates, OnPathDelegate callback = null) {
-        public static MultiTargetPath Construct (Int3[] startPoints, Int3 target, OnPathDelegate[] callbackDelegates, OnPathDelegate callback = null) {
+        public static MultiTargetPath Construct (VInt3[] startPoints, VInt3 target, OnPathDelegate[] callbackDelegates, OnPathDelegate callback = null) {
 			MultiTargetPath p = Construct(target, startPoints, callbackDelegates, callback);
 
 			p.inverted = true;
@@ -106,7 +106,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //public static MultiTargetPath Construct (Vector3 start, Vector3[] targets, OnPathDelegate[] callbackDelegates, OnPathDelegate callback = null) {
-        public static MultiTargetPath Construct (Int3 start, Int3[] targets, OnPathDelegate[] callbackDelegates, OnPathDelegate callback = null) {
+        public static MultiTargetPath Construct (VInt3 start, VInt3[] targets, OnPathDelegate[] callbackDelegates, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<MultiTargetPath>();
 
 			p.Setup(start, targets, callbackDelegates, callback);
@@ -115,7 +115,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //protected void Setup (Vector3 start, Vector3[] targets, OnPathDelegate[] callbackDelegates, OnPathDelegate callback) {
-        protected void Setup (Int3 start, Int3[] targets, OnPathDelegate[] callbackDelegates, OnPathDelegate callback) {
+        protected void Setup (VInt3 start, VInt3[] targets, OnPathDelegate[] callbackDelegates, OnPathDelegate callback) {
 			inverted = false;
 			this.callback = callback;
 			callbacks = callbackDelegates;
@@ -125,7 +125,7 @@ namespace Pathfinding {
 			originalStartPoint = start;
 
 			startPoint = start;
-			startIntPoint = (Int3)start;
+			startIntPoint = (VInt3)start;
 
 			if (targets.Length == 0) {
 				FailWithError("No targets were assigned to the MultiTargetPath");
@@ -136,7 +136,7 @@ namespace Pathfinding {
 
             //Good Game
             //originalTargetPoints = new Vector3[targetPoints.Length];
-            originalTargetPoints = new Int3[targetPoints.Length];
+            originalTargetPoints = new VInt3[targetPoints.Length];
 			for (int i = 0; i < targetPoints.Length; i++) {
 				originalTargetPoints[i] = targetPoints[i];
 			}
@@ -157,7 +157,7 @@ namespace Pathfinding {
 					if (vectorPaths[i] != null)
 					        //Good Game
                         //Util.ListPool<Vector3>.Release(vectorPaths[i]);
-                        Util.ListPool<Int3>.Release(vectorPaths[i]);
+                        Util.ListPool<VInt3>.Release(vectorPaths[i]);
 
 			vectorPaths = null;
 			vectorPath = null;
@@ -278,7 +278,7 @@ namespace Pathfinding {
 			nodePaths[i] = path;
             //Good Game
 			//vectorPath = Util.ListPool<Vector3>.Claim();
-			vectorPath = Util.ListPool<Int3>.Claim();
+			vectorPath = Util.ListPool<VInt3>.Claim();
 			path = Util.ListPool<GraphNode>.Claim();
 
 			targetsFound[i] = true;
@@ -339,7 +339,7 @@ namespace Pathfinding {
 
 		    //Good Game
             //vectorPaths = new List<Vector3>[targetPoints.Length];
-            vectorPaths = new List<Int3>[targetPoints.Length];
+            vectorPaths = new List<VInt3>[targetPoints.Length];
 			nodePaths = new List<GraphNode>[targetPoints.Length];
 			targetNodes = new GraphNode[targetPoints.Length];
 			targetsFound = new bool[targetPoints.Length];
@@ -383,7 +383,7 @@ namespace Pathfinding {
 
 			startPoint = startNNInfo.position;
 
-			startIntPoint = (Int3)startPoint;
+			startIntPoint = (VInt3)startPoint;
 
 			if (!anyNotNull) {
 				FailWithError("Couldn't find nodes close to the all of the end points");
@@ -445,7 +445,7 @@ namespace Pathfinding {
 				if (count == 0) throw new System.Exception("Should not happen");
 
 				avg /= count;
-				hTarget = (Int3)avg;
+				hTarget = (VInt3)avg;
 				break;
 			case HeuristicMode.Midpoint:
 				if (!firstTime) return;
@@ -476,7 +476,7 @@ namespace Pathfinding {
 					}
 				}
 
-				var midpoint = (Int3)((min+max)*0.5F);
+				var midpoint = (VInt3)((min+max)*0.5F);
 				hTarget = midpoint;
 				break;
 			case HeuristicMode.Sequential:
@@ -496,7 +496,7 @@ namespace Pathfinding {
 						float d = (targetNodes[j].position-startNode.position).sqrMagnitude;
 						if (d > dist) {
 							dist = d;
-							hTarget = (Int3)targetPoints[j];
+							hTarget = (VInt3)targetPoints[j];
 							sequentialTarget = j;
 						}
 					}
@@ -647,7 +647,7 @@ namespace Pathfinding {
 				{
 				    //Good Game
                     //Vector3 tmp = vectorPath[i];
-                    Int3 tmp = vectorPath[i];
+                    VInt3 tmp = vectorPath[i];
 					vectorPath[i] = vectorPath[vectorPath.Count-i-1];
 					vectorPath[vectorPath.Count-i-1] = tmp;
 				}

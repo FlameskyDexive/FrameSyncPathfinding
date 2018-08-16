@@ -213,7 +213,7 @@ namespace Pathfinding {
         /** \copydoc Pathfinding::IAstarAI::destination */
 	    //Good Game
 		public Vector3 destination { get; set; }
-        //public Int3 destination { get; set; }
+        //public VInt3 destination { get; set; }
 
 		/** \copydoc Pathfinding::IAstarAI::velocity */
 		public Vector3 velocity {
@@ -359,12 +359,12 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //protected virtual void CalculatePathRequestEndpoints (out Vector3 start, out Vector3 end) {
-        protected virtual void CalculatePathRequestEndpoints (out Int3 start, out Int3 end)
+        protected virtual void CalculatePathRequestEndpoints (out VInt3 start, out VInt3 end)
         {
             //Good Game
             //start = GetFeetPosition();
-            start = (Int3)GetFeetPosition();
-			end = (Int3)destination;
+            start = (VInt3)GetFeetPosition();
+			end = (VInt3)destination;
 		}
 
 		/** \copydoc Pathfinding::IAstarAI::SearchPath */
@@ -379,7 +379,7 @@ namespace Pathfinding {
 
 		    //Good Game
             //Vector3 start, end;
-            Int3 start, end;
+            VInt3 start, end;
 			CalculatePathRequestEndpoints(out start, out end);
 
 			// Alternative way of requesting the path

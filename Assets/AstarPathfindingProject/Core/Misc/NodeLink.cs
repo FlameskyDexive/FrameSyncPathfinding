@@ -65,8 +65,8 @@ namespace Pathfinding {
 		    //Good Game
             /*GraphNode startNode = AstarPath.active.GetNearest(Start.position).node;
 			GraphNode endNode = AstarPath.active.GetNearest(End.position).node;*/
-            GraphNode startNode = AstarPath.active.GetNearest((Int3)Start.position).node;
-			GraphNode endNode = AstarPath.active.GetNearest((Int3)End.position).node;
+            GraphNode startNode = AstarPath.active.GetNearest((VInt3)Start.position).node;
+			GraphNode endNode = AstarPath.active.GetNearest((VInt3)End.position).node;
 
 			if (startNode == null || endNode == null) return;
 

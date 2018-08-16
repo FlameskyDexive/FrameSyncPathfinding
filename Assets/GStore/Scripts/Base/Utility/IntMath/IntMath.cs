@@ -148,13 +148,13 @@ public class IntMath
         return a;
     }
 
-    public static Int3 Divide(Int3 a, long m, long b)
+    /*public static VInt3 Divide(VInt3 a, long m, long b)
     {
         a.x = (int)Divide((long)(a.x * m), b);
         a.y = (int)Divide((long)(a.y * m), b);
         a.z = (int)Divide((long)(a.z * m), b);
         return a;
-    }
+    }*/
 
     /// <summary>
     /// 线线相交
@@ -482,7 +482,7 @@ public class IntMath
 
 
     /** Returns the intersection point between the two lines. Lines are treated as infinite. \a start1 is returned if the lines are parallel */
-    public static Int3 LineIntersectionPointXZ(Int3 start1, Int3 end1, Int3 start2, Int3 end2)
+    public static VInt3 LineIntersectionPointXZ(VInt3 start1, VInt3 end1, VInt3 start2, VInt3 end2)
     {
         bool s;
 
@@ -490,10 +490,10 @@ public class IntMath
     }
 
     /** Returns the intersection point between the two lines. Lines are treated as infinite. \a start1 is returned if the lines are parallel */
-    public static Int3 LineIntersectionPointXZ(Int3 start1, Int3 end1, Int3 start2, Int3 end2, out bool intersects)
+    public static VInt3 LineIntersectionPointXZ(VInt3 start1, VInt3 end1, VInt3 start2, VInt3 end2, out bool intersects)
     {
-        Int3 dir1 = end1 - start1;
-        Int3 dir2 = end2 - start2;
+        VInt3 dir1 = end1 - start1;
+        VInt3 dir2 = end2 - start2;
 
         long den = dir2.z * dir1.x - dir2.x * dir1.z;
 
@@ -512,7 +512,7 @@ public class IntMath
     }
 
     /** Returns the intersection point between the two lines. Lines are treated as infinite. \a start1 is returned if the lines are parallel */
-    public static Int2 LineIntersectionPoint(Int2 start1, Int2 end1, Int2 start2, Int2 end2)
+    public static VInt2 LineIntersectionPoint(VInt2 start1, VInt2 end1, VInt2 start2, VInt2 end2)
     {
         bool s;
 
@@ -520,10 +520,10 @@ public class IntMath
     }
 
     /** Returns the intersection point between the two lines. Lines are treated as infinite. \a start1 is returned if the lines are parallel */
-    public static Int2 LineIntersectionPoint(Int2 start1, Int2 end1, Int2 start2, Int2 end2, out bool intersects)
+    public static VInt2 LineIntersectionPoint(VInt2 start1, VInt2 end1, VInt2 start2, VInt2 end2, out bool intersects)
     {
-        Int2 dir1 = end1 - start1;
-        Int2 dir2 = end2 - start2;
+        VInt2 dir1 = end1 - start1;
+        VInt2 dir2 = end2 - start2;
 
         long den = dir2.y * dir1.x - dir2.x * dir1.y;
 
@@ -545,10 +545,10 @@ public class IntMath
      * Lines are NOT treated as infinite. \a start1 is returned if the line segments do not intersect
      * The point will be returned along the line [start1, end1] (this matters only for the y coordinate).
      */
-    public static Int3 SegmentIntersectionPointXZ(Int3 start1, Int3 end1, Int3 start2, Int3 end2, out bool intersects)
+    public static VInt3 SegmentIntersectionPointXZ(VInt3 start1, VInt3 end1, VInt3 start2, VInt3 end2, out bool intersects)
     {
-        Int3 dir1 = end1 - start1;
-        Int3 dir2 = end2 - start2;
+        VInt3 dir1 = end1 - start1;
+        VInt3 dir2 = end2 - start2;
 
         int den = dir2.z * dir1.x - dir2.x * dir1.z;
 
@@ -577,11 +577,11 @@ public class IntMath
      * The line is NOT treated as infinite.
      * \author Slightly modified code from http://www.3dkingdoms.com/weekly/weekly.php?a=21
      */
-    public static bool SegmentIntersectsBounds(Bounds bounds, Int3 a, Int3 b)
+    public static bool SegmentIntersectsBounds(Bounds bounds, VInt3 a, VInt3 b)
     {
         // Put segment in box space
-        a -= (Int3)bounds.center;
-        b -= (Int3)bounds.center;
+        a -= (VInt3)bounds.center;
+        b -= (VInt3)bounds.center;
 
         // Get line midpoint and extent
         var LMid = (a + b) * 0.5F;
@@ -609,15 +609,15 @@ public class IntMath
      * \see ClosestPointOnLine
      * \see ClosestPointOnSegmentXZ
      */
-    public static Int3 ClosestPointOnSegment(Vector3 lineStart, Vector3 lineEnd, Vector3 point)
+    public static VInt3 ClosestPointOnSegment(Vector3 lineStart, Vector3 lineEnd, Vector3 point)
     {
         var dir = lineEnd - lineStart;
         float sqrMagn = dir.sqrMagnitude;
 
-        if (sqrMagn <= 0.000001) return (Int3)lineStart;
+        if (sqrMagn <= 0.000001) return (VInt3)lineStart;
 
         float factor = Vector3.Dot(point - lineStart, dir) / sqrMagn;
-        return (Int3)(lineStart + (Mathf.Clamp01(factor) * dir));
+        return (VInt3)(lineStart + (Mathf.Clamp01(factor) * dir));
     }
 
     /** Returns the closest point on the segment in the XZ plane.
@@ -627,17 +627,17 @@ public class IntMath
      * \see ClosestPointOnSegment
      * \see ClosestPointOnLine
      */
-    public static Int3 ClosestPointOnSegmentXZ(Int3 lineStart, Int3 lineEnd, Int3 point)
+    public static VInt3 ClosestPointOnSegmentXZ(VInt3 lineStart, VInt3 lineEnd, VInt3 point)
     {
         lineStart.y = point.y;
         lineEnd.y = point.y;
-        Int3 fullDirection = lineEnd - lineStart;
-        Int3 fullDirection2 = fullDirection;
+        VInt3 fullDirection = lineEnd - lineStart;
+        VInt3 fullDirection2 = fullDirection;
         fullDirection2.y = 0;
         int magn = fullDirection2.magnitude;
-        Int3 lineDirection = magn > float.Epsilon ? fullDirection2 / magn : Int3.zero;
+        VInt3 lineDirection = magn > float.Epsilon ? fullDirection2 / magn : VInt3.zero;
 
-        int closestPoint = Int3.Dot((point - lineStart), lineDirection);
+        int closestPoint = VInt3.Dot((point - lineStart), lineDirection);
         int a = (int)Clamp(closestPoint, 0, fullDirection2.magnitude);
         return lineStart + ( lineDirection * a);
     }
@@ -647,10 +647,10 @@ public class IntMath
      * \code intersectionPoint = start1 + intersectionFactor * (end1-start1) \endcode.
      * Lines are treated as infinite.\n
      * -1 is returned if the lines are parallel (note that this is a valid return value if they are not parallel too) */
-    public static long LineIntersectionFactorXZ(Int3 start1, Int3 end1, Int3 start2, Int3 end2)
+    public static long LineIntersectionFactorXZ(VInt3 start1, VInt3 end1, VInt3 start2, VInt3 end2)
     {
-        Int3 dir1 = end1 - start1;
-        Int3 dir2 = end2 - start2;
+        VInt3 dir1 = end1 - start1;
+        VInt3 dir2 = end2 - start2;
 
         long den = dir2.z * dir1.x - dir2.x * dir1.z;
 
@@ -670,12 +670,12 @@ public class IntMath
      * Returned value is in the range [0,1] if the point lies on the segment otherwise it just lies on the line.
      * The closest point can be calculated using (end-start)*factor + start
      */
-    public static long ClosestPointOnLineFactor(Int3 lineStart, Int3 lineEnd, Int3 point)
+    public static long ClosestPointOnLineFactor(VInt3 lineStart, VInt3 lineEnd, VInt3 point)
     {
         var lineDirection = lineEnd - lineStart;
         long magn = lineDirection.sqrMagnitudeLong;
 
-        long closestPoint = Int3.Dot((point - lineStart), lineDirection);
+        long closestPoint = VInt3.Dot((point - lineStart), lineDirection);
 
         if (magn != 0) closestPoint /= magn;
 
@@ -686,12 +686,12 @@ public class IntMath
      * Returned value is in the range [0,1] if the point lies on the segment otherwise it just lies on the line.
      * The closest point can be calculated using (end-start)*factor + start;
      */
-    public static long ClosestPointOnLineFactor(Int2 lineStart, Int2 lineEnd, Int2 point)
+    public static long ClosestPointOnLineFactor(VInt2 lineStart, VInt2 lineEnd, VInt2 point)
     {
         var lineDirection = lineEnd - lineStart;
         long magn = lineDirection.sqrMagnitudeLong;
 
-        long closestPoint = Int2.DotLong(point - lineStart, lineDirection);
+        long closestPoint = VInt2.DotLong(point - lineStart, lineDirection);
 
         if (magn != 0) closestPoint /= magn;
 
@@ -711,11 +711,11 @@ public class IntMath
         return (float)num3;
     }
 
-    public static float NearestPointFactor(Int3 lineStart, Int3 lineEnd, Int3 point)
+    public static float NearestPointFactor(VInt3 lineStart, VInt3 lineEnd, VInt3 point)
     {
-        Int3 rhs = lineEnd - lineStart;
+        VInt3 rhs = lineEnd - lineStart;
         double sqrMagnitude = rhs.sqrMagnitude;
-        double num3 = Int3.Dot(point - lineStart, rhs);
+        double num3 = VInt3.Dot(point - lineStart, rhs);
         if (sqrMagnitude != 0.0)
         {
             num3 /= sqrMagnitude;
@@ -723,12 +723,12 @@ public class IntMath
         return (float)num3;
     }
 
-    public static VFactor NearestPointFactor(ref Int3 lineStart, ref Int3 lineEnd, ref Int3 point)
+    public static VFactor NearestPointFactor(ref VInt3 lineStart, ref VInt3 lineEnd, ref VInt3 point)
     {
-        Int3 rhs = lineEnd - lineStart;
+        VInt3 rhs = lineEnd - lineStart;
         long sqrMagnitudeLong = rhs.sqrMagnitudeLong;
         VFactor zero = VFactor.zero;
-        zero.nom = Int3.DotLong(point - lineStart, rhs);
+        zero.nom = VInt3.DotLong(point - lineStart, rhs);
         if (sqrMagnitudeLong != 0)
         {
             zero.den = sqrMagnitudeLong;
@@ -736,7 +736,7 @@ public class IntMath
         return zero;
     }
 
-    public static float NearestPointFactorXZ(Int3 lineStart, Int3 lineEnd, Int3 point)
+    public static float NearestPointFactorXZ(VInt3 lineStart, VInt3 lineEnd, VInt3 point)
     {
         VInt2 b = new VInt2(lineEnd.x - lineStart.x, lineEnd.z - lineStart.z);
         double sqrMagnitude = b.sqrMagnitude;
@@ -749,7 +749,7 @@ public class IntMath
         return (float)num4;
     }
 
-    public static VFactor NearestPointFactorXZ(ref Int3 lineStart, ref Int3 lineEnd, ref Int3 point)
+    public static VFactor NearestPointFactorXZ(ref VInt3 lineStart, ref VInt3 lineEnd, ref VInt3 point)
     {
         VInt2 b = new VInt2(lineEnd.x - lineStart.x, lineEnd.z - lineStart.z);
         VInt2 a = new VInt2(point.x - lineStart.x, point.z - lineStart.z);
@@ -763,7 +763,7 @@ public class IntMath
         return zero;
     }
 
-    public static float NearestPointFloatXZ(Int3 lineStart, Int3 lineEnd, Int3 point)
+    public static float NearestPointFloatXZ(VInt3 lineStart, VInt3 lineEnd, VInt3 point)
     {
         VInt2 b = new VInt2(lineEnd.x - lineStart.x, lineEnd.z - lineStart.z);
         double num = (double)b.sqrMagnitude;
@@ -776,32 +776,32 @@ public class IntMath
         return (float)num2;
     }
 
-    public static Int3 NearestPointStrict(Int3 lineStart, Int3 lineEnd, Int3 point)
+    public static VInt3 NearestPointStrict(VInt3 lineStart, VInt3 lineEnd, VInt3 point)
     {
         return NearestPointStrict(ref lineStart, ref lineEnd, ref point);
     }
 
-    public static Int3 NearestPointStrict(ref Int3 lineStart, ref Int3 lineEnd, ref Int3 point)
+    public static VInt3 NearestPointStrict(ref VInt3 lineStart, ref VInt3 lineEnd, ref VInt3 point)
     {
-        Int3 rhs = lineEnd - lineStart;
+        VInt3 rhs = lineEnd - lineStart;
         long sqrMagnitudeLong = rhs.sqrMagnitudeLong;
         if (sqrMagnitudeLong == 0)
         {
             return lineStart;
         }
-        long m = IntMath.Clamp(Int3.DotLong(point - lineStart, rhs), 0L, sqrMagnitudeLong);
+        long m = IntMath.Clamp(VInt3.DotLong(point - lineStart, rhs), 0L, sqrMagnitudeLong);
         return (IntMath.Divide(rhs, m, sqrMagnitudeLong) + lineStart);
     }
 
-    public static Int3 NearestPointStrictXZ(ref Int3 lineStart, ref Int3 lineEnd, ref Int3 point)
+    public static VInt3 NearestPointStrictXZ(ref VInt3 lineStart, ref VInt3 lineEnd, ref VInt3 point)
     {
-        Int3 rhs = lineEnd - lineStart;
+        VInt3 rhs = lineEnd - lineStart;
         long max = rhs.sqrMagnitudeLong2D;
         if (max == 0)
         {
             return lineStart;
         }
-        long m = IntMath.Clamp(Int3.DotXZLong(point - lineStart, rhs), 0L, max);
+        long m = IntMath.Clamp(VInt3.DotXZLong(point - lineStart, rhs), 0L, max);
         return (IntMath.Divide(rhs, m, max) + lineStart);
     }
 
@@ -809,15 +809,15 @@ public class IntMath
     /** Closest point on the triangle \a abc to the point \a p.
      * \see 'Real Time Collision Detection' by Christer Ericson, chapter 5.1, page 141
      */
-    public static Int2 ClosestPointOnTriangle(Int2 a, Int2 b, Int2 c, Int2 p)
+    public static VInt2 ClosestPointOnTriangle(VInt2 a, VInt2 b, VInt2 c, VInt2 p)
     {
         // Check if p is in vertex region outside A
         var ab = b - a;
         var ac = c - a;
         var ap = p - a;
 
-        var d1 = Int2.Dot(ab, ap);
-        var d2 = Int2.Dot(ac, ap);
+        var d1 = VInt2.Dot(ab, ap);
+        var d2 = VInt2.Dot(ac, ap);
 
         // Barycentric coordinates (1,0,0)
         if (d1 <= 0 && d2 <= 0)
@@ -827,8 +827,8 @@ public class IntMath
 
         // Check if p is in vertex region outside B
         var bp = p - b;
-        var d3 = Int2.Dot(ab, bp);
-        var d4 = Int2.Dot(ac, bp);
+        var d3 = VInt2.Dot(ab, bp);
+        var d4 = VInt2.Dot(ac, bp);
 
         // Barycentric coordinates (0,1,0)
         if (d3 >= 0 && d4 <= d3)
@@ -850,8 +850,8 @@ public class IntMath
 
         // Check if p is in vertex region outside C
         var cp = p - c;
-        var d5 = Int2.Dot(ab, cp);
-        var d6 = Int2.Dot(ac, cp);
+        var d5 = VInt2.Dot(ab, cp);
+        var d6 = VInt2.Dot(ac, cp);
 
         // Barycentric coordinates (0,0,1)
         if (d6 >= 0 && d5 <= d6)
@@ -888,15 +888,15 @@ public class IntMath
     /** Closest point on the triangle \a abc to the point \a p when seen from above.
      * \see 'Real Time Collision Detection' by Christer Ericson, chapter 5.1, page 141
      */
-    public static Int3 ClosestPointOnTriangleXZ(Int3 a, Int3 b, Int3 c, Int3 p)
+    public static VInt3 ClosestPointOnTriangleXZ(VInt3 a, VInt3 b, VInt3 c, VInt3 p)
     {
         // Check if p is in vertex region outside A
-        var ab = new Int2(b.x - a.x, b.z - a.z);
-        var ac = new Int2(c.x - a.x, c.z - a.z);
-        var ap = new Int2(p.x - a.x, p.z - a.z);
+        var ab = new VInt2(b.x - a.x, b.z - a.z);
+        var ac = new VInt2(c.x - a.x, c.z - a.z);
+        var ap = new VInt2(p.x - a.x, p.z - a.z);
 
-        var d1 = Int2.Dot(ab, ap);
-        var d2 = Int2.Dot(ac, ap);
+        var d1 = VInt2.Dot(ab, ap);
+        var d2 = VInt2.Dot(ac, ap);
 
         // Barycentric coordinates (1,0,0)
         if (d1 <= 0 && d2 <= 0)
@@ -905,9 +905,9 @@ public class IntMath
         }
 
         // Check if p is in vertex region outside B
-        var bp = new Int2(p.x - b.x, p.z - b.z);
-        var d3 = Int2.Dot(ab, bp);
-        var d4 = Int2.Dot(ac, bp);
+        var bp = new VInt2(p.x - b.x, p.z - b.z);
+        var d3 = VInt2.Dot(ab, bp);
+        var d4 = VInt2.Dot(ac, bp);
 
         // Barycentric coordinates (0,1,0)
         if (d3 >= 0 && d4 <= d3)
@@ -925,9 +925,9 @@ public class IntMath
         }
 
         // Check if p is in vertex region outside C
-        var cp = new Int2(p.x - c.x, p.z - c.z);
-        var d5 = Int2.Dot(ab, cp);
-        var d6 = Int2.Dot(ac, cp);
+        var cp = new VInt2(p.x - c.x, p.z - c.z);
+        var d5 = VInt2.Dot(ab, cp);
+        var d6 = VInt2.Dot(ac, cp);
 
         // Barycentric coordinates (0,0,1)
         if (d6 >= 0 && d5 <= d6)
@@ -959,7 +959,7 @@ public class IntMath
             var v = vb * denom;
             var w = vc * denom;
 
-            return new Int3(p.x, (1 - v - w) * a.y + v * b.y + w * c.y, p.z);
+            return new VInt3(p.x, (1 - v - w) * a.y + v * b.y + w * c.y, p.z);
         }
     }
 
@@ -967,15 +967,15 @@ public class IntMath
      * \see 'Real Time Collision Detection' by Christer Ericson, chapter 5.1, page 141
      * 需要考虑溢出原因，所以平方和的单精度只放大10倍
      */
-    public static Int3 ClosestPointOnTriangle(Int3 a, Int3 b, Int3 c, Int3 p)
+    public static VInt3 ClosestPointOnTriangle(VInt3 a, VInt3 b, VInt3 c, VInt3 p)
     {
         // Check if p is in vertex region outside A
         var ab = b - a;
         var ac = c - a;
         var ap = p - a;
 
-        var d1 = Int3.DotLongSafe(ab, ap);
-        var d2 = Int3.DotLongSafe(ac, ap);
+        var d1 = VInt3.DotLongSafe(ab, ap);
+        var d2 = VInt3.DotLongSafe(ac, ap);
 
         // Barycentric coordinates (1,0,0)
         if (d1 <= 0 && d2 <= 0)
@@ -983,8 +983,8 @@ public class IntMath
 
         // Check if p is in vertex region outside B
         var bp = p - b;
-        var d3 = Int3.DotLongSafe(ab, bp);
-        var d4 = Int3.DotLongSafe(ac, bp);
+        var d3 = VInt3.DotLongSafe(ab, bp);
+        var d4 = VInt3.DotLongSafe(ac, bp);
 
         // Barycentric coordinates (0,1,0)
         if (d3 >= 0 && d4 <= d3)
@@ -1009,8 +1009,8 @@ public class IntMath
 
         // Check if p is in vertex region outside C
         var cp = p - c;
-        var d5 = Int3.DotLongSafe(ab, cp);
-        var d6 = Int3.DotLongSafe(ac, cp);
+        var d5 = VInt3.DotLongSafe(ab, cp);
+        var d6 = VInt3.DotLongSafe(ac, cp);
 
         /*CheckIntOverFlow(d5);
         CheckIntOverFlow(d6);*/
@@ -1066,7 +1066,7 @@ public class IntMath
             Debug.LogError("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
     }
 
-    public static List<Vector3> Int3s2Vector3s(List<Int3> int3s)
+    public static List<Vector3> Int3s2Vector3s(List<VInt3> int3s)
     {
         List<Vector3> vector3s = new List<Vector3>();
         for (int i = 0; i < int3s.Count; i++)
@@ -1077,12 +1077,12 @@ public class IntMath
         return vector3s;
     }
 
-    public static List<Int3> Vector3s2Int3s(List<Vector3> vector3s)
+    public static List<VInt3> Vector3s2Int3s(List<Vector3> vector3s)
     {
-        List<Int3> int3s = new List<Int3>();
+        List<VInt3> int3s = new List<VInt3>();
         for (int i = 0; i < vector3s.Count; i++)
         {
-            int3s.Add((Int3)vector3s[i]);
+            int3s.Add((VInt3)vector3s[i]);
         }
 
         return int3s;

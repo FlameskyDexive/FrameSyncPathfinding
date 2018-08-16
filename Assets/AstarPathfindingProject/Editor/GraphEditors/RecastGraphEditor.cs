@@ -228,7 +228,7 @@ namespace Pathfinding {
 
 				if (tile == null) continue;
 
-				Int3[] vertices = tile.verts;
+				VInt3[] vertices = tile.verts;
 
 				//Write vertices
 				for (int i = 0; i < vertices.Length; i++) {

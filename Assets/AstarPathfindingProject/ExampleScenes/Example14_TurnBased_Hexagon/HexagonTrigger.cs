@@ -20,7 +20,7 @@ namespace Pathfinding.Examples {
 			var unit = coll.GetComponentInParent<TurnBasedAI>();
 		    //Good Game
             //var node = AstarPath.active.GetNearest(transform.position).node;
-            var node = AstarPath.active.GetNearest((Int3)transform.position).node;
+            var node = AstarPath.active.GetNearest((VInt3)transform.position).node;
 
 			// Check if it was a unit and the unit was headed for this node
 			if (unit != null && unit.targetNode == node) {

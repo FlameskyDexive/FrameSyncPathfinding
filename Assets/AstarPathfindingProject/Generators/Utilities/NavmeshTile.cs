@@ -7,10 +7,10 @@ namespace Pathfinding {
 		public int[] tris;
 
 		/** Tile vertices */
-		public Int3[] verts;
+		public VInt3[] verts;
 
 		/** Tile vertices in graph space */
-		public Int3[] vertsInGraphSpace;
+		public VInt3[] vertsInGraphSpace;
 
 		/** Tile X Coordinate */
 		public int x;
@@ -51,13 +51,13 @@ namespace Pathfinding {
 		}
 
 		/** Get a specific vertex in the tile */
-		public Int3 GetVertex (int index) {
+		public VInt3 GetVertex (int index) {
 			int idx = index & NavmeshBase.VertexIndexMask;
 
 			return verts[idx];
 		}
 
-		public Int3 GetVertexInGraphSpace (int index) {
+		public VInt3 GetVertexInGraphSpace (int index) {
 			return vertsInGraphSpace[index & NavmeshBase.VertexIndexMask];
 		}
 

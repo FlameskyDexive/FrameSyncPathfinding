@@ -63,7 +63,7 @@ namespace Pathfinding {
 		/** Penalty cost for walking on this node.
 		 * This can be used to make it harder/slower to walk over certain nodes.
 		 *
-		 * A penalty of 1000 (Int3.Precision) corresponds to the cost of walking one world unit.
+		 * A penalty of 1000 (VInt3.Precision) corresponds to the cost of walking one world unit.
 		 */
 		private uint penalty;
 #endif
@@ -145,11 +145,11 @@ namespace Pathfinding {
 		internal bool TemporaryFlag2 { get { return (nodeIndex & TemporaryFlag2Mask) != 0; } set { nodeIndex = (nodeIndex & ~TemporaryFlag2Mask) | (value ? TemporaryFlag2Mask : 0); } }
 
 		/** Position of the node in world space.
-		 * \note The position is stored as an Int3, not a Vector3.
-		 * You can convert an Int3 to a Vector3 using an explicit conversion.
+		 * \note The position is stored as an VInt3, not a Vector3.
+		 * You can convert an VInt3 to a Vector3 using an explicit conversion.
 		 * \code var v3 = (Vector3)node.position; \endcode
 		 */
-		public Int3 position;
+		public VInt3 position;
 
 		#region Constants
 		/** Position of the walkable bit. \see Walkable */
@@ -193,7 +193,7 @@ namespace Pathfinding {
 
 		/** Penalty cost for walking on this node.
 		 * This can be used to make it harder/slower to walk over certain areas.
-		 * A cost of 1000 (\link Pathfinding.Int3.Precision Int3.Precision\endlink) corresponds to the cost of moving 1 world unit.
+		 * A cost of 1000 (\link Pathfinding.VInt3.Precision VInt3.Precision\endlink) corresponds to the cost of moving 1 world unit.
 		 */
 		public uint Penalty {
 #if !ASTAR_NO_PENALTY
@@ -345,7 +345,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public virtual bool GetPortal (GraphNode other, List<Vector3> left, List<Vector3> right, bool backwards) {
-        public virtual bool GetPortal (GraphNode other, List<Int3> left, List<Int3> right, bool backwards) {
+        public virtual bool GetPortal (GraphNode other, List<VInt3> left, List<VInt3> right, bool backwards) {
 			return false;
 		}
 
@@ -364,7 +364,7 @@ namespace Pathfinding {
 		/*public virtual Vector3 RandomPointOnSurface () {
 			return (Vector3)position;
 		}*/
-		public virtual Int3 RandomPointOnSurface () {
+		public virtual VInt3 RandomPointOnSurface () {
 			return position;
 		}
 
@@ -428,7 +428,7 @@ namespace Pathfinding {
 		/** Get a vertex of this node.
 		 * \param i vertex index. Must be between 0 and #GetVertexCount (exclusive).
 		 */
-		public abstract Int3 GetVertex (int i);
+		public abstract VInt3 GetVertex (int i);
 
 		/** Number of corner vertices that this node has.
 		 * For example for a triangle node this will return 3.
@@ -438,7 +438,7 @@ namespace Pathfinding {
         /** Closest point on the surface of this node to the point \a p */
 	    //Good Game
         //public abstract Vector3 ClosestPointOnNode (Vector3 p);
-        public abstract Int3 ClosestPointOnNode (Int3 p);
+        public abstract VInt3 ClosestPointOnNode (VInt3 p);
 
         /** Closest point on the surface of this node when seen from above.
 		 * This is usually very similar to #ClosestPointOnNode but when the node is in a slope this can be significantly different.
@@ -447,7 +447,7 @@ namespace Pathfinding {
 		 */
         //Good Game
         //public abstract Vector3 ClosestPointOnNodeXZ (Vector3 p);
-	    public abstract Int3 ClosestPointOnNodeXZ(Int3 p);
+	    public abstract VInt3 ClosestPointOnNodeXZ(VInt3 p);
 
         public override void ClearConnections (bool alsoReverse) {
 			// Remove all connections to this node from our neighbours
@@ -599,7 +599,7 @@ namespace Pathfinding {
 		}
 
 		/** Checks if \a point is inside the node */
-		public virtual bool ContainsPoint (Int3 point) {
+		public virtual bool ContainsPoint (VInt3 point) {
             //Good Game
 			return ContainsPoint(point);
 			//return ContainsPoint(point);
@@ -620,7 +620,7 @@ namespace Pathfinding {
 		 * In graph space the up direction is always the Y axis so in principle
 		 * we project the triangle down on the XZ plane and check if the point is inside the 2D triangle there.
 		 */
-		public abstract bool ContainsPointInGraphSpace (Int3 point);
+		public abstract bool ContainsPointInGraphSpace (VInt3 point);
 
 		public override int GetGizmoHashCode () {
 			var hash = base.GetGizmoHashCode();

@@ -159,7 +159,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //public Vector3 ClosestPointOnNode (Vector3 p) {
-        public Int3 ClosestPointOnNode (Int3 p) {
+        public VInt3 ClosestPointOnNode (VInt3 p) {
 			var gg = GetGridGraph(GraphIndex);
 
 			// Convert to graph space
@@ -176,7 +176,7 @@ namespace Pathfinding {
 
             //Good Game
             //var closestInGraphSpace = new Vector3(Mathf.Clamp(p.x, x, x+1f), y, Mathf.Clamp(p.z, z, z+1f));
-            var closestInGraphSpace = new Int3(Mathf.Clamp(p.x, x, x+1), y, Mathf.Clamp(p.z, z, z+1));
+            var closestInGraphSpace = new VInt3(Mathf.Clamp(p.x, x, x+1), y, Mathf.Clamp(p.z, z, z+1));
 
 			// Convert to world space
 			return gg.transform.Transform(closestInGraphSpace);
@@ -184,7 +184,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //public override bool GetPortal (GraphNode other, List<Vector3> left, List<Vector3> right, bool backwards) {
-        public override bool GetPortal (GraphNode other, List<Int3> left, List<Int3> right, bool backwards) {
+        public override bool GetPortal (GraphNode other, List<VInt3> left, List<VInt3> right, bool backwards) {
 			if (backwards) return true;
 
 			GridGraph gg = GetGridGraph(GraphIndex);
@@ -197,8 +197,8 @@ namespace Pathfinding {
 				    //Good Game
                     /*Vector3 middle = ((Vector3)(position + other.position))*0.5f;
 					Vector3 cross = Vector3.Cross(gg.collision.up, (Vector3)(other.position-position));*/
-                    Int3 middle = ((position + other.position)) / 2;
-					Int3 cross = Int3.Cross((Int3)gg.collision.up, (other.position-position));
+                    VInt3 middle = ((position + other.position)) / 2;
+					VInt3 cross = VInt3.Cross((VInt3)gg.collision.up, (other.position-position));
 					cross.Normalize();
 					cross *= gg.nodeSize*0.5f;
 					left.Add(middle - cross);
@@ -228,14 +228,14 @@ namespace Pathfinding {
 				    //Good Game
                     /*Vector3 middle = ((Vector3)(position + other.position))*0.5f;
 					Vector3 cross = Vector3.Cross(gg.collision.up, (Vector3)(other.position-position));*/
-                    Int3 middle = ((position + other.position))/2;
-					Int3 cross = Int3.Cross((Int3)gg.collision.up, (other.position-position));
+                    VInt3 middle = ((position + other.position))/2;
+					VInt3 cross = VInt3.Cross((VInt3)gg.collision.up, (other.position-position));
 					cross.Normalize();
 					cross *= gg.nodeSize*1.4142f;
 					/*left.Add(middle - (lClear ? cross : Vector3.zero));
 					right.Add(middle + (rClear ? cross : Vector3.zero));*/
-					left.Add(middle - (lClear ? cross : Int3.zero));
-					right.Add(middle + (rClear ? cross : Int3.zero));
+					left.Add(middle - (lClear ? cross : VInt3.zero));
+					right.Add(middle + (rClear ? cross : VInt3.zero));
 					return true;
 				}
 			}

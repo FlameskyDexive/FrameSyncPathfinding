@@ -91,12 +91,12 @@ namespace Pathfinding {
 		 * Note that the point passed to the Linecast method will be clamped to the closest point on the navmesh.
 		 */
 		//public Vector3 origin;
-		public Int3 origin;
+		public VInt3 origin;
 		/** Hit point.
 		 * In case no obstacle was hit then this will be set to the endpoint of the line.
 		 */
 		//public Vector3 point;
-		public Int3 point;
+		public VInt3 point;
 		/** Node which contained the edge which was hit.
 		 * If the linecast did not hit anything then this will be set to the last node along the line's path (the one which contains the endpoint).
 		 *
@@ -108,12 +108,12 @@ namespace Pathfinding {
 		 * \shadowimage{linecast_tangent.png}
 		 */
 		//public Vector3 tangentOrigin;
-		public Int3 tangentOrigin;
+		public VInt3 tangentOrigin;
 		/** Tangent of the edge which was hit.
 		 * \shadowimage{linecast_tangent.png}
 		 */
 		//public Vector3 tangent;
-		public Int3 tangent;
+		public VInt3 tangent;
 
 		/** Distance from #origin to #point */
 		public float distance {
@@ -130,12 +130,12 @@ namespace Pathfinding {
 			node = null;
 			tangent = Vector3.zero;
 		}*/
-        public GraphHitInfo (Int3 point) {
-			tangentOrigin  = Int3.zero;
-			origin = Int3.zero;
+        public GraphHitInfo (VInt3 point) {
+			tangentOrigin  = VInt3.zero;
+			origin = VInt3.zero;
 			this.point = point;
 			node = null;
-			tangent = Int3.zero;
+			tangent = VInt3.zero;
 		}
 	}
 
@@ -292,20 +292,20 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public Vector3 clampedPosition;
-		public Int3 clampedPosition;
+		public VInt3 clampedPosition;
 
 		/** Clamped position for the optional constrainedNode */
         //Good Game
 		//public Vector3 constClampedPosition;
-		public Int3 constClampedPosition;
+		public VInt3 constClampedPosition;
 
 		public NNInfoInternal (GraphNode node) {
 			this.node = node;
 			constrainedNode = null;
             //Good Game
 			//clampedPosition = Vector3.zero;
-			clampedPosition = Int3.zero;
-			constClampedPosition = Int3.zero;
+			clampedPosition = VInt3.zero;
+			constClampedPosition = VInt3.zero;
 
 			UpdateInfo();
 		}
@@ -315,10 +315,10 @@ namespace Pathfinding {
 		{
 		    //Good Game
             //clampedPosition = node != null ? (Vector3)node.position : Vector3.zero;
-            clampedPosition = node != null ? node.position : Int3.zero;
+            clampedPosition = node != null ? node.position : VInt3.zero;
             //Good Game
 			//constClampedPosition = constrainedNode != null ? (Vector3)constrainedNode.position : Vector3.zero;
-			constClampedPosition = constrainedNode != null ? constrainedNode.position : Int3.zero;
+			constClampedPosition = constrainedNode != null ? constrainedNode.position : VInt3.zero;
 		}
 	}
 
@@ -332,7 +332,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public readonly Vector3 position;
-        public readonly Int3 position;
+        public readonly VInt3 position;
 
 		/** Closest point on the navmesh.
 		 * \deprecated This field has been renamed to #position
@@ -340,7 +340,7 @@ namespace Pathfinding {
 		[System.Obsolete("This field has been renamed to 'position'")]
 		//Good Game
         //public Vector3 clampedPosition {
-        public Int3 clampedPosition {
+        public VInt3 clampedPosition {
 			get {
 				return position;
 			}
@@ -353,7 +353,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //public static explicit operator Vector3 (NNInfo ob) {
-        public static explicit operator Int3 (NNInfo ob) {
+        public static explicit operator VInt3 (NNInfo ob) {
 			return ob.position;
 		}
 
@@ -523,7 +523,7 @@ namespace Pathfinding {
 		 */
 		public List<GraphNode> changedNodes;
 		private List<uint> backupData;
-		private List<Int3> backupPositionData;
+		private List<VInt3> backupPositionData;
 
 		/** A shape can be specified if a bounds object does not give enough precision.
 		 * Note that if you set this, you should set the bounds so that it encloses the shape
@@ -538,7 +538,7 @@ namespace Pathfinding {
 		 */
 		public virtual void WillUpdateNode (GraphNode node) {
 			if (trackChangedNodes && node != null) {
-				if (changedNodes == null) { changedNodes = ListPool<GraphNode>.Claim(); backupData = ListPool<uint>.Claim(); backupPositionData = ListPool<Int3>.Claim(); }
+				if (changedNodes == null) { changedNodes = ListPool<GraphNode>.Claim(); backupData = ListPool<uint>.Claim(); backupPositionData = ListPool<VInt3>.Claim(); }
 				changedNodes.Add(node);
 				backupPositionData.Add(node.position);
 				backupData.Add(node.Penalty);
@@ -577,7 +577,7 @@ namespace Pathfinding {
 
 				ListPool<GraphNode>.Release(ref changedNodes);
 				ListPool<uint>.Release(ref backupData);
-				ListPool<Int3>.Release(ref backupPositionData);
+				ListPool<VInt3>.Release(ref backupPositionData);
 			} else {
 				throw new System.InvalidOperationException("Changed nodes have not been tracked, cannot revert from backup. Please set trackChangedNodes to true before applying the update.");
 			}
@@ -622,10 +622,10 @@ namespace Pathfinding {
 
 	/** Graph which supports the Linecast method */
 	public interface IRaycastableGraph {
-		bool Linecast (Int3 start, Int3 end);
-		bool Linecast (Int3 start, Int3 end, GraphNode hint);
-		bool Linecast (Int3 start, Int3 end, GraphNode hint, out GraphHitInfo hit);
-		bool Linecast (Int3 start, Int3 end, GraphNode hint, out GraphHitInfo hit, List<GraphNode> trace);
+		bool Linecast (VInt3 start, VInt3 end);
+		bool Linecast (VInt3 start, VInt3 end, GraphNode hint);
+		bool Linecast (VInt3 start, VInt3 end, GraphNode hint, out GraphHitInfo hit);
+		bool Linecast (VInt3 start, VInt3 end, GraphNode hint, out GraphHitInfo hit, List<GraphNode> trace);
 	}
 
 	/** Integer Rectangle.
@@ -785,7 +785,7 @@ namespace Pathfinding {
 
 		/** Returns a new rect which is offset by the specified amount.
 		 */
-		public IntRect Offset (Int2 offset) {
+		public IntRect Offset (VInt2 offset) {
 			return new IntRect(xmin+offset.x, ymin + offset.y, xmax + offset.x, ymax + offset.y);
 		}
 

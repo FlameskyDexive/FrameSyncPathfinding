@@ -29,7 +29,7 @@ namespace Pathfinding {
 	 */
 	public class RandomPath : ABPath {
 		/** G score to stop searching at.
-		 * The G score is rougly the distance to get from the start node to a node multiplied by 1000 (per default, see Pathfinding.Int3.Precision), plus any penalties */
+		 * The G score is rougly the distance to get from the start node to a node multiplied by 1000 (per default, see Pathfinding.VInt3.Precision), plus any penalties */
 		public int searchLength;
 
 		/** All G scores between #searchLength and #searchLength+#spread are valid end points, a random one of them is chosen as the final point.
@@ -57,7 +57,7 @@ namespace Pathfinding {
 		 * \see #aimStrength */
 	    //Good Game
         //public Vector3 aim;
-        public Int3 aim;
+        public VInt3 aim;
 
 		int nodesEvaluatedRep;
 
@@ -88,7 +88,7 @@ namespace Pathfinding {
 			maxGScore = 0;
 		    //Good Game
             //aim = Vector3.zero;
-            aim = Int3.zero;
+            aim = VInt3.zero;
 
 			nodesEvaluatedRep = 0;
 		}
@@ -98,13 +98,13 @@ namespace Pathfinding {
 		[System.Obsolete("This constructor is obsolete. Please use the pooling API and the Construct methods")]
 		//Good Game
         //public RandomPath (Vector3 start, int length, OnPathDelegate callback = null) {
-        public RandomPath (Int3 start, int length, OnPathDelegate callback = null) {
+        public RandomPath (VInt3 start, int length, OnPathDelegate callback = null) {
 			throw new System.Exception("This constructor is obsolete. Please use the pooling API and the Setup methods");
 		}
 
 	    //Good Game
         //public static RandomPath Construct (Vector3 start, int length, OnPathDelegate callback = null) {
-        public static RandomPath Construct (Int3 start, int length, OnPathDelegate callback = null) {
+        public static RandomPath Construct (VInt3 start, int length, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<RandomPath>();
 
 			p.Setup(start, length, callback);
@@ -113,7 +113,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //protected RandomPath Setup (Vector3 start, int length, OnPathDelegate callback) {
-        protected RandomPath Setup (Int3 start, int length, OnPathDelegate callback) {
+        protected RandomPath Setup (VInt3 start, int length, OnPathDelegate callback) {
 			this.callback = callback;
 
 			searchLength = length;
@@ -121,14 +121,14 @@ namespace Pathfinding {
 			originalStartPoint = start;
             //Good Game
             //originalEndPoint = Vector3.zero;
-            originalEndPoint = Int3.zero;
+            originalEndPoint = VInt3.zero;
 
 			startPoint = start;
             //Good Game
             //endPoint = Vector3.zero;
-            endPoint = Int3.zero;
+            endPoint = VInt3.zero;
 
-			startIntPoint = (Int3)start;
+			startIntPoint = (VInt3)start;
 
 			return this;
 		}
@@ -157,8 +157,8 @@ namespace Pathfinding {
 			startPoint = startNNInfo.position;
 			endPoint = startPoint;
 
-			startIntPoint = (Int3)startPoint;
-			hTarget = (Int3)aim;//startIntPoint;
+			startIntPoint = (VInt3)startPoint;
+			hTarget = (VInt3)aim;//startIntPoint;
 
 			startNode = startNNInfo.node;
 			endNode = startNode;
@@ -184,7 +184,7 @@ namespace Pathfinding {
 		protected override void Initialize () {
 			//Adjust the costs for the end node
 			/*if (hasEndPoint && recalcStartEndCosts) {
-			 *  endNodeCosts = endNode.InitialOpen (open,hTarget,(Int3)endPoint,this,false);
+			 *  endNodeCosts = endNode.InitialOpen (open,hTarget,(VInt3)endPoint,this,false);
 			 *  callback += ResetCosts; /* \todo Might interfere with other paths since other paths might be calculated before #callback is called *
 			 * }*/
 

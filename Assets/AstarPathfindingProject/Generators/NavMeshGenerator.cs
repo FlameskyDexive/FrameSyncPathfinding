@@ -105,20 +105,20 @@ namespace Pathfinding {
 
 			// Bounding rectangle with integer coordinates
 			var irect = new IntRect(
-				Mathf.FloorToInt(bounds.min.x*Int3.Precision),
-				Mathf.FloorToInt(bounds.min.z*Int3.Precision),
-				Mathf.CeilToInt(bounds.max.x*Int3.Precision),
-				Mathf.CeilToInt(bounds.max.z*Int3.Precision)
+				Mathf.FloorToInt(bounds.min.x*VInt3.Precision),
+				Mathf.FloorToInt(bounds.min.z*VInt3.Precision),
+				Mathf.CeilToInt(bounds.max.x*VInt3.Precision),
+				Mathf.CeilToInt(bounds.max.z*VInt3.Precision)
 				);
 
 			// Corners of the bounding rectangle
-			var a = new Int3(irect.xmin, 0, irect.ymin);
-			var b = new Int3(irect.xmin, 0, irect.ymax);
-			var c = new Int3(irect.xmax, 0, irect.ymin);
-			var d = new Int3(irect.xmax, 0, irect.ymax);
+			var a = new VInt3(irect.xmin, 0, irect.ymin);
+			var b = new VInt3(irect.xmin, 0, irect.ymax);
+			var c = new VInt3(irect.xmax, 0, irect.ymin);
+			var d = new VInt3(irect.xmax, 0, irect.ymax);
 
-			var ymin = ((Int3)bounds.min).y;
-			var ymax = ((Int3)bounds.max).y;
+			var ymin = ((VInt3)bounds.min).y;
+			var ymax = ((VInt3)bounds.max).y;
 
 			// Loop through all nodes and check if they intersect the bounding box
 			graph.GetNodes(_node => {
@@ -133,7 +133,7 @@ namespace Pathfinding {
 
 				// Check bounding box rect in XZ plane
 				for (int v = 0; v < 3; v++) {
-					Int3 p = node.GetVertexInGraphSpace(v);
+					VInt3 p = node.GetVertexInGraphSpace(v);
 
 					if (irect.Contains(p.x, p.z)) {
 						inside = true;
@@ -154,8 +154,8 @@ namespace Pathfinding {
 				for (int v = 0; v < 3; v++) {
 					int v2 = v > 1 ? 0 : v+1;
 
-					Int3 vert1 = node.GetVertexInGraphSpace(v);
-					Int3 vert2 = node.GetVertexInGraphSpace(v2);
+					VInt3 vert1 = node.GetVertexInGraphSpace(v);
+					VInt3 vert2 = node.GetVertexInGraphSpace(v2);
 
 					if (VectorMath.SegmentsIntersectXZ(a, b, vert1, vert2)) { inside = true; break; }
 					if (VectorMath.SegmentsIntersectXZ(a, c, vert1, vert2)) { inside = true; break; }
@@ -177,7 +177,7 @@ namespace Pathfinding {
 
 				// Check y coordinate
 				for (int v = 0; v < 3; v++) {
-					Int3 p = node.GetVertexInGraphSpace(v);
+					VInt3 p = node.GetVertexInGraphSpace(v);
 					if (p.y < ymin) allBelow++;
 					if (p.y > ymax) allAbove++;
 				}
@@ -223,22 +223,22 @@ namespace Pathfinding {
 
 			forcedBoundsSize = sourceMesh.bounds.size * scale;
 			Vector3[] vectorVertices = sourceMesh.vertices;
-			var intVertices = ListPool<Int3>.Claim(vectorVertices.Length);
+			var intVertices = ListPool<VInt3>.Claim(vectorVertices.Length);
 			var matrix = Matrix4x4.TRS(-sourceMesh.bounds.min * scale, Quaternion.identity, Vector3.one * scale);
 			// Convert the vertices to integer coordinates and also position them in graph space
 			// so that the minimum of the bounding box of the mesh is at the origin
 			// (the vertices will later be transformed to world space)
 			for (int i = 0; i < vectorVertices.Length; i++) {
-				intVertices.Add((Int3)matrix.MultiplyPoint3x4(vectorVertices[i]));
+				intVertices.Add((VInt3)matrix.MultiplyPoint3x4(vectorVertices[i]));
 			}
 
 			yield return new Progress(0.1f, "Compressing Vertices");
 
 			// Remove duplicate vertices
-			Int3[] compressedVertices = null;
+			VInt3[] compressedVertices = null;
 			int[] compressedTriangles = null;
 			Polygon.CompressMesh(intVertices, new List<int>(sourceMesh.triangles), out compressedVertices, out compressedTriangles);
-			ListPool<Int3>.Release(ref intVertices);
+			ListPool<VInt3>.Release(ref intVertices);
 
 			yield return new Progress(0.2f, "Building Nodes");
 

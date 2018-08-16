@@ -16,8 +16,8 @@ namespace Pathfinding {
 		    //Good Game
             /*public List<Vector3> left;
 			public List<Vector3> right;*/
-            public List<Int3> left;
-			public List<Int3> right;
+            public List<VInt3> left;
+			public List<VInt3> right;
 		}
 
 		/** Part of a path.
@@ -32,7 +32,7 @@ namespace Pathfinding {
 			public int endIndex;
 		    //Good Game
             //public Vector3 startPoint, endPoint;
-            public Int3 startPoint, endPoint;
+            public VInt3 startPoint, endPoint;
 			public bool isLink;
 		}
 
@@ -126,7 +126,7 @@ namespace Pathfinding {
 			{
 			    //Good Game
                 //return new FunnelPortals { left = ListPool<Vector3>.Claim(0), right = ListPool<Vector3>.Claim(0) };
-                return new FunnelPortals { left = ListPool<Int3>.Claim(0), right = ListPool<Int3>.Claim(0) };
+                return new FunnelPortals { left = ListPool<VInt3>.Claim(0), right = ListPool<VInt3>.Claim(0) };
 			}
 
 			if (part.endIndex < part.startIndex || part.startIndex < 0 || part.endIndex > nodes.Count) throw new System.ArgumentOutOfRangeException();
@@ -135,8 +135,8 @@ namespace Pathfinding {
 		    //Good Game
             /*var left = ListPool<Vector3>.Claim(nodes.Count+1);
 			var right = ListPool<Vector3>.Claim(nodes.Count+1);*/
-            var left = ListPool<Int3>.Claim(nodes.Count+1);
-			var right = ListPool<Int3>.Claim(nodes.Count+1);
+            var left = ListPool<VInt3>.Claim(nodes.Count+1);
+			var right = ListPool<VInt3>.Claim(nodes.Count+1);
 
 			// Add start point
 			left.Add(part.startPoint);
@@ -183,8 +183,8 @@ namespace Pathfinding {
 				    //Good Game
                     /*portals.left[i] = Vector3.Lerp(left, right, s);
 					portals.right[i] = Vector3.Lerp(left, right, 1 - s);*/
-                    portals.left[i] = Int3.Lerp(left, right, s);
-					portals.right[i] = Int3.Lerp(left, right, 1 - s);
+                    portals.left[i] = VInt3.Lerp(left, right, s);
+					portals.right[i] = VInt3.Lerp(left, right, 1 - s);
 				}
 			}
 		}
@@ -222,11 +222,11 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public static void Unwrap (FunnelPortals funnel, Vector2[] left, Vector2[] right) {
-        public static void Unwrap (FunnelPortals funnel, Int2[] left, Int2[] right) {
+        public static void Unwrap (FunnelPortals funnel, VInt2[] left, VInt2[] right) {
 			int startingIndex = 1;
 		    //Good Game
             //var normal = Vector3.Cross(funnel.right[1] - funnel.left[0], funnel.left[1] - funnel.left[0]);
-            var normal = Int3.Cross(funnel.right[1] - funnel.left[0], funnel.left[1] - funnel.left[0]);
+            var normal = VInt3.Cross(funnel.right[1] - funnel.left[0], funnel.left[1] - funnel.left[0]);
 
             // This handles the case when the starting point is colinear with the first portal.
             // Note that left.Length is only guaranteed to be at least as large as funnel.left.Count, it may be larger.
@@ -236,10 +236,10 @@ namespace Pathfinding {
 				startingIndex++;
 			    //Good Game
                 //normal = Vector3.Cross(funnel.right[startingIndex] - funnel.left[0], funnel.left[startingIndex] - funnel.left[0]);
-                normal = Int3.Cross(funnel.right[startingIndex] - funnel.left[0], funnel.left[startingIndex] - funnel.left[0]);
+                normal = VInt3.Cross(funnel.right[startingIndex] - funnel.left[0], funnel.left[startingIndex] - funnel.left[0]);
 			}
 
-			left[0] = right[0] = Int2.zero;
+			left[0] = right[0] = VInt2.zero;
 
 			var portalLeft = funnel.left[1];
 			var portalRight = funnel.right[1];
@@ -260,7 +260,7 @@ namespace Pathfinding {
 					portalLeft = funnel.left[i];
 				}
 
-				left[i] = Int2.FromInt3XZ((Int3)(mRot * (Vector3)funnel.left[i] + mOffset));
+				left[i] = VInt2.FromInt3XZ((VInt3)(mRot * (Vector3)funnel.left[i] + mOffset));
 
 			    //Good Game
                 //if (UnwrapHelper(portalLeft, portalRight, prevPoint, funnel.right[i], ref mRot, ref mOffset)) {
@@ -269,7 +269,7 @@ namespace Pathfinding {
 					portalRight = funnel.right[i];
 				}
 
-				right[i] = Int2.FromInt3XZ((Int3)(mRot * (Vector3)funnel.right[i] + mOffset));
+				right[i] = VInt2.FromInt3XZ((VInt3)(mRot * (Vector3)funnel.right[i] + mOffset));
             }
 		}
 
@@ -278,7 +278,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //static int FixFunnel (Vector2[] left, Vector2[] right, int numPortals) {
-        static int FixFunnel (Int2[] left, Int2[] right, int numPortals) {
+        static int FixFunnel (VInt2[] left, VInt2[] right, int numPortals) {
 			if (numPortals > left.Length || numPortals > right.Length) throw new System.ArgumentException("Arrays do not have as many elements as specified");
 
 			if (numPortals < 3) {
@@ -303,27 +303,27 @@ namespace Pathfinding {
 
         //Good Game
 		//protected static Vector2 ToXZ (Vector3 p) {
-		protected static Int2 ToXZ (Int3 p) {
-			return new Int2(p.x, p.z);
+		protected static VInt2 ToXZ (VInt3 p) {
+			return new VInt2(p.x, p.z);
 		}
 
 	    //Good Game
-        //protected static Int3 FromXZ (Int2 p) {
-        protected static Int3 FromXZ (Int2 p) {
-			return new Int3(p.x, 0, p.y);
+        //protected static VInt3 FromXZ (VInt2 p) {
+        protected static VInt3 FromXZ (VInt2 p) {
+			return new VInt3(p.x, 0, p.y);
 		}
 
 	    //Good Game
         /** True if b is to the right of or on the line from (0,0) to a*/
         //protected static bool RightOrColinear (Vector2 a, Vector2 b) {
-        protected static bool RightOrColinear (Int2 a, Int2 b) {
+        protected static bool RightOrColinear (VInt2 a, VInt2 b) {
 			return (a.x*b.y - b.x*a.y) <= 0;
 		}
 
 	    //Good Game
         /** True if b is to the left of or on the line from (0,0) to a */
         //protected static bool LeftOrColinear (Vector2 a, Vector2 b) {
-        protected static bool LeftOrColinear (Int2 a, Int2 b) {
+        protected static bool LeftOrColinear (VInt2 a, VInt2 b) {
 			return (a.x*b.y - b.x*a.y) >= 0;
 		}
 
@@ -346,15 +346,15 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public static List<Vector3> Calculate (FunnelPortals funnel, bool unwrap, bool splitAtEveryPortal) {
-        public static List<Int3> Calculate (FunnelPortals funnel, bool unwrap, bool splitAtEveryPortal) {
+        public static List<VInt3> Calculate (FunnelPortals funnel, bool unwrap, bool splitAtEveryPortal) {
 			if (funnel.left.Count != funnel.right.Count) throw new System.ArgumentException("funnel.left.Count != funnel.right.Count");
 
             // Get arrays at least as large as the number of portals
             //Good Game
             /*var leftArr = ArrayPool<Vector2>.Claim(funnel.left.Count);
 			var rightArr = ArrayPool<Vector2>.Claim(funnel.left.Count);*/
-            var leftArr = ArrayPool<Int2>.Claim(funnel.left.Count);
-			var rightArr = ArrayPool<Int2>.Claim(funnel.left.Count);
+            var leftArr = ArrayPool<VInt2>.Claim(funnel.left.Count);
+			var rightArr = ArrayPool<VInt2>.Claim(funnel.left.Count);
 
 			if (unwrap) {
 				Unwrap(funnel, leftArr, rightArr);
@@ -380,11 +380,11 @@ namespace Pathfinding {
             // Get list for the final result
             //Good Game
             //var result = ListPool<Vector3>.Claim(intermediateResult.Count);
-            var result = ListPool<Int3>.Claim(intermediateResult.Count);
+            var result = ListPool<VInt3>.Claim(intermediateResult.Count);
 
             //Good Game
             //Vector2 prev2D = leftArr[0];
-            Int2 prev2D = leftArr[0];
+            VInt2 prev2D = leftArr[0];
 			var prevIdx = 0;
 			for (int i = 0; i < intermediateResult.Count; i++) {
 				var idx = intermediateResult[i];
@@ -399,7 +399,7 @@ namespace Pathfinding {
                         var factor = IntMath.LineIntersectionFactorXZ(FromXZ(leftArr[j]), FromXZ(rightArr[j]), FromXZ(prev2D), FromXZ(next2D));
                         //result.Add(Vector3.Lerp(funnel.left[j], funnel.right[j], factor));
 					    //Good Game
-                        result.Add(Int3.Lerp(funnel.left[j], funnel.right[j], factor));
+                        result.Add(VInt3.Lerp(funnel.left[j], funnel.right[j], factor));
 					}
 
 					prevIdx = Mathf.Abs(idx);
@@ -418,8 +418,8 @@ namespace Pathfinding {
             //Good Game
             /*ArrayPool<Vector2>.Release(ref leftArr);
 			ArrayPool<Vector2>.Release(ref rightArr);*/
-            ArrayPool<Int2>.Release(ref leftArr);
-			ArrayPool<Int2>.Release(ref rightArr);
+            ArrayPool<VInt2>.Release(ref leftArr);
+			ArrayPool<VInt2>.Release(ref rightArr);
 			return result;
 		}
 
@@ -433,7 +433,7 @@ namespace Pathfinding {
 		*/
 	    //Good Game
         //static void Calculate (Vector2[] left, Vector2[] right, int numPortals, int startIndex, List<int> funnelPath, int maxCorners, out bool lastCorner) {
-        static void Calculate (Int2[] left, Int2[] right, int numPortals, int startIndex, List<int> funnelPath, int maxCorners, out bool lastCorner) {
+        static void Calculate (VInt2[] left, VInt2[] right, int numPortals, int startIndex, List<int> funnelPath, int maxCorners, out bool lastCorner) {
 			if (left.Length != right.Length) throw new System.ArgumentException();
 
 			lastCorner = false;
@@ -446,9 +446,9 @@ namespace Pathfinding {
             /*Vector2 portalApex = left[apexIndex];
 			Vector2 portalLeft = left[leftIndex];
 			Vector2 portalRight = right[rightIndex];*/
-            Int2 portalApex = left[apexIndex];
-			Int2 portalLeft = left[leftIndex];
-			Int2 portalRight = right[rightIndex];
+            VInt2 portalApex = left[apexIndex];
+			VInt2 portalLeft = left[leftIndex];
+			VInt2 portalRight = right[rightIndex];
 
 			funnelPath.Add(apexIndex);
 
@@ -465,8 +465,8 @@ namespace Pathfinding {
 			    //Good Game
                 /*Vector2 pLeft = left[i];
 				Vector2 pRight = right[i];*/
-                Int2 pLeft = left[i];
-				Int2 pRight = right[i];
+                VInt2 pLeft = left[i];
+				VInt2 pRight = right[i];
 
 				if (LeftOrColinear(portalRight - portalApex, pRight - portalApex)) {
 					if (portalApex == portalRight || RightOrColinear(portalLeft - portalApex, pRight - portalApex)) {

@@ -81,7 +81,7 @@ public class AStarPlayer : MonoBehaviour
 
             targetPosition = hit.point;// new Vector3(hit.point.x, transform.localPosition.y, hit.point.z);
             UnityEngine.Debug.Log("targetPosition=" + targetPosition);
-            seeker.StartPath((Int3)transform.position, (Int3)targetPosition, OnPathComplete);
+            seeker.StartPath((VInt3)transform.position, (VInt3)targetPosition, OnPathComplete);
         }*/
         
     }
@@ -93,7 +93,7 @@ public class AStarPlayer : MonoBehaviour
     /// </summary>
     private int funnelIndex = 0;
     string content = String.Empty;
-    private void PositionsLog(List<Int3> p)
+    private void PositionsLog(List<VInt3> p)
     {
         for (int i = 0; i < p.Count; i++)
         {
@@ -114,7 +114,7 @@ public class AStarPlayer : MonoBehaviour
     {
         if (GUI.Button(new Rect(Screen.width - 300, 2, 250, 50), "Seek Path ABCD"))
         {
-            //Debug.Log("--start position--" + (Int3)startObj.position + "--end position--" + (Int3)endObj.position);
+            //Debug.Log("--start position--" + (VInt3)startObj.position + "--end position--" + (VInt3)endObj.position);
             StartCoroutine(Seeking());
         }
         /*GUI.BeginScrollView(new Rect(0, 50, 700, 700), new Vector2(0, 0), new Rect(0, 50, 700, 700));
@@ -158,7 +158,7 @@ public class AStarPlayer : MonoBehaviour
 
     public void SeekPath(int from, int to)
     {
-         seeker.StartPath((Int3)pointRoot.GetChild(from).position, (Int3)pointRoot.GetChild(to).position, OnPathComplete);
+         seeker.StartPath((VInt3)pointRoot.GetChild(from).position, (VInt3)pointRoot.GetChild(to).position, OnPathComplete);
     }
 
     /*void FixedUpdate()

@@ -435,7 +435,7 @@ namespace Pathfinding.Voxels {
 	 */
 	public struct VoxelMesh {
 		/** Vertices of the mesh */
-		public Int3[] verts;
+		public VInt3[] verts;
 
 		/** Triangles of the mesh.
 		 * Each element points to a vertex in the #verts array

@@ -10,11 +10,11 @@ public class Test : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Int3 int3 = new Int3(1, 1, 1);
-        Int3 int3_2 = new Int3(1, 1, 1);
-        Debug.Log("--加法--" + (int3 + int3_2));
-        Debug.Log("--减法--" + (int3 - int3_2));
-        Debug.Log("--点乘和--" + Int3.Dot(int3, int3_2));
+        VInt3 vInt3 = new VInt3(1, 1, 1);
+        VInt3 vInt32 = new VInt3(1, 1, 1);
+        Debug.Log("--加法--" + (vInt3 + vInt32));
+        Debug.Log("--减法--" + (vInt3 - vInt32));
+        Debug.Log("--点乘和--" + VInt3.Dot(vInt3, vInt32));
     }
 
     // Update is called once per frame

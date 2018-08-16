@@ -260,10 +260,10 @@ public struct VFactor
         return IntMath.Divide(v, f.nom, f.den);
     }
 
-    public static Int3 operator *(Int3 v, VFactor f)
+    /*public static VInt3 operator *(VInt3 v, VFactor f)
     {
         return IntMath.Divide(v, f.nom, f.den);
-    }
+    }*/
 
     public static VInt2 operator *(VInt2 v, VFactor f)
     {

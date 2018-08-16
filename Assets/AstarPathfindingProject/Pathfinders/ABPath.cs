@@ -19,26 +19,26 @@ namespace Pathfinding {
 	    //Good Game
         /** Start Point exactly as in the path request */
         //public Vector3 originalStartPoint;
-        public Int3 originalStartPoint;
+        public VInt3 originalStartPoint;
 
         /** End Point exactly as in the path request */
 	    //Good Game
         //public Vector3 originalEndPoint;
-        public Int3 originalEndPoint;
+        public VInt3 originalEndPoint;
 
         /** Start point of the path.
 		 * This is the closest point on the #startNode to #originalStartPoint
 		 */
 	    //Good Game
         //public Vector3 startPoint;
-        public Int3 startPoint;
+        public VInt3 startPoint;
 
         /** End point of the path.
 		 * This is the closest point on the #endNode to #originalEndPoint
 		 */
 	    //Good Game
         //public Vector3 endPoint;
-        public Int3 endPoint;
+        public VInt3 endPoint;
 
 		/** Determines if a search for an end node should be done.
 		 * Set by different path types.
@@ -50,7 +50,7 @@ namespace Pathfinding {
 			}
 		}
 
-		public Int3 startIntPoint; /**< Start point in integer coordinates */
+		public VInt3 startIntPoint; /**< Start point in integer coordinates */
 
 		/** Calculate partial path if the target node cannot be reached.
 		 * If the target node cannot be reached, the node which was closest (given by heuristic) will be chosen as target node
@@ -93,7 +93,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public static ABPath Construct (Vector3 start, Vector3 end, OnPathDelegate callback = null) {
-        public static ABPath Construct (Int3 start, Int3 end, OnPathDelegate callback = null) {
+        public static ABPath Construct (VInt3 start, VInt3 end, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<ABPath>();
 
 			p.Setup(start, end, callback);
@@ -102,7 +102,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //protected void Setup (Vector3 start, Vector3 end, OnPathDelegate callbackDelegate) {
-        protected void Setup (Int3 start, Int3 end, OnPathDelegate callbackDelegate) {
+        protected void Setup (VInt3 start, VInt3 end, OnPathDelegate callbackDelegate) {
 			callback = callbackDelegate;
 			UpdateStartEnd(start, end);
 		}
@@ -113,15 +113,15 @@ namespace Pathfinding {
 		 * Sets #originalStartPoint, #originalEndPoint, #startPoint, #endPoint, #startIntPoint and #hTarget (to \a end ) */
 	    //Good Game
         //protected void UpdateStartEnd (Vector3 start, Vector3 end) {
-        protected void UpdateStartEnd (Int3 start, Int3 end) {
+        protected void UpdateStartEnd (VInt3 start, VInt3 end) {
 			originalStartPoint = start;
 			originalEndPoint = end;
 
 			startPoint = start;
 			endPoint = end;
 
-			startIntPoint = (Int3)start;
-			hTarget = (Int3)end;
+			startIntPoint = (VInt3)start;
+			hTarget = (VInt3)end;
 		}
 
 		internal override uint GetConnectionSpecialCost (GraphNode a, GraphNode b, uint currentCost) {
@@ -160,14 +160,14 @@ namespace Pathfinding {
 
 			startNode = null;
 			endNode = null;
-			originalStartPoint = Int3.zero;
-			originalEndPoint = Int3.zero;
-			startPoint = Int3.zero;
-			endPoint = Int3.zero;
+			originalStartPoint = VInt3.zero;
+			originalEndPoint = VInt3.zero;
+			startPoint = VInt3.zero;
+			endPoint = VInt3.zero;
 			calculatePartial = false;
 			partialBestTarget = null;
-			startIntPoint = new Int3();
-			hTarget = new Int3();
+			startIntPoint = new VInt3();
+			hTarget = new VInt3();
 			endNodeCosts = null;
 
 #if !ASTAR_NO_GRID_GRAPH
@@ -266,7 +266,7 @@ namespace Pathfinding {
 						// We now need to find all nodes marked with an x to be able to mark them as targets
 						SetFlagOnSurroundingGridNodes(gridNode2, 1, true);
 
-						// Note, other methods assume hTarget is (Int3)endPoint
+						// Note, other methods assume hTarget is (VInt3)endPoint
                         //Good Game
 						//endPoint = (Vector3)gridNode2.position;
 						endPoint = gridNode2.position;
@@ -345,7 +345,7 @@ namespace Pathfinding {
 
 			startPoint = startNNInfo.position;
 
-			startIntPoint = (Int3)startPoint;
+			startIntPoint = (VInt3)startPoint;
 			startNode = startNNInfo.node;
 
 			if (startNode == null) {
@@ -390,8 +390,8 @@ namespace Pathfinding {
 				if (!EndPointGridGraphSpecialCase(endNNInfo.node))
 #endif
 				{
-					// Note, other methods assume hTarget is (Int3)endPoint
-					hTarget = (Int3)endPoint;
+					// Note, other methods assume hTarget is (VInt3)endPoint
+					hTarget = (VInt3)endPoint;
 					hTargetNode = endNode;
 
 					// Mark end node with flag1 to mark it as a target point
@@ -667,12 +667,12 @@ namespace Pathfinding {
         //Good Game
 		[System.Obsolete()]
 		//public Vector3 GetMovementVector (Vector3 point) {
-		public Int3 GetMovementVector (Int3 point) {
+		public VInt3 GetMovementVector (VInt3 point) {
 			if (vectorPath == null || vectorPath.Count == 0)
 			{
 			    //Good Game
                 //return Vector3.zero;
-                return Int3.zero;
+                return VInt3.zero;
 			}
 
 			if (vectorPath.Count == 1) {
@@ -686,7 +686,7 @@ namespace Pathfinding {
 			{
 			    //Good Game
                 //Vector3 closest = VectorMath.ClosestPointOnSegment(vectorPath[i], vectorPath[i+1], point);
-                Int3 closest = IntMath.ClosestPointOnSegment((Vector3)vectorPath[i], (Vector3)vectorPath[i+1], (Vector3)point);
+                VInt3 closest = IntMath.ClosestPointOnSegment((Vector3)vectorPath[i], (Vector3)vectorPath[i+1], (Vector3)point);
 				float dist = (closest-point).sqrMagnitude;
 				if (dist < minDist) {
 					minDist = dist;

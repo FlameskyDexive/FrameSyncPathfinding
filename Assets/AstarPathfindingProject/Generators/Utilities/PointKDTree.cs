@@ -129,14 +129,14 @@ namespace Pathfinding {
 				for (int i = start; i < end; i++)
 					leafData[i - start] = nodes[i];
 			} else {
-				Int3 mn, mx;
+				VInt3 mn, mx;
 				mn = mx = nodes[start].position;
 				for (int i = start; i < end; i++) {
 					var p = nodes[i].position;
-					mn = new Int3(System.Math.Min(mn.x, p.x), System.Math.Min(mn.y, p.y), System.Math.Min(mn.z, p.z));
-					mx = new Int3(System.Math.Max(mx.x, p.x), System.Math.Max(mx.y, p.y), System.Math.Max(mx.z, p.z));
+					mn = new VInt3(System.Math.Min(mn.x, p.x), System.Math.Min(mn.y, p.y), System.Math.Min(mn.z, p.z));
+					mx = new VInt3(System.Math.Max(mx.x, p.x), System.Math.Max(mx.y, p.y), System.Math.Max(mx.z, p.z));
 				}
-				Int3 diff = mx - mn;
+				VInt3 diff = mx - mn;
 				var axis = diff.x > diff.y ? (diff.x > diff.z ? 0 : 2) : (diff.y > diff.z ? 1 : 2);
 
 				nodes.Sort(start, end - start, comparers[axis]);
@@ -174,7 +174,7 @@ namespace Pathfinding {
 		}
 
 		/** Closest node to the point which satisfies the constraint */
-		public GraphNode GetNearest (Int3 point, NNConstraint constraint) {
+		public GraphNode GetNearest (VInt3 point, NNConstraint constraint) {
 			GraphNode best = null;
 			long bestSqrDist = long.MaxValue;
 
@@ -182,7 +182,7 @@ namespace Pathfinding {
 			return best;
 		}
 
-		void GetNearestInternal (int index, Int3 point, NNConstraint constraint, ref GraphNode best, ref long bestSqrDist) {
+		void GetNearestInternal (int index, VInt3 point, NNConstraint constraint, ref GraphNode best, ref long bestSqrDist) {
 			var data = tree[index].data;
 
 			if (data != null) {
@@ -208,15 +208,15 @@ namespace Pathfinding {
 
 		/** Add all nodes within a squared distance of the point to the buffer.
 		 * \param point Nodes around this point will be added to the \a buffer.
-		 * \param sqrRadius squared maximum distance in Int3 space. If you are converting from world space you will need to multiply by Int3.Precision:
-		 * \code var sqrRadius = (worldSpaceRadius * Int3.Precision) * (worldSpaceRadius * Int3.Precision); \endcode
+		 * \param sqrRadius squared maximum distance in VInt3 space. If you are converting from world space you will need to multiply by VInt3.Precision:
+		 * \code var sqrRadius = (worldSpaceRadius * VInt3.Precision) * (worldSpaceRadius * VInt3.Precision); \endcode
 		 * \param buffer All nodes will be added to this list.
 		 */
-		public void GetInRange (Int3 point, long sqrRadius, List<GraphNode> buffer) {
+		public void GetInRange (VInt3 point, long sqrRadius, List<GraphNode> buffer) {
 			GetInRangeInternal(1, point, sqrRadius, buffer);
 		}
 
-		void GetInRangeInternal (int index, Int3 point, long sqrRadius, List<GraphNode> buffer) {
+		void GetInRangeInternal (int index, VInt3 point, long sqrRadius, List<GraphNode> buffer) {
 			var data = tree[index].data;
 
 			if (data != null) {

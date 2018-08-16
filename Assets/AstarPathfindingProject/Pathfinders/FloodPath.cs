@@ -50,8 +50,8 @@ namespace Pathfinding {
 	    //Good Game
         /*public Vector3 originalStartPoint;
 		public Vector3 startPoint;*/
-        public Int3 originalStartPoint;
-		public Int3 startPoint;
+        public VInt3 originalStartPoint;
+		public VInt3 startPoint;
 		public GraphNode startNode;
 
 		/** If false, will not save any information.
@@ -82,7 +82,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //public static FloodPath Construct (Vector3 start, OnPathDelegate callback = null) {
-        public static FloodPath Construct (Int3 start, OnPathDelegate callback = null) {
+        public static FloodPath Construct (VInt3 start, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<FloodPath>();
 
 			p.Setup(start, callback);
@@ -99,7 +99,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //protected void Setup (Vector3 start, OnPathDelegate callback) {
-        protected void Setup (Int3 start, OnPathDelegate callback) {
+        protected void Setup (VInt3 start, OnPathDelegate callback) {
 			this.callback = callback;
 			originalStartPoint = start;
 			startPoint = start;
@@ -123,8 +123,8 @@ namespace Pathfinding {
 		    //Good Game
             /*originalStartPoint = Vector3.zero;
 			startPoint = Vector3.zero;*/
-            originalStartPoint = Int3.zero;
-			startPoint = Int3.zero;
+            originalStartPoint = VInt3.zero;
+			startPoint = VInt3.zero;
 			startNode = null;
 			/** \todo Avoid this allocation */
 			parents = new Dictionary<GraphNode, GraphNode>();

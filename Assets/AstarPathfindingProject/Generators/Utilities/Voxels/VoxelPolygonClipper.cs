@@ -124,7 +124,7 @@ namespace Pathfinding.Voxels {
 		 * x axis, y axis or the z axis as the cutting line. The resulting vertices will be added to the
 		 * vOut array in their original space (i.e before scaling and offsetting).
 		 */
-		public int ClipPolygon (Int3[] vIn, int n, Int3[] vOut, int multi, int offset, int axis) {
+		public int ClipPolygon (VInt3[] vIn, int n, VInt3[] vOut, int multi, int offset, int axis) {
 			Init();
 
 			int[] d = clipPolygonIntCache;

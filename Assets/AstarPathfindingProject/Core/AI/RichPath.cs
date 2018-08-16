@@ -173,14 +173,14 @@ namespace Pathfinding {
 		NavmeshBase graph;
 		int currentNode;
 		Vector3 currentPosition;*/
-        readonly List<Int3> left;
-		readonly List<Int3> right;
+        readonly List<VInt3> left;
+		readonly List<VInt3> right;
 		List<TriangleMeshNode> nodes;
-		public Int3 exactStart;
-		public Int3 exactEnd;
+		public VInt3 exactStart;
+		public VInt3 exactEnd;
 		NavmeshBase graph;
 		int currentNode;
-		Int3 currentPosition;
+		VInt3 currentPosition;
 
 		int checkForDestroyedNodesCounter;
 		RichPath path;
@@ -194,8 +194,8 @@ namespace Pathfinding {
 		    //Good Game
             /*left = Pathfinding.Util.ListPool<Vector3>.Claim();
 			right = Pathfinding.Util.ListPool<Vector3>.Claim();*/
-            left = Pathfinding.Util.ListPool<Int3>.Claim();
-			right = Pathfinding.Util.ListPool<Int3>.Claim();
+            left = Pathfinding.Util.ListPool<VInt3>.Claim();
+			right = Pathfinding.Util.ListPool<VInt3>.Claim();
 			nodes = new List<TriangleMeshNode>();
 			this.graph = null;
 		}
@@ -289,7 +289,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //void SimplifyPath (IRaycastableGraph graph, List<GraphNode> nodes, int start, int end, List<GraphNode> result, Vector3 startPoint, Vector3 endPoint) {
-        void SimplifyPath (IRaycastableGraph graph, List<GraphNode> nodes, int start, int end, List<GraphNode> result, Int3 startPoint, Int3 endPoint) {
+        void SimplifyPath (IRaycastableGraph graph, List<GraphNode> nodes, int start, int end, List<GraphNode> result, VInt3 startPoint, VInt3 endPoint) {
 			if (graph == null) throw new System.ArgumentNullException("graph");
 
 			if (start > end) {
@@ -322,8 +322,8 @@ namespace Pathfinding {
 				    //Good Game
                     /*Vector3 sp = start == ostart ? startPoint : (Vector3)nodes[start].position;
 					Vector3 ep = mid == end ? endPoint : (Vector3)nodes[mid].position;*/
-                    Int3 sp = start == ostart ? startPoint : nodes[start].position;
-					Int3 ep = mid == end ? endPoint : nodes[mid].position;
+                    VInt3 sp = start == ostart ? startPoint : nodes[start].position;
+					VInt3 ep = mid == end ? endPoint : nodes[mid].position;
 
 					if (graph.Linecast(sp, ep, nodes[start], out hit)) {
 						mx = mid;
@@ -344,8 +344,8 @@ namespace Pathfinding {
 				    //Good Game
                     /*Vector3 sp = start == ostart ? startPoint : (Vector3)nodes[start].position;
 					Vector3 ep = mn == end ? endPoint : (Vector3)nodes[mn].position;*/
-                    Int3 sp = start == ostart ? startPoint : nodes[start].position;
-					Int3 ep = mn == end ? endPoint : nodes[mn].position;
+                    VInt3 sp = start == ostart ? startPoint : nodes[start].position;
+					VInt3 ep = mn == end ? endPoint : nodes[mn].position;
 					graph.Linecast(sp, ep, nodes[start], out hit, result);
 
 					long penaltySum = 0;
@@ -423,7 +423,7 @@ namespace Pathfinding {
 				var currentNode = CurrentNode;
 			    //Good Game
                 //Vector3 closestOnNode = currentNode != null ? currentNode.ClosestPointOnNode(currentPosition) : currentPosition;
-                Int3 closestOnNode = currentNode != null ? currentNode.ClosestPointOnNode(currentPosition) : currentPosition;
+                VInt3 closestOnNode = currentNode != null ? currentNode.ClosestPointOnNode(currentPosition) : currentPosition;
 				return (exactEnd - closestOnNode).magnitude;
 			}
 		}
@@ -466,7 +466,7 @@ namespace Pathfinding {
 
 		    //Good Game
 			//currentPosition = position;
-            currentPosition = (Int3)position;
+            currentPosition = (VInt3)position;
 
 			if (nodesDestroyed) {
 				// Some nodes on the path have been destroyed
@@ -513,7 +513,7 @@ namespace Pathfinding {
 			// Check if we are in the same node as we were in during the last frame and otherwise do a more extensive search
             //Good Game
 			//if (previousNode.ContainsPoint(position)) {
-			if (previousNode.ContainsPoint((Int3)position)) {
+			if (previousNode.ContainsPoint((VInt3)position)) {
 				return false;
 			}
 
@@ -540,7 +540,7 @@ namespace Pathfinding {
                 // might slow down when traversing slopes
 			    //Good Game
                 //var closest = node.ClosestPointOnNodeXZ(position);
-                var closest = node.ClosestPointOnNodeXZ((Int3)position);
+                var closest = node.ClosestPointOnNodeXZ((VInt3)position);
 			    //Good Game
                 //var dist = VectorMath.MagnitudeXZ(closest - position);
 				var dist = VectorMath.MagnitudeXZ((Vector3)closest - position);
@@ -595,7 +595,7 @@ namespace Pathfinding {
                 // Recalculate the funnel to include this node
 			    //Good Game
                 //exactStart = position;
-                exactStart = (Int3)position;
+                exactStart = (VInt3)position;
 				UpdateFunnelCorridor(closestNodeInPath, prefix);
 
 				prefix.ClearFast();
@@ -656,7 +656,7 @@ namespace Pathfinding {
 
 			    //Good Game
                 //if ((node.ClosestPointOnNodeXZ(position)-position).sqrMagnitude > range) {
-                if (((Vector3)node.ClosestPointOnNodeXZ((Int3)position)-position).sqrMagnitude > range) {
+                if (((Vector3)node.ClosestPointOnNodeXZ((VInt3)position)-position).sqrMagnitude > range) {
 					if (i < 0) negAbort = true;
 					else posAbort = true;
 					continue;
@@ -755,7 +755,7 @@ namespace Pathfinding {
 			if (swPoint == left[startIndex+1]) {
 				swPoint = right[startIndex+2];
 			}*/
-            Int3 swPoint = left[startIndex+2];
+            VInt3 swPoint = left[startIndex+2];
 			if (swPoint == left[startIndex+1]) {
 				swPoint = right[startIndex+2];
 			}

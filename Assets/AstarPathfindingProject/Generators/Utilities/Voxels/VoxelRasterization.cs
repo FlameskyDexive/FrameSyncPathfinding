@@ -543,11 +543,11 @@ namespace Pathfinding.Voxels {
 		 * (0,0,0) in voxel coordinates is a bottom corner of the bounding box.
 		 * (1,0,0) is one voxel in the +X direction of that.
 		 */
-		public Int3 VoxelToWorldInt3 (Int3 voxelPosition) {
-			var pos = voxelPosition * Int3.Precision;
+		public VInt3 VoxelToWorldInt3 (VInt3 voxelPosition) {
+			var pos = voxelPosition * VInt3.Precision;
 
-			pos = new Int3(Mathf.RoundToInt(pos.x * cellScale.x), Mathf.RoundToInt(pos.y * cellScale.y), Mathf.RoundToInt(pos.z * cellScale.z));
-			return pos +(Int3)voxelOffset;
+			pos = new VInt3(Mathf.RoundToInt(pos.x * cellScale.x), Mathf.RoundToInt(pos.y * cellScale.y), Mathf.RoundToInt(pos.z * cellScale.z));
+			return pos +(VInt3)voxelOffset;
 		}
 
 		Vector3 ConvertPosWithoutOffset (int x, int y, int z) {

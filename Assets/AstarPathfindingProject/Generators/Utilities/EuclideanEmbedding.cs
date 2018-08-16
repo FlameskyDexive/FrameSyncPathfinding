@@ -109,7 +109,7 @@ namespace Pathfinding {
 			{
 			    //Good Game
                 //var info = AstarPath.active.GetNearest(ch.position, NNConstraint.Default);
-                var info = AstarPath.active.GetNearest((Int3)ch.position, NNConstraint.Default);
+                var info = AstarPath.active.GetNearest((VInt3)ch.position, NNConstraint.Default);
 				if (info.node != null && info.node.Walkable) {
 					nodes.Add(info.node);
 				}

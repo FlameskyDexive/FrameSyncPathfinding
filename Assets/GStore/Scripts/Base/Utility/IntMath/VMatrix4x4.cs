@@ -499,9 +499,9 @@ using Pathfinding;
         ///   <para>Transforms a position by this matrix (fast).</para>
         /// </summary>
         /// <param name="point"></param>
-        public Int3 MultiplyPoint3x4(Int3 point)
+        public VInt3 MultiplyPoint3x4(VInt3 point)
         {
-            Int3 vector3;
+            VInt3 vector3;
             vector3.x = (int)(M11 * point.x + M12 * point.y + M13 * point.z + M14);
             vector3.y = (int)(M21 * point.x + M22 * point.y + M23 * point.z + M24);
             vector3.z = (int)(M31 * point.x + M32 * point.y + M33 * point.z + M34);
@@ -801,7 +801,7 @@ using Pathfinding;
             return result;
         }
 
-        public static VMatrix4x4 Translate(Int3 translation)
+        public static VMatrix4x4 Translate(VInt3 translation)
         {
             return Translate(translation.x, translation.y, translation.z);
         }
@@ -833,7 +833,7 @@ using Pathfinding;
         /// <param name="zScale">Value to scale by on the Z-axis.</param>
         /// <param name="centerPoint">The center point.</param>
         /// <returns>The scaling matrix.</returns>
-        public static VMatrix4x4 Scale(long xScale, long yScale, long zScale, Int3 centerPoint)
+        public static VMatrix4x4 Scale(long xScale, long yScale, long zScale, VInt3 centerPoint)
         {
             VMatrix4x4 result;
 
@@ -854,7 +854,7 @@ using Pathfinding;
         /// </summary>
         /// <param name="scales">The vector containing the amount to scale by on each axis.</param>
         /// <returns>The scaling matrix.</returns>
-        public static VMatrix4x4 Scale(Int3 scales)
+        public static VMatrix4x4 Scale(VInt3 scales)
         {
             return Scale(scales.x, scales.y, scales.z);
         }
@@ -865,7 +865,7 @@ using Pathfinding;
         /// <param name="scales">The vector containing the amount to scale by on each axis.</param>
         /// <param name="centerPoint">The center point.</param>
         /// <returns>The scaling matrix.</returns>
-        public static VMatrix4x4 Scale(Int3 scales, Int3 centerPoint)
+        public static VMatrix4x4 Scale(VInt3 scales, VInt3 centerPoint)
         {
             return Scale(scales.x, scales.y, scales.z, centerPoint);
         }
@@ -886,7 +886,7 @@ using Pathfinding;
         /// <param name="scale">The uniform scaling factor.</param>
         /// <param name="centerPoint">The center point.</param>
         /// <returns>The scaling matrix.</returns>
-        public static VMatrix4x4 Scale(long scale, Int3 centerPoint)
+        public static VMatrix4x4 Scale(long scale, VInt3 centerPoint)
         {
             return Scale(scale, scale, scale, centerPoint);
         }
@@ -933,7 +933,7 @@ using Pathfinding;
         /// <param name="radians">The amount, in radians, by which to rotate around the X-axis.</param>
         /// <param name="centerPoint">The center point.</param>
         /// <returns>The rotation matrix.</returns>
-        /*public static VMatrix4x4 RotateX(long radians, Int3 centerPoint)
+        /*public static VMatrix4x4 RotateX(long radians, VInt3 centerPoint)
         {
             VMatrix4x4 result;
 
@@ -1009,7 +1009,7 @@ using Pathfinding;
         /// <param name="radians">The amount, in radians, by which to rotate around the Y-axis.</param>
         /// <param name="centerPoint">The center point.</param>
         /// <returns>The rotation matrix.</returns>
-        /*public static VMatrix4x4 RotateY(long radians, Int3 centerPoint)
+        /*public static VMatrix4x4 RotateY(long radians, VInt3 centerPoint)
         {
             VMatrix4x4 result;
 
@@ -1085,7 +1085,7 @@ using Pathfinding;
         /// <param name="radians">The amount, in radians, by which to rotate around the Z-axis.</param>
         /// <param name="centerPoint">The center point.</param>
         /// <returns>The rotation matrix.</returns>
-        /*public static VMatrix4x4 RotateZ(long radians, Int3 centerPoint)
+        /*public static VMatrix4x4 RotateZ(long radians, VInt3 centerPoint)
         {
             VMatrix4x4 result;
 
@@ -1125,7 +1125,7 @@ using Pathfinding;
         /// <param name="axis">The axis.</param>
         /// <param name="angle">The angle.</param>
         /// <param name="result">The resulting rotation matrix</param>
-        /*public static void AxisAngle(ref Int3 axis, long angle, out VMatrix4x4 result)
+        /*public static void AxisAngle(ref VInt3 axis, long angle, out VMatrix4x4 result)
         {
             // a: angle
             // x, y, z: unit vector for axis.
@@ -1181,7 +1181,7 @@ using Pathfinding;
         /// <param name="axis">The axis.</param>
         /// <param name="angle">The angle.</param>
         /// <returns>The resulting rotation matrix</returns>
-        /*public static VMatrix4x4 AngleAxis(long angle, Int3 axis)
+        /*public static VMatrix4x4 AngleAxis(long angle, VInt3 axis)
         {
             VMatrix4x4 result;
             AxisAngle(ref axis, angle, out result);
@@ -1197,12 +1197,12 @@ using Pathfinding;
                 M41, M42, M43, M44);
         }
 
-        public static void TRS(Int3 translation, VQuaternion rotation, Int3 scale, out VMatrix4x4 matrix)
+        public static void TRS(VInt3 translation, VQuaternion rotation, VInt3 scale, out VMatrix4x4 matrix)
         {
             matrix = VMatrix4x4.Translate(translation) * VMatrix4x4.Rotate(rotation) * VMatrix4x4.Scale(scale);
         }
 
-        public static VMatrix4x4 TRS(Int3 translation, VQuaternion rotation, Int3 scale)
+        public static VMatrix4x4 TRS(VInt3 translation, VQuaternion rotation, VInt3 scale)
         {
             VMatrix4x4 result;
             TRS(translation, rotation, scale, out result);

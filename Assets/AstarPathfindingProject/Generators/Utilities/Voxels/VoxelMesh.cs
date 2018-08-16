@@ -156,7 +156,7 @@ namespace Pathfinding.Voxels {
 				maxVertsPerCont = System.Math.Max(maxVertsPerCont, cset.conts[i].nverts);
 			}
 
-			Int3[] verts = ArrayPool<Int3>.Claim(maxVertices);
+			VInt3[] verts = ArrayPool<VInt3>.Claim(maxVertices);
 			int[] polys = ArrayPool<int>.Claim(maxTris*nvp);
 			int[] areas = ArrayPool<int>.Claim(maxTris);
 
@@ -204,7 +204,7 @@ namespace Pathfinding.Voxels {
 
 				// Copy the vertex positions
 				for (int j = 0; j < cont.nverts; vertexIndex++, j++) {
-					verts[vertexIndex] = new Int3(cont.verts[j*4], cont.verts[j*4+1], cont.verts[j*4+2]);
+					verts[vertexIndex] = new VInt3(cont.verts[j*4], cont.verts[j*4+1], cont.verts[j*4+2]);
 				}
 			}
 
@@ -214,7 +214,7 @@ namespace Pathfinding.Voxels {
 				areas = Memory.ShrinkArray(areas, areaIndex)
 			};
 
-			ArrayPool<Int3>.Release(ref verts);
+			ArrayPool<VInt3>.Release(ref verts);
 			ArrayPool<int>.Release(ref polys);
 			ArrayPool<int>.Release(ref areas);
 			ArrayPool<int>.Release(ref indices);

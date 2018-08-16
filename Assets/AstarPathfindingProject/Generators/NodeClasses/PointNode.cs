@@ -18,7 +18,7 @@ namespace Pathfinding {
 		 */
 		public GameObject gameObject;
 
-		public void SetPosition (Int3 value) {
+		public void SetPosition (VInt3 value) {
 			position = value;
 		}
 

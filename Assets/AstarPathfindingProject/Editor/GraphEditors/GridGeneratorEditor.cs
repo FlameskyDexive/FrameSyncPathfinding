@@ -407,7 +407,7 @@ namespace Pathfinding {
 					EditorGUI.indentLevel++;
 					graph.penaltyPositionOffset = EditorGUILayout.FloatField("Offset", graph.penaltyPositionOffset);
 					graph.penaltyPositionFactor = EditorGUILayout.FloatField("Factor", graph.penaltyPositionFactor);
-					EditorGUILayout.HelpBox("Applies penalty to nodes based on their Y coordinate\nSampled in Int3 space, i.e it is multiplied with Int3.Precision first ("+Int3.Precision+")\n" +
+					EditorGUILayout.HelpBox("Applies penalty to nodes based on their Y coordinate\nSampled in VInt3 space, i.e it is multiplied with VInt3.Precision first ("+VInt3.Precision+")\n" +
 						"Be very careful when using negative values since a negative penalty will underflow and instead get really high", MessageType.None);
 					EditorGUI.indentLevel--;
 				}

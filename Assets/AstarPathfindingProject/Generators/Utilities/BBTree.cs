@@ -26,7 +26,7 @@ namespace Pathfinding {
 					return new Rect(0, 0, 0, 0);
 				} else {
 					var rect = tree[0].rect;
-					return Rect.MinMaxRect(rect.xmin*Int3.PrecisionFactor, rect.ymin*Int3.PrecisionFactor, rect.xmax*Int3.PrecisionFactor, rect.ymax*Int3.PrecisionFactor);
+					return Rect.MinMaxRect(rect.xmin*VInt3.PrecisionFactor, rect.ymin*VInt3.PrecisionFactor, rect.xmax*VInt3.PrecisionFactor, rect.ymax*VInt3.PrecisionFactor);
 				}
 			}
 		}
@@ -105,7 +105,7 @@ namespace Pathfinding {
 			// the bounds makes it around 3 times faster to build a tree
 			var nodeBounds = ArrayPool<IntRect>.Claim(nodes.Length);
 			for (int i = 0; i < nodes.Length; i++) {
-				Int3 v0, v1, v2;
+				VInt3 v0, v1, v2;
 				nodes[i].GetVertices(out v0, out v1, out v2);
 
 				var rect = new IntRect(v0.x, v0.z, v0.x, v0.z);
@@ -246,7 +246,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public NNInfoInternal QueryClosest (Vector3 p, NNConstraint constraint, out float distance) {
-        public NNInfoInternal QueryClosest (Int3 p, NNConstraint constraint, out float distance) {
+        public NNInfoInternal QueryClosest (VInt3 p, NNConstraint constraint, out float distance) {
 			distance = float.PositiveInfinity;
 			return QueryClosest(p, constraint, ref distance, new NNInfoInternal(null));
 		}
@@ -269,7 +269,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public NNInfoInternal QueryClosestXZ (Vector3 p, NNConstraint constraint, ref float distance, NNInfoInternal previous) {
-        public NNInfoInternal QueryClosestXZ (Int3 p, NNConstraint constraint, ref float distance, NNInfoInternal previous) {
+        public NNInfoInternal QueryClosestXZ (VInt3 p, NNConstraint constraint, ref float distance, NNInfoInternal previous) {
 			var sqrDistance = distance*distance;
 			var origSqrDistance = sqrDistance;
 
@@ -282,7 +282,7 @@ namespace Pathfinding {
 			return previous;
 		}
 
-		void SearchBoxClosestXZ (int boxi, Int3 p, ref float closestSqrDist, NNConstraint constraint, ref NNInfoInternal nnInfo) {
+		void SearchBoxClosestXZ (int boxi, VInt3 p, ref float closestSqrDist, NNConstraint constraint, ref NNInfoInternal nnInfo) {
 			BBTreeBox box = tree[boxi];
 
 			if (box.IsLeaf) {
@@ -295,7 +295,7 @@ namespace Pathfinding {
 					if (constraint == null || constraint.Suitable(node)) {
                         //Good Game
 						//Vector3 closest = node.ClosestPointOnNodeXZ(p);
-						Int3 closest = node.ClosestPointOnNodeXZ(p);
+						VInt3 closest = node.ClosestPointOnNodeXZ(p);
 						// XZ squared distance
 						float dist = (closest.x-p.x)*(closest.x-p.x)+(closest.z-p.z)*(closest.z-p.z);
 
@@ -342,7 +342,7 @@ namespace Pathfinding {
 		 */
 	    //Good Game
         //public NNInfoInternal QueryClosest (Vector3 p, NNConstraint constraint, ref float distance, NNInfoInternal previous) {
-        public NNInfoInternal QueryClosest (Int3 p, NNConstraint constraint, ref float distance, NNInfoInternal previous) {
+        public NNInfoInternal QueryClosest (VInt3 p, NNConstraint constraint, ref float distance, NNInfoInternal previous) {
 			var sqrDistance = distance*distance;
 			var origSqrDistance = sqrDistance;
 
@@ -357,7 +357,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //void SearchBoxClosest (int boxi, Vector3 p, ref float closestSqrDist, NNConstraint constraint, ref NNInfoInternal nnInfo) {
-        void SearchBoxClosest (int boxi, Int3 p, ref float closestSqrDist, NNConstraint constraint, ref NNInfoInternal nnInfo) {
+        void SearchBoxClosest (int boxi, VInt3 p, ref float closestSqrDist, NNConstraint constraint, ref NNInfoInternal nnInfo) {
 			BBTreeBox box = tree[boxi];
 
 			if (box.IsLeaf) {
@@ -366,7 +366,7 @@ namespace Pathfinding {
 					var node = nodes[box.nodeOffset+i];
 				    //Good Game
                     //Vector3 closest = node.ClosestPointOnNode(p);
-                    Int3 closest = node.ClosestPointOnNode(p);
+                    VInt3 closest = node.ClosestPointOnNode(p);
 					float dist = (closest-p).sqrMagnitude;
 					if (dist < closestSqrDist) {
 						DrawDebugNode(node, 0.2f, Color.red);
@@ -401,7 +401,7 @@ namespace Pathfinding {
 	    //Good Game
         /** Orders the box indices first and second by the approximate distance to the point p */
         //void GetOrderedChildren (ref int first, ref int second, out float firstDist, out float secondDist, Vector3 p) {
-        void GetOrderedChildren (ref int first, ref int second, out float firstDist, out float secondDist, Int3 p) {
+        void GetOrderedChildren (ref int first, ref int second, out float firstDist, out float secondDist, VInt3 p) {
 			firstDist = SquaredRectPointDistance(tree[first].rect, p);
 			secondDist = SquaredRectPointDistance(tree[second].rect, p);
 
@@ -433,7 +433,7 @@ namespace Pathfinding {
 				var nodes = nodeLookup;
 				for (int i = 0; i < MaximumLeafSize && nodes[box.nodeOffset+i] != null; i++) {
 					var node = nodes[box.nodeOffset+i];
-					if (node.ContainsPoint((Int3)p)) {
+					if (node.ContainsPoint((VInt3)p)) {
 						DrawDebugNode(node, 0.2f, Color.red);
 
 						if (constraint == null || constraint.Suitable(node)) {
@@ -486,7 +486,7 @@ namespace Pathfinding {
 			}
 
 			public bool Contains (Vector3 point) {
-				var pi = (Int3)point;
+				var pi = (VInt3)point;
 
 				return rect.Contains(pi.x, pi.z);
 			}
@@ -501,8 +501,8 @@ namespace Pathfinding {
 		void OnDrawGizmos (int boxi, int depth) {
 			BBTreeBox box = tree[boxi];
 
-			var min = (Vector3) new Int3(box.rect.xmin, 0, box.rect.ymin);
-			var max = (Vector3) new Int3(box.rect.xmax, 0, box.rect.ymax);
+			var min = (Vector3) new VInt3(box.rect.xmin, 0, box.rect.ymin);
+			var max = (Vector3) new VInt3(box.rect.xmax, 0, box.rect.ymax);
 
 			Vector3 center = (min+max)*0.5F;
 			Vector3 size = (max-center)*2;
@@ -521,7 +521,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //static bool NodeIntersectsCircle (TriangleMeshNode node, Vector3 p, float radius) {
-        static bool NodeIntersectsCircle (TriangleMeshNode node, Int3 p, float radius) {
+        static bool NodeIntersectsCircle (TriangleMeshNode node, VInt3 p, float radius) {
 			if (float.IsPositiveInfinity(radius)) return true;
 
             /** \bug Is not correct on the Y axis */
@@ -537,10 +537,10 @@ namespace Pathfinding {
 			if (float.IsPositiveInfinity(radius)) return true;
 
 			Vector3 po = p;
-			p.x = Math.Max(p.x, r.xmin*Int3.PrecisionFactor);
-			p.x = Math.Min(p.x, r.xmax*Int3.PrecisionFactor);
-			p.z = Math.Max(p.z, r.ymin*Int3.PrecisionFactor);
-			p.z = Math.Min(p.z, r.ymax*Int3.PrecisionFactor);
+			p.x = Math.Max(p.x, r.xmin*VInt3.PrecisionFactor);
+			p.x = Math.Min(p.x, r.xmax*VInt3.PrecisionFactor);
+			p.z = Math.Max(p.z, r.ymin*VInt3.PrecisionFactor);
+			p.z = Math.Min(p.z, r.ymax*VInt3.PrecisionFactor);
 
 			// XZ squared magnitude comparison
 			return (p.x-po.x)*(p.x-po.x) + (p.z-po.z)*(p.z-po.z) < radius*radius;
@@ -550,10 +550,10 @@ namespace Pathfinding {
 		static float SquaredRectPointDistance (IntRect r, Vector3 p) {
 			Vector3 po = p;
 
-			p.x = Math.Max(p.x, r.xmin*Int3.PrecisionFactor);
-			p.x = Math.Min(p.x, r.xmax*Int3.PrecisionFactor);
-			p.z = Math.Max(p.z, r.ymin*Int3.PrecisionFactor);
-			p.z = Math.Min(p.z, r.ymax*Int3.PrecisionFactor);
+			p.x = Math.Max(p.x, r.xmin*VInt3.PrecisionFactor);
+			p.x = Math.Min(p.x, r.xmax*VInt3.PrecisionFactor);
+			p.z = Math.Max(p.z, r.ymin*VInt3.PrecisionFactor);
+			p.z = Math.Min(p.z, r.ymax*VInt3.PrecisionFactor);
 
 			// XZ squared magnitude comparison
 			return (p.x-po.x)*(p.x-po.x) + (p.z-po.z)*(p.z-po.z);
@@ -562,8 +562,8 @@ namespace Pathfinding {
 	    //Good Game
         //returns int calculation
         /** Returns distance from \a p to the rectangle \a r */
-        static float SquaredRectPointDistance (IntRect r, Int3 p) {
-			Int3 po = p;
+        static float SquaredRectPointDistance (IntRect r, VInt3 p) {
+			VInt3 po = p;
 
 			p.x = Math.Max(p.x, r.xmin);
 			p.x = Math.Min(p.x, r.xmax);

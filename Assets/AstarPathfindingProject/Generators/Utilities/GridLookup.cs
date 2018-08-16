@@ -12,7 +12,7 @@ namespace Pathfinding.Util {
 	 * (inclusive) and one at #size (exclusive) that is specified in the constructor.
 	 */
 	public class GridLookup<T> where T : class {
-		Int2 size;
+		VInt2 size;
 		Item[] cells;
 		/** Linked list of all items.
 		 * Note that the first item in the list is a dummy item and does not contain any data.
@@ -21,7 +21,7 @@ namespace Pathfinding.Util {
 		Dictionary<T, Root> rootLookup = new Dictionary<T, Root>();
 		Stack<Item> itemPool = new Stack<Item>();
 
-		public GridLookup (Int2 size) {
+		public GridLookup (VInt2 size) {
 			this.size = size;
 			cells = new Item[size.x*size.y];
 			for (int i = 0; i < cells.Length; i++) cells[i] = new Item();

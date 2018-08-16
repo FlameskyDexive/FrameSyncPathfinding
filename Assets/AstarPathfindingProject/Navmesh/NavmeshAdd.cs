@@ -157,7 +157,7 @@ namespace Pathfinding {
 		 */
 		internal override Rect GetBounds (Pathfinding.Util.GraphTransform inverseTransform) {
 			if (this.verts == null) RebuildMesh();
-			var verts = Pathfinding.Util.ArrayPool<Int3>.Claim(this.verts != null ? this.verts.Length : 0);
+			var verts = Pathfinding.Util.ArrayPool<VInt3>.Claim(this.verts != null ? this.verts.Length : 0);
 			int[] tris;
 			GetMesh(ref verts, out tris, inverseTransform);
 
@@ -174,7 +174,7 @@ namespace Pathfinding {
 				}
 			}
 
-			Pathfinding.Util.ArrayPool<Int3>.Release(ref verts);
+			Pathfinding.Util.ArrayPool<VInt3>.Release(ref verts);
 			return r;
 		}
 
@@ -187,7 +187,7 @@ namespace Pathfinding {
 		 * \param inverseTransform All vertices will be transformed using the #Pathfinding.GraphTransform.InverseTransform method.
 		 *  This is typically used to transform from world space to graph space.
 		 */
-		public void GetMesh (ref Int3[] vbuffer, out int[] tbuffer, Pathfinding.Util.GraphTransform inverseTransform = null) {
+		public void GetMesh (ref VInt3[] vbuffer, out int[] tbuffer, Pathfinding.Util.GraphTransform inverseTransform = null) {
 			if (verts == null) RebuildMesh();
 
 			if (verts == null) {
@@ -196,8 +196,8 @@ namespace Pathfinding {
 			}
 
 			if (vbuffer == null || vbuffer.Length < verts.Length) {
-				if (vbuffer != null) Util.ArrayPool<Int3>.Release(ref vbuffer);
-				vbuffer = Util.ArrayPool<Int3>.Claim(verts.Length);
+				if (vbuffer != null) Util.ArrayPool<VInt3>.Release(ref vbuffer);
+				vbuffer = Util.ArrayPool<VInt3>.Claim(verts.Length);
 			}
 			tbuffer = tris;
 
@@ -207,14 +207,14 @@ namespace Pathfinding {
 				for (int i = 0; i < verts.Length; i++) {
 					var v = m.MultiplyPoint3x4(verts[i]);
 					if (inverseTransform != null) v = inverseTransform.InverseTransform(v);
-					vbuffer[i] = (Int3)v;
+					vbuffer[i] = (VInt3)v;
 				}
 			} else {
 				Vector3 voffset = tr.position + center;
 				for (int i = 0; i < verts.Length; i++) {
 					var v = voffset + verts[i]*meshScale;
 					if (inverseTransform != null) v = inverseTransform.InverseTransform(v);
-					vbuffer[i] = (Int3)v;
+					vbuffer[i] = (VInt3)v;
 				}
 			}
 		}
@@ -222,7 +222,7 @@ namespace Pathfinding {
 		public static readonly Color GizmoColor = new Color(94.0f/255, 239.0f/255, 37.0f/255);
 
 	#if UNITY_EDITOR
-		public static Int3[] gizmoBuffer;
+		public static VInt3[] gizmoBuffer;
 
 		public void OnDrawGizmos () {
 			if (tr == null) tr = transform;

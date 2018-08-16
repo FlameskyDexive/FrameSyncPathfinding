@@ -579,7 +579,7 @@ namespace Pathfinding {
 #if ASTAR_SET_LEVELGRIDNODE_HEIGHT
 				node.height = lln.height;
 #endif
-				node.position = (Int3)lln.position;
+				node.position = (VInt3)lln.position;
 				node.Walkable = lln.walkable;
 				node.WalkableErosion = node.Walkable;
 
@@ -759,7 +759,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //public override NNInfoInternal GetNearest (Vector3 position, NNConstraint constraint, GraphNode hint) {
-        public override NNInfoInternal GetNearest (Int3 position, NNConstraint constraint, GraphNode hint) {
+        public override NNInfoInternal GetNearest (VInt3 position, NNConstraint constraint, GraphNode hint) {
 			if (nodes == null || depth*width*layerCount != nodes.Length) {
 				//Debug.LogError ("NavGraph hasn't been generated yet");
 				return new NNInfoInternal();
@@ -783,13 +783,13 @@ namespace Pathfinding {
             int y = transform.InverseTransform(minNode.position).y;
 		    //Good Game
             //nn.clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, x, x+1f), y, Mathf.Clamp(zf, z, z+1f)));
-            nn.clampedPosition = transform.Transform(new Int3(Mathf.Clamp(xf, x, x+1), y, Mathf.Clamp(zf, z, z+1)));
+            nn.clampedPosition = transform.Transform(new VInt3(Mathf.Clamp(xf, x, x+1), y, Mathf.Clamp(zf, z, z+1)));
 			return nn;
 		}
 
 	    //Good Game
         //private LevelGridNode GetNearestNode (Vector3 position, int x, int z, NNConstraint constraint) {
-        private LevelGridNode GetNearestNode (Int3 position, int x, int z, NNConstraint constraint) {
+        private LevelGridNode GetNearestNode (VInt3 position, int x, int z, NNConstraint constraint) {
 			int index = width*z+x;
 			float minDist = float.PositiveInfinity;
 			LevelGridNode minNode = null;
@@ -812,14 +812,14 @@ namespace Pathfinding {
 
 	    //Good Game
         //public override NNInfoInternal GetNearestForce (Vector3 position, NNConstraint constraint) {
-        public override NNInfoInternal GetNearestForce (Int3 position, NNConstraint constraint) {
+        public override NNInfoInternal GetNearestForce (VInt3 position, NNConstraint constraint) {
 			if (nodes == null || depth*width*layerCount != nodes.Length || layerCount == 0) {
 				return new NNInfoInternal();
 			}
 
             //Good Game
             //Vector3 globalPosition = position;
-            Int3 globalPosition = position;
+            VInt3 globalPosition = position;
 
 			position = transform.InverseTransform(position);
 
@@ -927,7 +927,7 @@ namespace Pathfinding {
 				var nz = minNode.ZCoordinateInGrid;
                 //Good Game
 				//nn.clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, nx, nx+1f), transform.InverseTransform((Vector3)minNode.position).y, Mathf.Clamp(zf, nz, nz+1f)));
-				nn.clampedPosition = transform.Transform(new Int3(Mathf.Clamp(xf, nx, nx+1), transform.InverseTransform(minNode.position).y, Mathf.Clamp(zf, nz, nz+1)));
+				nn.clampedPosition = transform.Transform(new VInt3(Mathf.Clamp(xf, nx, nx+1), transform.InverseTransform(minNode.position).y, Mathf.Clamp(zf, nz, nz+1)));
 			}
 			return nn;
 		}
@@ -1107,7 +1107,7 @@ namespace Pathfinding {
 		 */
 		public int LayerCoordinateInGrid { get { return nodeInGridIndex >> NodeInGridIndexLayerOffset; } set { nodeInGridIndex = (nodeInGridIndex & NodeInGridIndexMask) | (value << NodeInGridIndexLayerOffset); } }
 
-		public void SetPosition (Int3 position) {
+		public void SetPosition (VInt3 position) {
 			this.position = position;
 		}
 
@@ -1219,7 +1219,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //public override bool GetPortal (GraphNode other, List<Vector3> left, List<Vector3> right, bool backwards) {
-        public override bool GetPortal (GraphNode other, List<Int3> left, List<Int3> right, bool backwards) {
+        public override bool GetPortal (GraphNode other, List<VInt3> left, List<VInt3> right, bool backwards) {
 			if (backwards) return true;
 
 			LayerGridGraph graph = GetGridGraph(GraphIndex);
@@ -1235,8 +1235,8 @@ namespace Pathfinding {
 					    //Good Game
                         /*Vector3 middle = ((Vector3)(position + other.position))*0.5f;
 						Vector3 cross = Vector3.Cross(graph.collision.up, (Vector3)(other.position-position));*/
-                        Int3 middle = ((position + other.position))/2;
-						Int3 cross = Int3.Cross((Int3)graph.collision.up, (other.position-position));
+                        VInt3 middle = ((position + other.position))/2;
+						VInt3 cross = VInt3.Cross((VInt3)graph.collision.up, (other.position-position));
 						cross.Normalize();
 						cross *= graph.nodeSize*0.5f;
 						left.Add(middle - cross);

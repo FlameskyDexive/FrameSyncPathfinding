@@ -32,7 +32,7 @@ namespace Pathfinding.Examples {
 			var selector = new List<SingleNodeBlocker>() { blocker };
 		    //Good Game
             //var node = AstarPath.active.GetNearest(transform.position).node;
-            var node = AstarPath.active.GetNearest((Int3)transform.position).node;
+            var node = AstarPath.active.GetNearest((VInt3)transform.position).node;
 
 			// Wait while there is another SingleNodeBlocker occupying the same node as the door
 			// this is likely another unit which is standing on the door node, and then we cannot

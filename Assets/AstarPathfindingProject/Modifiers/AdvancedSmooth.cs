@@ -22,7 +22,7 @@ namespace Pathfinding {
 		{
 		    //Good Game
             Vector3[] vectorPath = IntMath.Int3s2Vector3s(p.vectorPath).ToArray();
-            //Int3[] vectorPath = p.vectorPath.ToArray();
+            //VInt3[] vectorPath = p.vectorPath.ToArray();
 
 			if (vectorPath == null || vectorPath.Length <= 2) {
 				return;
@@ -30,7 +30,7 @@ namespace Pathfinding {
 
 		    //Good Game
             List<Vector3> newPath = new List<Vector3>();
-            //List<Int3> newPath = new List<Int3>();
+            //List<VInt3> newPath = new List<VInt3>();
 			newPath.Add(vectorPath[0]);
 
 			TurnConstructor.turningRadius = turningRadius;

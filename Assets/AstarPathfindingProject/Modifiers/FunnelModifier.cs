@@ -59,12 +59,12 @@ namespace Pathfinding {
         public override void Apply(Path p)
         {
             List<GraphNode> path = p.path;
-            List<Int3> vectorPath = p.vectorPath;
+            List<VInt3> vectorPath = p.vectorPath;
             if (((path != null) && (path.Count != 0)) && ((vectorPath != null) && (vectorPath.Count == path.Count)))
             {
-                List<Int3> funnelPath = ListPool<Int3>.Claim();
-                List<Int3> left = ListPool<Int3>.Claim(path.Count + 1);
-                List<Int3> right = ListPool<Int3>.Claim(path.Count + 1);
+                List<VInt3> funnelPath = ListPool<VInt3>.Claim();
+                List<VInt3> left = ListPool<VInt3>.Claim(path.Count + 1);
+                List<VInt3> right = ListPool<VInt3>.Claim(path.Count + 1);
                 left.Add(vectorPath[0]);
                 right.Add(vectorPath[0]);
                 for (int i = 0; i < (path.Count - 1); i++)
@@ -86,11 +86,11 @@ namespace Pathfinding {
                     funnelPath.Add(vectorPath[0]);
                     funnelPath.Add(vectorPath[vectorPath.Count - 1]);
                 }
-                ListPool<Int3>.Release(p.vectorPath);
+                ListPool<VInt3>.Release(p.vectorPath);
                 p.vectorPath = funnelPath;
                 //PositionsLog(funnelPath);
-                ListPool<Int3>.Release(left);
-                ListPool<Int3>.Release(right);
+                ListPool<VInt3>.Release(left);
+                ListPool<VInt3>.Release(right);
             }
         }
 
@@ -110,7 +110,7 @@ namespace Pathfinding {
         {
         }
 
-        public bool RunFunnel(List<Int3> left, List<Int3> right, List<Int3> funnelPath)
+        public bool RunFunnel(List<VInt3> left, List<VInt3> right, List<VInt3> funnelPath)
         {
             if (left == null)
             {
@@ -141,7 +141,7 @@ namespace Pathfinding {
                     return false;
                 }
             }
-            Int3 c = left[2];
+            VInt3 c = left[2];
             if (c == left[1])
             {
                 c = right[2];
@@ -162,14 +162,14 @@ namespace Pathfinding {
             }
             if (!VectorMath.IsClockwiseXZ(left[0], left[1], right[1]) && !VectorMath.IsColinearXZ(left[0], left[1], right[1]))
             {
-                List<Int3> list = left;
+                List<VInt3> list = left;
                 left = right;
                 right = list;
             }
             funnelPath.Add(left[0]);
-            Int3 a = left[0];
-            Int3 b = left[1];
-            Int3 num4 = right[1];
+            VInt3 a = left[0];
+            VInt3 b = left[1];
+            VInt3 num4 = right[1];
             int num5 = 0;
             int num6 = 1;
             int num7 = 1;
@@ -180,8 +180,8 @@ namespace Pathfinding {
                     Debug.LogWarning("Avoiding infinite loop. Remove this check if you have this long paths.");
                     break;
                 }
-                Int3 num9 = left[i];
-                Int3 num10 = right[i];
+                VInt3 num9 = left[i];
+                VInt3 num10 = right[i];
                 if (VectorMath.SignedTriangleAreaTimes2XZ(a, num4, num10) >= 0L)
                 {
                     if ((a == num4) || (VectorMath.SignedTriangleAreaTimes2XZ(a, b, num10) <= 0L))

@@ -5,12 +5,12 @@ namespace Pathfinding {
 	/** Interface for something that holds a triangle based navmesh */
 	public interface INavmeshHolder : ITransformedGraph, INavmesh {
 		/** Position of vertex number i in the world */
-		Int3 GetVertex (int i);
+		VInt3 GetVertex (int i);
 
 		/** Position of vertex number i in coordinates local to the graph.
 		 * The up direction is always the +Y axis for these coordinates.
 		 */
-		Int3 GetVertexInGraphSpace (int i);
+		VInt3 GetVertexInGraphSpace (int i);
 
 		int GetVertexArrayIndex (int index);
 
@@ -59,7 +59,7 @@ namespace Pathfinding {
 
 		/** Set the position of this node to the average of its 3 vertices */
 		public void UpdatePositionFromVertices () {
-			Int3 a, b, c;
+			VInt3 a, b, c;
 
 			GetVertices(out a, out b, out c);
 			position = (a + b + c) / 3;
@@ -82,7 +82,7 @@ namespace Pathfinding {
 		}
 
 		/** Returns all 3 vertices of this node in world space */
-		public void GetVertices (out Int3 v0, out Int3 v1, out Int3 v2) {
+		public void GetVertices (out VInt3 v0, out VInt3 v1, out VInt3 v2) {
 			// Get the object holding the vertex data for this node
 			// This is usually a graph or a recast graph tile
 			var holder = GetNavmeshHolder(GraphIndex);
@@ -93,7 +93,7 @@ namespace Pathfinding {
 		}
 
 		/** Returns all 3 vertices of this node in graph space */
-		public void GetVerticesInGraphSpace (out Int3 v0, out Int3 v1, out Int3 v2) {
+		public void GetVerticesInGraphSpace (out VInt3 v0, out VInt3 v1, out VInt3 v2) {
 			// Get the object holding the vertex data for this node
 			// This is usually a graph or a recast graph tile
 			var holder = GetNavmeshHolder(GraphIndex);
@@ -103,11 +103,11 @@ namespace Pathfinding {
 			v2 = holder.GetVertexInGraphSpace(this.v2);
 		}
 
-		public override Int3 GetVertex (int i) {
+		public override VInt3 GetVertex (int i) {
 			return GetNavmeshHolder(GraphIndex).GetVertex(GetVertexIndex(i));
 		}
 
-		public Int3 GetVertexInGraphSpace (int i) {
+		public VInt3 GetVertexInGraphSpace (int i) {
 			return GetNavmeshHolder(GraphIndex).GetVertexInGraphSpace(GetVertexIndex(i));
 		}
 
@@ -118,20 +118,20 @@ namespace Pathfinding {
 
 	    //Good Game
         //public override Vector3 ClosestPointOnNode (Vector3 p) {
-        public override Int3 ClosestPointOnNode (Int3 p) {
-			Int3 a, b, c;
+        public override VInt3 ClosestPointOnNode (VInt3 p) {
+			VInt3 a, b, c;
 
 			GetVertices(out a, out b, out c);
             //Good Game
             //return Pathfinding.Polygon.ClosestPointOnTriangle((Vector3)a, (Vector3)b, (Vector3)c, p);
-            //Int3 closestInt3 = (Int3) Polygon.ClosestPointOnTriangle((Vector3) a, (Vector3) b, (Vector3) c, (Vector3) p);
-            Int3 closestInt3 = IntMath.ClosestPointOnTriangle(a, b, c, p);
-            //Int3 closestInt3 = ClosestPointOnTriangleXZ(a, b, c, p);
-            //Int3 closestInt3 = (Int3) ClosestPointOnNodeXZ(a, b, c, (Vector3) p);
-            PathDebug.LogError(4, "--ClosestPointOnNodeXZ--" + closestInt3);
-            //return (Int3)Pathfinding.Polygon.ClosestPointOnTriangle((Vector3)a, (Vector3)b, (Vector3)c, (Vector3)p);
+            //VInt3 closestVInt3 = (VInt3) Polygon.ClosestPointOnTriangle((Vector3) a, (Vector3) b, (Vector3) c, (Vector3) p);
+            VInt3 closestVInt3 = IntMath.ClosestPointOnTriangle(a, b, c, p);
+            //VInt3 closestVInt3 = ClosestPointOnTriangleXZ(a, b, c, p);
+            //VInt3 closestVInt3 = (VInt3) ClosestPointOnNodeXZ(a, b, c, (Vector3) p);
+            PathDebug.LogError(4, "--ClosestPointOnNodeXZ--" + closestVInt3);
+            //return (VInt3)Pathfinding.Polygon.ClosestPointOnTriangle((Vector3)a, (Vector3)b, (Vector3)c, (Vector3)p);
             //return ClosestPointOnTriangleXZ(a, b, c, p);
-            return closestInt3;
+            return closestVInt3;
 		}
 
         /** Closest point on the node when seen from above.
@@ -139,17 +139,17 @@ namespace Pathfinding {
 		 *
 		 * - The returned point is the closest one on the node to \a p when seen from above (relative to the graph).
 		 *   This is important mostly for sloped surfaces.
-		 * - The returned point is an Int3 point in graph space.
+		 * - The returned point is an VInt3 point in graph space.
 		 * - It is guaranteed to be inside the node, so if you call #ContainsPointInGraphSpace with the return value from this method the result is guaranteed to be true.
 		 *
 		 * This method is slower than e.g #ClosestPointOnNode or #ClosestPointOnNodeXZ.
 		 * However they do not have the same guarantees as this method has.
 		 */
 	    //Good Game
-        //internal Int3 ClosestPointOnNodeXZInGraphSpace (Vector3 p) {
-        internal Int3 ClosestPointOnNodeXZInGraphSpace (Int3 p) {
+        //internal VInt3 ClosestPointOnNodeXZInGraphSpace (Vector3 p) {
+        internal VInt3 ClosestPointOnNodeXZInGraphSpace (VInt3 p) {
 			// Get the vertices that make up the triangle
-			Int3 a, b, c;
+			VInt3 a, b, c;
 
 			GetVerticesInGraphSpace(out a, out b, out c);
 
@@ -163,7 +163,7 @@ namespace Pathfinding {
             var closest = ClosestPointOnTriangleXZ(a, b, c, p);
 
 			// Make sure the point is actually inside the node
-			var i3closest = (Int3)closest;
+			var i3closest = (VInt3)closest;
 			if (ContainsPointInGraphSpace(i3closest)) {
 				// Common case
 				return i3closest;
@@ -179,7 +179,7 @@ namespace Pathfinding {
 				for (int dx = -1; dx <= 1; dx++) {
 					for (int dz = -1; dz <= 1; dz++) {
 						if ((dx != 0 || dz != 0)) {
-							var candidate = new Int3(i3closest.x + dx, i3closest.y, i3closest.z + dz);
+							var candidate = new VInt3(i3closest.x + dx, i3closest.y, i3closest.z + dz);
 							if (ContainsPointInGraphSpace(candidate)) return candidate;
 						}
 					}
@@ -197,28 +197,28 @@ namespace Pathfinding {
 		}
 
         //Good Game
-        public override Int3 ClosestPointOnNodeXZ (Int3 p) {
-        //public override Int3 ClosestPointOnNodeXZ (Int3 p) {
+        public override VInt3 ClosestPointOnNodeXZ (VInt3 p) {
+        //public override VInt3 ClosestPointOnNodeXZ (VInt3 p) {
 			// Get all 3 vertices for this node
-			Int3 tp1, tp2, tp3;
+			VInt3 tp1, tp2, tp3;
             PathDebug.LogError(3, "--ClosestPointOnNodeXZ--" + p.ToString());
 			GetVertices(out tp1, out tp2, out tp3);
             //Good Game
             //return Polygon.ClosestPointOnTriangleXZ(tp1, tp2, tp3, p);
-            //return (Int3)Polygon.ClosestPointOnTriangleXZ((Vector3)tp1, (Vector3)tp2, (Vector3)tp3, (Vector3)p);
+            //return (VInt3)Polygon.ClosestPointOnTriangleXZ((Vector3)tp1, (Vector3)tp2, (Vector3)tp3, (Vector3)p);
             //return IntMath.ClosestPointOnTriangle(tp1, tp2, tp3, p);
             return ClosestPointOnTriangleXZ(tp1, tp2, tp3, p);
-			//return (Int3)ClosestPointOnNodeXZ(tp1, tp2, tp3, (Vector3)p);
+			//return (VInt3)ClosestPointOnNodeXZ(tp1, tp2, tp3, (Vector3)p);
 		}
 
 	    //Good Game
-        Int3 ClosestPointOnTriangleXZ(Int3 vertex, Int3 vertex2, Int3 vertex3, Int3 p)
+        VInt3 ClosestPointOnTriangleXZ(VInt3 vertex, VInt3 vertex2, VInt3 vertex3, VInt3 p)
 	    {
 	        vertex.y = 0;
 	        vertex.y = 0;
 	        vertex2.y = 0;
 	        vertex3.y = 0;
-	        Int3 result;
+	        VInt3 result;
 	        if ((long)(vertex2.x - vertex.x) * (long)(p.z - vertex.z) - (long)(p.x - vertex.x) * (long)(vertex2.z - vertex.z) > 0L)
 	        {
 	            this.CalcNearestPoint(out result, ref vertex, ref vertex2, ref p);
@@ -237,13 +237,13 @@ namespace Pathfinding {
 	        }
 	        return result;
         }
-	    Vector3 ClosestPointOnNodeXZ(Int3 vertex, Int3 vertex2, Int3 vertex3, Vector3 _p)
+	    Vector3 ClosestPointOnNodeXZ(VInt3 vertex, VInt3 vertex2, VInt3 vertex3, Vector3 _p)
 	    {
 	        /*INavmeshHolder navmeshHolder = TriangleMeshNode.GetNavmeshHolder(this.DataGroupIndex, base.GraphIndex);
 	        VInt3 vertex = navmeshHolder.GetVertex(this.v0);
 	        VInt3 vertex2 = navmeshHolder.GetVertex(this.v1);
 	        VInt3 vertex3 = navmeshHolder.GetVertex(this.v2);*/
-	        Int3 point = (Int3)_p;
+	        VInt3 point = (VInt3)_p;
 	        int y = point.y;
 	        vertex.y = 0;
 	        vertex2.y = 0;
@@ -268,14 +268,14 @@ namespace Pathfinding {
 	    }
 
         //Good Game
-        private void CalcNearestPoint(out Int3 cp, ref Int3 start, ref Int3 end, ref Int3 p)
+        private void CalcNearestPoint(out VInt3 cp, ref VInt3 start, ref VInt3 end, ref VInt3 p)
 	    {
-	        Int2 b = new Int2(end.x - start.x, end.z - start.z);
+	        VInt2 b = new VInt2(end.x - start.x, end.z - start.z);
 	        long sqrMagnitudeLong = b.sqrMagnitudeLong;
-	        Int2 a = new Int2(p.x - start.x, p.z - start.z);
-	        cp = new Int3();
+	        VInt2 a = new VInt2(p.x - start.x, p.z - start.z);
+	        cp = new VInt3();
 	        cp.y = p.y;
-	        long num4 = Int2.DotLong(ref a, ref b);
+	        long num4 = VInt2.DotLong(ref a, ref b);
 	        if (sqrMagnitudeLong != 0)
 	        {
 	            long num5 = (end.x - start.x) * num4;
@@ -295,13 +295,13 @@ namespace Pathfinding {
 
         //GG
         //public override bool ContainsPoint (Vector3 p) {
-        public override bool ContainsPoint (Int3 p) {
-			return ContainsPointInGraphSpace((Int3)GetNavmeshHolder(GraphIndex).transform.InverseTransform(p));
+        public override bool ContainsPoint (VInt3 p) {
+			return ContainsPointInGraphSpace((VInt3)GetNavmeshHolder(GraphIndex).transform.InverseTransform(p));
 		}
 
-		public override bool ContainsPointInGraphSpace (Int3 p) {
+		public override bool ContainsPointInGraphSpace (VInt3 p) {
 			// Get all 3 vertices for this node
-			Int3 a, b, c;
+			VInt3 a, b, c;
 
 			GetVerticesInGraphSpace(out a, out b, out c);
 
@@ -417,7 +417,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //public override bool GetPortal (GraphNode toNode, System.Collections.Generic.List<Vector3> left, System.Collections.Generic.List<Vector3> right, bool backwards) {
-        public override bool GetPortal (GraphNode toNode, System.Collections.Generic.List<Int3> left, System.Collections.Generic.List<Int3> right, bool backwards) {
+        public override bool GetPortal (GraphNode toNode, System.Collections.Generic.List<VInt3> left, System.Collections.Generic.List<VInt3> right, bool backwards) {
 			int aIndex, bIndex;
 
 			return GetPortal(toNode, left, right, backwards, out aIndex, out bIndex);
@@ -425,7 +425,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //public bool GetPortal (GraphNode toNode, System.Collections.Generic.List<Vector3> left, System.Collections.Generic.List<Vector3> right, bool backwards, out int aIndex, out int bIndex) {
-        public bool GetPortal (GraphNode toNode, System.Collections.Generic.List<Int3> left, System.Collections.Generic.List<Int3> right, bool backwards, out int aIndex, out int bIndex) {
+        public bool GetPortal (GraphNode toNode, System.Collections.Generic.List<VInt3> left, System.Collections.Generic.List<VInt3> right, bool backwards, out int aIndex, out int bIndex) {
 			aIndex = -1;
 			bIndex = -1;
 
@@ -463,8 +463,8 @@ namespace Pathfinding {
 			bIndex = (edge + 1) % GetVertexCount();
 
 			// Get the vertices of the shared edge for the first node
-			Int3 v1a = GetVertex(edge);
-			Int3 v1b = GetVertex((edge+1) % GetVertexCount());
+			VInt3 v1a = GetVertex(edge);
+			VInt3 v1b = GetVertex((edge+1) % GetVertexCount());
 
 			// Get tile indices
 			int tileIndex1 = (GetVertexIndex(0) >> NavmeshBase.TileIndexOffset) & NavmeshBase.TileIndexMask;
@@ -497,8 +497,8 @@ namespace Pathfinding {
 					int maxcoord = System.Math.Max(v1a[coord], v1b[coord]);
 
 					// Get the vertices of the shared edge for the second node
-					Int3 v2a = toTriNode.GetVertex(otherEdge);
-					Int3 v2b = toTriNode.GetVertex((otherEdge+1) % toTriNode.GetVertexCount());
+					VInt3 v2a = toTriNode.GetVertex(otherEdge);
+					VInt3 v2b = toTriNode.GetVertex((otherEdge+1) % toTriNode.GetVertexCount());
 
 					mincoord = System.Math.Max(mincoord, System.Math.Min(v2a[coord], v2b[coord]));
 					maxcoord = System.Math.Min(maxcoord, System.Math.Max(v2a[coord], v2b[coord]));
@@ -532,7 +532,7 @@ namespace Pathfinding {
 		}
 
         //GG
-		public override Int3 RandomPointOnSurface () {
+		public override VInt3 RandomPointOnSurface () {
 			// Find a random point inside the triangle
 			// This generates uniformly distributed trilinear coordinates
 			// See http://mathworld.wolfram.com/TrianglePointPicking.html

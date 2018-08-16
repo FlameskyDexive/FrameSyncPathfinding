@@ -61,7 +61,7 @@ namespace Pathfinding.Examples {
 		}
 
 		/** All tiles */
-		Dictionary<Int2, ProceduralTile> tiles = new Dictionary<Int2, ProceduralTile>();
+		Dictionary<VInt2, ProceduralTile> tiles = new Dictionary<VInt2, ProceduralTile>();
 
 		// Use this for initialization
 		void Start () {
@@ -76,7 +76,7 @@ namespace Pathfinding.Examples {
 		// Update is called once per frame
 		void Update () {
 			// Calculate the tile the target is standing on
-			Int2 p = new Int2(Mathf.RoundToInt((target.position.x - tileSize*0.5f) / tileSize), Mathf.RoundToInt((target.position.z - tileSize*0.5f) / tileSize));
+			VInt2 p = new VInt2(Mathf.RoundToInt((target.position.x - tileSize*0.5f) / tileSize), Mathf.RoundToInt((target.position.z - tileSize*0.5f) / tileSize));
 
 			// Clamp range
 			range = range < 1 ? 1 : range;
@@ -85,7 +85,7 @@ namespace Pathfinding.Examples {
 			bool changed = true;
 			while (changed) {
 				changed = false;
-				foreach (KeyValuePair<Int2, ProceduralTile> pair in tiles) {
+				foreach (KeyValuePair<VInt2, ProceduralTile> pair in tiles) {
 					if (Mathf.Abs(pair.Key.x-p.x) > range || Mathf.Abs(pair.Key.y-p.y) > range) {
 						pair.Value.Destroy();
 						tiles.Remove(pair.Key);
@@ -99,14 +99,14 @@ namespace Pathfinding.Examples {
 			// and start calculating them
 			for (int x = p.x-range; x <= p.x+range; x++) {
 				for (int z = p.y-range; z <= p.y+range; z++) {
-					if (!tiles.ContainsKey(new Int2(x, z))) {
+					if (!tiles.ContainsKey(new VInt2(x, z))) {
 						ProceduralTile tile = new ProceduralTile(this, x, z);
 						var generator = tile.Generate();
 						// Tick it one step forward
 						generator.MoveNext();
 						// Calculate the rest later
 						tileGenerationQueue.Enqueue(generator);
-						tiles.Add(new Int2(x, z), tile);
+						tiles.Add(new VInt2(x, z), tile);
 					}
 				}
 			}
@@ -116,7 +116,7 @@ namespace Pathfinding.Examples {
 			// make sure they are
 			for (int x = p.x-1; x <= p.x+1; x++) {
 				for (int z = p.y-1; z <= p.y+1; z++) {
-					tiles[new Int2(x, z)].ForceFinish();
+					tiles[new VInt2(x, z)].ForceFinish();
 				}
 			}
 		}

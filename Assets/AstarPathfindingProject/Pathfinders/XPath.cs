@@ -28,7 +28,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //public new static XPath Construct (Vector3 start, Vector3 end, OnPathDelegate callback = null) {
-        public new static XPath Construct (Int3 start, Int3 end, OnPathDelegate callback = null) {
+        public new static XPath Construct (VInt3 start, VInt3 end, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<XPath>();
 
 			p.Setup(start, end, callback);
@@ -148,7 +148,7 @@ namespace Pathfinding {
 	 * }
 	 * \endcode
 	 *
-	 * One part at a time. We need to cast the node's position to a Vector3 since internally, it is stored as an integer coordinate (Int3).
+	 * One part at a time. We need to cast the node's position to a Vector3 since internally, it is stored as an integer coordinate (VInt3).
 	 * Then we subtract the Pathfinding.Path.originalEndPoint from it to get their difference.
 	 * The original end point is always the exact point specified when calling the path.
 	 * As a last step we check the squared magnitude (squared distance, it is much faster than the non-squared distance) and check if it is lower or equal to our maxDistance squared.\n

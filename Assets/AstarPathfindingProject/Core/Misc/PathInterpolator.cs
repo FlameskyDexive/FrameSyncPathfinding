@@ -7,7 +7,7 @@ namespace Pathfinding.Util {
 	{
 	    //Good Game
         //List<Vector3> path;
-        List<Int3> path;
+        List<VInt3> path;
 
 		float distanceToSegmentStart;
 		float currentDistance;
@@ -17,19 +17,19 @@ namespace Pathfinding.Util {
         /** Current position */
 	    //Good Game
         //public virtual Vector3 position {
-        public virtual Int3 position {
+        public virtual VInt3 position {
 			get {
 				float t = currentSegmentLength > 0.0001f ? (currentDistance - distanceToSegmentStart) / currentSegmentLength : 0f;
 			    //Good Game
                 //return Vector3.Lerp(path[segmentIndex], path[segmentIndex+1], t);
-				return Int3.Lerp(path[segmentIndex], path[segmentIndex+1], t);
+				return VInt3.Lerp(path[segmentIndex], path[segmentIndex+1], t);
 			}
 		}
 
         /** Tangent of the curve at the current position */
 	    //Good Game
         //public Vector3 tangent {
-        public Int3 tangent {
+        public VInt3 tangent {
 			get {
 				return path[segmentIndex+1] - path[segmentIndex];
 			}
@@ -77,7 +77,7 @@ namespace Pathfinding.Util {
 		 */
 	    //Good Game
         //public void SetPath (List<Vector3> path) {
-        public void SetPath (List<Int3> path) {
+        public void SetPath (List<VInt3> path) {
 			this.path = path;
 			currentDistance = 0;
 			segmentIndex = 0;
@@ -114,7 +114,7 @@ namespace Pathfinding.Util {
         /** Move as close as possible to the specified point */
 	    //Good Game
         //public void MoveToClosestPoint (Vector3 point) {
-        public void MoveToClosestPoint (Int3 point) {
+        public void MoveToClosestPoint (VInt3 point) {
 			if (path == null) return;
 
 			float bestDist = float.PositiveInfinity;
@@ -127,7 +127,7 @@ namespace Pathfinding.Util {
                 /*float factor = VectorMath.ClosestPointOnLineFactor(path[i], path[i+1], point);
 				Vector3 closest = Vector3.Lerp(path[i], path[i+1], factor);*/
                 long factor = IntMath.ClosestPointOnLineFactor(path[i], path[i+1], point);
-				Int3 closest = Int3.Lerp(path[i], path[i+1], factor);
+				VInt3 closest = VInt3.Lerp(path[i], path[i+1], factor);
 				float dist = (point - closest).sqrMagnitude;
 
 				if (dist < bestDist) {
@@ -142,7 +142,7 @@ namespace Pathfinding.Util {
 
 	    //Good Game
         //public void MoveToLocallyClosestPoint (Vector3 point, bool allowForwards = true, bool allowBackwards = true) {
-        public void MoveToLocallyClosestPoint (Int3 point, bool allowForwards = true, bool allowBackwards = true) {
+        public void MoveToLocallyClosestPoint (VInt3 point, bool allowForwards = true, bool allowBackwards = true) {
 			if (path == null) return;
 
 			while (allowForwards && segmentIndex < path.Count - 2 && (path[segmentIndex+1] - point).sqrMagnitude <= (path[segmentIndex] - point).sqrMagnitude) {
@@ -162,7 +162,7 @@ namespace Pathfinding.Util {
                 /*factor1 = VectorMath.ClosestPointOnLineFactor(path[segmentIndex-1], path[segmentIndex], point);
 				d1 = (Vector3.Lerp(path[segmentIndex-1], path[segmentIndex], factor1) - point).sqrMagnitude;*/
                 factor1 = IntMath.ClosestPointOnLineFactor(path[segmentIndex-1], path[segmentIndex], point);
-				d1 = (Int3.Lerp(path[segmentIndex-1], path[segmentIndex], factor1) - point).sqrMagnitude;
+				d1 = (VInt3.Lerp(path[segmentIndex-1], path[segmentIndex], factor1) - point).sqrMagnitude;
 			}
 
 			if (segmentIndex < path.Count - 1)
@@ -171,7 +171,7 @@ namespace Pathfinding.Util {
                 /*factor2 = VectorMath.ClosestPointOnLineFactor(path[segmentIndex], path[segmentIndex+1], point);
 				d2 = (Vector3.Lerp(path[segmentIndex], path[segmentIndex+1], factor2) - point).sqrMagnitude;*/
                 factor2 = IntMath.ClosestPointOnLineFactor(path[segmentIndex], path[segmentIndex+1], point);
-				d2 = (Int3.Lerp(path[segmentIndex], path[segmentIndex+1], factor2) - point).sqrMagnitude;
+				d2 = (VInt3.Lerp(path[segmentIndex], path[segmentIndex+1], factor2) - point).sqrMagnitude;
 			}
 
 			if (d1 < d2) MoveToSegment(segmentIndex - 1, factor1);
@@ -180,7 +180,7 @@ namespace Pathfinding.Util {
 
 	    //Good Game
         //public void MoveToCircleIntersection2D (Vector3 circleCenter3D, float radius, IMovementPlane transform) {
-        public void MoveToCircleIntersection2D (Int3 circleCenter3D, float radius, IMovementPlane transform) {
+        public void MoveToCircleIntersection2D (VInt3 circleCenter3D, float radius, IMovementPlane transform) {
 			if (path == null) return;
 
             // Move forwards as long as we are getting closer to circleCenter3D

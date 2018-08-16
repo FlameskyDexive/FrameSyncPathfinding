@@ -38,7 +38,7 @@ namespace Pathfinding.Util {
 		readonly Matrix4x4 inverseMatrix;
 		readonly Vector3 up;
 		readonly Vector3 translation;
-		readonly Int3 i3translation;
+		readonly VInt3 i3translation;
 		readonly Quaternion rotation;
 		readonly Quaternion inverseRotation;
 
@@ -51,7 +51,7 @@ namespace Pathfinding.Util {
 			onlyTranslational = MatrixIsTranslational(matrix);
 			up = matrix.MultiplyVector(Vector3.up).normalized;
 			translation = matrix.MultiplyPoint3x4(Vector3.zero);
-			i3translation = (Int3)translation;
+			i3translation = (VInt3)translation;
 
 			// Extract the rotation from the matrix. This is only correct if the matrix has no skew, but we only
 			// want to use it for the movement plane so as long as the Up axis is parpendicular to the Forward
@@ -86,29 +86,29 @@ namespace Pathfinding.Util {
 
 	    //Good Game
         //Need To Log, may be this is the reason why grid path way doesn't work normal
-        public Int3 Transform (Int3 point) {
+        public VInt3 Transform (VInt3 point) {
             PathDebug.LogError(1, "transform origin point--" + point);
             if (onlyTranslational)
             {
                 PathDebug.LogError(1, "transform cal point--" + point + i3translation);
                 return point + i3translation;
             }
-            PathDebug.LogError(1, "transform cal point--" + (Int3)matrix.MultiplyPoint3x4((Vector3)point));
-            return (Int3)matrix.MultiplyPoint3x4((Vector3)point);
+            PathDebug.LogError(1, "transform cal point--" + (VInt3)matrix.MultiplyPoint3x4((Vector3)point));
+            return (VInt3)matrix.MultiplyPoint3x4((Vector3)point);
 	    }
 
 	    //Good Game
-        public Int3 TransformVector(Int3 point)
+        public VInt3 TransformVector(VInt3 point)
 	    {
 	        if (onlyTranslational) return point;
-	        return (Int3)matrix.MultiplyVector((Vector3)point);
+	        return (VInt3)matrix.MultiplyVector((Vector3)point);
 	    }
 
-        public void Transform (Int3[] arr) {
+        public void Transform (VInt3[] arr) {
 			if (onlyTranslational) {
 				for (int i = arr.Length - 1; i >= 0; i--) arr[i] += i3translation;
 			} else {
-				for (int i = arr.Length - 1; i >= 0; i--) arr[i] = (Int3)matrix.MultiplyPoint3x4((Vector3)arr[i]);
+				for (int i = arr.Length - 1; i >= 0; i--) arr[i] = (VInt3)matrix.MultiplyPoint3x4((Vector3)arr[i]);
 			}
 		}
 
@@ -125,7 +125,7 @@ namespace Pathfinding.Util {
 			return inverseMatrix.MultiplyPoint3x4(point);
 		}
 
-		public Int3 InverseTransform (Int3 point)
+		public VInt3 InverseTransform (VInt3 point)
 		{
 		    PathDebug.LogError(2, "inverse origin point--" + point);
             if (onlyTranslational)
@@ -134,11 +134,11 @@ namespace Pathfinding.Util {
                 return point - i3translation;
 		    }
 		    PathDebug.LogError(2, "inverse cal point--" + point);
-            return (Int3)inverseMatrix.MultiplyPoint3x4((Vector3)point);
+            return (VInt3)inverseMatrix.MultiplyPoint3x4((Vector3)point);
 		}
 
-		public void InverseTransform (Int3[] arr) {
-			for (int i = arr.Length - 1; i >= 0; i--) arr[i] = (Int3)inverseMatrix.MultiplyPoint3x4((Vector3)arr[i]);
+		public void InverseTransform (VInt3[] arr) {
+			for (int i = arr.Length - 1; i >= 0; i--) arr[i] = (VInt3)inverseMatrix.MultiplyPoint3x4((Vector3)arr[i]);
 		}
 
 		public static GraphTransform operator * (GraphTransform lhs, Matrix4x4 rhs) {

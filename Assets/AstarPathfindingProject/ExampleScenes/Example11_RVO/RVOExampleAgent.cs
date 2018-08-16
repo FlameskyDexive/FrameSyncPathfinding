@@ -22,7 +22,7 @@ namespace Pathfinding.Examples {
 
 	    //Good Game
         //private Vector3 target;
-        private Int3 target;
+        private VInt3 target;
 		private bool canSearchAgain = true;
 
 		private RVOController controller;
@@ -32,7 +32,7 @@ namespace Pathfinding.Examples {
 
 	    //Good Game
         //List<Vector3> vectorPath;
-        List<Int3> vectorPath;
+        List<VInt3> vectorPath;
 		int wp;
 
 		public float moveNextDist = 1;
@@ -53,7 +53,7 @@ namespace Pathfinding.Examples {
         {
             //Good Game
             //this.target = target;
-            this.target = (Int3)target;
+            this.target = (VInt3)target;
             //Debug.Log("--target point--" + target + "--" + gameObject.transform.GetSiblingIndex());
 			RecalculatePath();
 		}
@@ -91,7 +91,7 @@ namespace Pathfinding.Examples {
 			nextRepath = Time.time+repathRate*(Random.value+0.5f);
 		    //Good Game
             //seeker.StartPath(transform.position, target, OnPathComplete);
-            seeker.StartPath((Int3)transform.position, (Int3)target, OnPathComplete);
+            seeker.StartPath((VInt3)transform.position, (VInt3)target, OnPathComplete);
             //Debug.Log(gameObject.name + "start--" + transform.position + "--end--" + target);
 		}
 
@@ -123,8 +123,8 @@ namespace Pathfinding.Examples {
 		    //Good Game
             /*Vector3 p1 = (Vector3)p.originalStartPoint;
 			Vector3 p2 = transform.position;*/
-            Int3 p1 = p.originalStartPoint;
-			Int3 p2 = (Int3)transform.position;
+            VInt3 p1 = p.originalStartPoint;
+			VInt3 p2 = (VInt3)transform.position;
 			p1.y = p2.y;
 			float d = (p2-p1).magnitude;
 			wp = 0;
@@ -138,14 +138,14 @@ namespace Pathfinding.Examples {
 		    }*/
 		    //Good Game
             //Vector3 waypoint;
-            Int3 waypoint;
+            VInt3 waypoint;
 
 			if (moveNextDist > 0) {
 				for (float t = 0; t <= d; t += moveNextDist*0.6f) {
 					wp--;
 				    //Good Game
                     //Vector3 pos = p1 + (p2-p1)*t;
-                    Int3 pos = p1 + (p2-p1)*t;
+                    VInt3 pos = p1 + (p2-p1)*t;
 
 					do {
 						wp++;

@@ -127,13 +127,13 @@ namespace Pathfinding {
 
 	    //Good Game
         //public override NNInfoInternal GetNearest (Vector3 position, NNConstraint constraint, GraphNode hint) {
-        public override NNInfoInternal GetNearest (Int3 position, NNConstraint constraint, GraphNode hint) {
+        public override NNInfoInternal GetNearest (VInt3 position, NNConstraint constraint, GraphNode hint) {
 			return GetNearestInternal((Vector3)position, constraint, true);
 		}
 
 	    //Good Game
         //public override NNInfoInternal GetNearestForce (Vector3 position, NNConstraint constraint) {
-        public override NNInfoInternal GetNearestForce (Int3 position, NNConstraint constraint) {
+        public override NNInfoInternal GetNearestForce (VInt3 position, NNConstraint constraint) {
 			return GetNearestInternal((Vector3)position, constraint, false);
 		}
 
@@ -141,7 +141,7 @@ namespace Pathfinding {
 			if (nodes == null) return new NNInfoInternal();
 
 			if (optimizeForSparseGraph) {
-				return new NNInfoInternal(lookupTree.GetNearest((Int3)position, fastCheck ? null : constraint));
+				return new NNInfoInternal(lookupTree.GetNearest((VInt3)position, fastCheck ? null : constraint));
 			}
 
 			float maxDistSqr = constraint == null || constraint.constrainDistance ? AstarPath.active.maxNearestNodeDistanceSqr : float.PositiveInfinity;
@@ -172,7 +172,7 @@ namespace Pathfinding {
 		}
 
 		/** Add a node to the graph at the specified position.
-		 * \note Vector3 can be casted to Int3 using (Int3)myVector.
+		 * \note Vector3 can be casted to VInt3 using (VInt3)myVector.
 		 *
 		 * \note This needs to be called when it is safe to update nodes, which is
 		 * - when scanning
@@ -181,7 +181,7 @@ namespace Pathfinding {
 		 *
 		 * \snippet MiscSnippets.cs PointGraph.AddNode
 		 */
-		public PointNode AddNode (Int3 position) {
+		public PointNode AddNode (VInt3 position) {
 			return AddNode(new PointNode(active), position);
 		}
 
@@ -191,7 +191,7 @@ namespace Pathfinding {
 		 * The node parameter is only there because there is no new(AstarPath) constraint on
 		 * generic type parameters.
 		 * \param position The node will be set to this position.
-		 * \note Vector3 can be casted to Int3 using (Int3)myVector.
+		 * \note Vector3 can be casted to VInt3 using (VInt3)myVector.
 		 *
 		 * \note This needs to be called when it is safe to update nodes, which is
 		 * - when scanning
@@ -200,7 +200,7 @@ namespace Pathfinding {
 		 *
 		 * \see AstarPath.AddWorkItem
 		 */
-		public T AddNode<T>(T node, Int3 position) where T : PointNode {
+		public T AddNode<T>(T node, VInt3 position) where T : PointNode {
 			if (nodes == null || nodeCount == nodes.Length) {
 				var newNodes = new PointNode[nodes != null ? System.Math.Max(nodes.Length+4, nodes.Length*2) : 4];
 				if (nodes != null) nodes.CopyTo(newNodes, 0);
@@ -233,7 +233,7 @@ namespace Pathfinding {
 		/** Recursively adds childrens of a transform as nodes */
 		protected void AddChildren (ref int c, Transform tr) {
 			foreach (Transform child in tr) {
-				nodes[c].position = (Int3)child.position;
+				nodes[c].position = (VInt3)child.position;
 				nodes[c].Walkable = true;
 				nodes[c].gameObject = child.gameObject;
 
@@ -300,7 +300,7 @@ namespace Pathfinding {
 				nodes = CreateNodes(nodeCount);
 
 				for (int i = 0; i < gos.Length; i++) {
-					nodes[i].position = (Int3)gos[i].transform.position;
+					nodes[i].position = (VInt3)gos[i].transform.position;
 					nodes[i].Walkable = true;
 					nodes[i].gameObject = gos[i].gameObject;
 				}
@@ -312,7 +312,7 @@ namespace Pathfinding {
 
 					int c = 0;
 					foreach (Transform child in root) {
-						nodes[c].position = (Int3)child.position;
+						nodes[c].position = (VInt3)child.position;
 						nodes[c].Walkable = true;
 						nodes[c].gameObject = child.gameObject;
 
@@ -357,7 +357,7 @@ namespace Pathfinding {
 				if (maxDistance == 0 && (limits.x == 0 || limits.y == 0 || limits.z == 0)) {
 					maxSquaredRange = long.MaxValue;
 				} else {
-					maxSquaredRange = (long)(Mathf.Max(limits.x, Mathf.Max(limits.y, Mathf.Max(limits.z, maxDistance))) * Int3.Precision) + 1;
+					maxSquaredRange = (long)(Mathf.Max(limits.x, Mathf.Max(limits.y, Mathf.Max(limits.z, maxDistance))) * VInt3.Precision) + 1;
 					maxSquaredRange *= maxSquaredRange;
 				}
 
@@ -382,7 +382,7 @@ namespace Pathfinding {
 								connections.Add(new Connection(
 										other,
 										/** \todo Is this equal to .costMagnitude */
-										(uint)Mathf.RoundToInt(dist*Int3.FloatPrecision)
+										(uint)Mathf.RoundToInt(dist*VInt3.FloatPrecision)
 										));
 							}
 						}
@@ -397,7 +397,7 @@ namespace Pathfinding {
 								connections.Add(new Connection(
 										other,
 										/** \todo Is this equal to .costMagnitude */
-										(uint)Mathf.RoundToInt(dist*Int3.FloatPrecision)
+										(uint)Mathf.RoundToInt(dist*VInt3.FloatPrecision)
 										));
 							}
 						}
@@ -514,7 +514,7 @@ namespace Pathfinding {
 
 							if (!contains && validConnection) {
 								// A new connection should be added
-								uint cost = (uint)Mathf.RoundToInt(dist*Int3.FloatPrecision);
+								uint cost = (uint)Mathf.RoundToInt(dist*VInt3.FloatPrecision);
 								conn.Add(new Connection(other, cost));
 							} else if (contains && !validConnection) {
 								// A connection should be removed

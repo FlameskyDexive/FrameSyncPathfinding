@@ -9,14 +9,14 @@ namespace Pathfinding {
 	    //Good Game
         /*public Vector3 portalA;
 		public Vector3 portalB;*/
-        public Int3 portalA;
-		public Int3 portalB;
+        public VInt3 portalA;
+		public VInt3 portalB;
 
 		public NodeLink3Node (AstarPath active) : base(active) {}
 
         //Good Game
 		//public override bool GetPortal (GraphNode other, List<Vector3> left, List<Vector3> right, bool backwards) {
-		public override bool GetPortal (GraphNode other, List<Int3> left, List<Int3> right, bool backwards) {
+		public override bool GetPortal (GraphNode other, List<VInt3> left, List<VInt3> right, bool backwards) {
 			if (this.connections.Length < 2) return false;
 
 			if (this.connections.Length != 2) throw new System.Exception("Invalid NodeLink3Node. Expected 2 connections, found " + this.connections.Length);
@@ -81,7 +81,7 @@ namespace Pathfinding {
 		MeshNode connectedNode1, connectedNode2;
 	    //Good Game
         //Vector3 clamped1, clamped2;
-        Int3 clamped1, clamped2;
+        VInt3 clamped1, clamped2;
 		bool postScanCalled = false;
 
 		public GraphNode StartNode {
@@ -110,9 +110,9 @@ namespace Pathfinding {
 			}
 
 			//Get nearest nodes from the first point graph, assuming both start and end transforms are nodes
-			startNode = AstarPath.active.data.pointGraph.AddNode(new NodeLink3Node(AstarPath.active), (Int3)StartTransform.position);
+			startNode = AstarPath.active.data.pointGraph.AddNode(new NodeLink3Node(AstarPath.active), (VInt3)StartTransform.position);
 			startNode.link = this;
-			endNode = AstarPath.active.data.pointGraph.AddNode(new NodeLink3Node(AstarPath.active), (Int3)EndTransform.position);
+			endNode = AstarPath.active.data.pointGraph.AddNode(new NodeLink3Node(AstarPath.active), (VInt3)EndTransform.position);
 			endNode.link = this;
 #else
 			throw new System.Exception("Point graphs are not included. Check your A* Optimization settings.");
@@ -213,7 +213,7 @@ namespace Pathfinding {
 		    {
 		        //Good Game
                 //var info = AstarPath.active.GetNearest(StartTransform.position, nn);
-                var info = AstarPath.active.GetNearest((Int3)StartTransform.position, nn);
+                var info = AstarPath.active.GetNearest((VInt3)StartTransform.position, nn);
 				same &= info.node == connectedNode1 && info.node != null;
 				connectedNode1 = info.node as MeshNode;
 				clamped1 = info.position;
@@ -223,7 +223,7 @@ namespace Pathfinding {
 		    {
 		        //Good Game
                 //var info = AstarPath.active.GetNearest(EndTransform.position, nn);
-                var info = AstarPath.active.GetNearest((Int3)EndTransform.position, nn);
+                var info = AstarPath.active.GetNearest((VInt3)EndTransform.position, nn);
 				same &= info.node == connectedNode2 && info.node != null;
 				connectedNode2 = info.node as MeshNode;
 				clamped2 = info.position;
@@ -232,33 +232,33 @@ namespace Pathfinding {
 
 			if (connectedNode2 == null || connectedNode1 == null) return;
 
-			startNode.SetPosition((Int3)StartTransform.position);
-			endNode.SetPosition((Int3)EndTransform.position);
+			startNode.SetPosition((VInt3)StartTransform.position);
+			endNode.SetPosition((VInt3)EndTransform.position);
 
 			if (same && !forceNewCheck) return;
 
 			RemoveConnections(startNode);
 			RemoveConnections(endNode);
 
-			uint cost = (uint)Mathf.RoundToInt(((Int3)(StartTransform.position-EndTransform.position)).costMagnitude*costFactor);
+			uint cost = (uint)Mathf.RoundToInt(((VInt3)(StartTransform.position-EndTransform.position)).costMagnitude*costFactor);
 			startNode.AddConnection(endNode, cost);
 			endNode.AddConnection(startNode, cost);
 
-			Int3 dir = connectedNode2.position - connectedNode1.position;
+			VInt3 dir = connectedNode2.position - connectedNode1.position;
 
 			for (int a = 0; a < connectedNode1.GetVertexCount(); a++) {
-				Int3 va1 = connectedNode1.GetVertex(a);
-				Int3 va2 = connectedNode1.GetVertex((a+1) % connectedNode1.GetVertexCount());
+				VInt3 va1 = connectedNode1.GetVertex(a);
+				VInt3 va2 = connectedNode1.GetVertex((a+1) % connectedNode1.GetVertexCount());
 
-				if (Int3.DotLong((va2-va1).Normal2D(), dir) > 0) continue;
+				if (VInt3.DotLong((va2-va1).Normal2D(), dir) > 0) continue;
 
 				for (int b = 0; b < connectedNode2.GetVertexCount(); b++) {
-					Int3 vb1 = connectedNode2.GetVertex(b);
-					Int3 vb2 = connectedNode2.GetVertex((b+1) % connectedNode2.GetVertexCount());
+					VInt3 vb1 = connectedNode2.GetVertex(b);
+					VInt3 vb2 = connectedNode2.GetVertex((b+1) % connectedNode2.GetVertexCount());
 
-					if (Int3.DotLong((vb2-vb1).Normal2D(), dir) < 0) continue;
+					if (VInt3.DotLong((vb2-vb1).Normal2D(), dir) < 0) continue;
 
-					if (Int3.Angle((vb2-vb1), (va2-va1)) > (170.0/360.0f)*Mathf.PI*2) {
+					if (VInt3.Angle((vb2-vb1), (va2-va1)) > (170.0/360.0f)*Mathf.PI*2) {
 						float t1 = 0;
 						float t2 = 1;
 
@@ -272,8 +272,8 @@ namespace Pathfinding {
 						    //Good Game
                             /*Vector3 pa = (Vector3)(va2-va1)*t1 + (Vector3)va1;
 							Vector3 pb = (Vector3)(va2-va1)*t2 + (Vector3)va1;*/
-                            Int3 pa = (va2-va1)*t1 + va1;
-							Int3 pb = (va2-va1)*t2 + va1;
+                            VInt3 pa = (va2-va1)*t1 + va1;
+							VInt3 pb = (va2-va1)*t2 + va1;
 
 							startNode.portalA = pa;
 							startNode.portalB = pb;
@@ -283,16 +283,16 @@ namespace Pathfinding {
 
                             //Add connections between nodes, or replace old connections if existing
 						    //Good Game
-                            /*connectedNode1.AddConnection(startNode, (uint)Mathf.RoundToInt(((Int3)(clamped1 - StartTransform.position)).costMagnitude*costFactor));
-							connectedNode2.AddConnection(endNode, (uint)Mathf.RoundToInt(((Int3)(clamped2 - EndTransform.position)).costMagnitude*costFactor));
+                            /*connectedNode1.AddConnection(startNode, (uint)Mathf.RoundToInt(((VInt3)(clamped1 - StartTransform.position)).costMagnitude*costFactor));
+							connectedNode2.AddConnection(endNode, (uint)Mathf.RoundToInt(((VInt3)(clamped2 - EndTransform.position)).costMagnitude*costFactor));
 
-							startNode.AddConnection(connectedNode1, (uint)Mathf.RoundToInt(((Int3)(clamped1 - StartTransform.position)).costMagnitude*costFactor));
-							endNode.AddConnection(connectedNode2, (uint)Mathf.RoundToInt(((Int3)(clamped2 - EndTransform.position)).costMagnitude*costFactor));*/
-                            connectedNode1.AddConnection(startNode, (uint)Mathf.RoundToInt(((clamped1 - (Int3)StartTransform.position)).costMagnitude*costFactor));
-							connectedNode2.AddConnection(endNode, (uint)Mathf.RoundToInt(((clamped2 - (Int3)EndTransform.position)).costMagnitude*costFactor));
+							startNode.AddConnection(connectedNode1, (uint)Mathf.RoundToInt(((VInt3)(clamped1 - StartTransform.position)).costMagnitude*costFactor));
+							endNode.AddConnection(connectedNode2, (uint)Mathf.RoundToInt(((VInt3)(clamped2 - EndTransform.position)).costMagnitude*costFactor));*/
+                            connectedNode1.AddConnection(startNode, (uint)Mathf.RoundToInt(((clamped1 - (VInt3)StartTransform.position)).costMagnitude*costFactor));
+							connectedNode2.AddConnection(endNode, (uint)Mathf.RoundToInt(((clamped2 - (VInt3)EndTransform.position)).costMagnitude*costFactor));
 
-							startNode.AddConnection(connectedNode1, (uint)Mathf.RoundToInt(((clamped1 - (Int3)StartTransform.position)).costMagnitude*costFactor));
-							endNode.AddConnection(connectedNode2, (uint)Mathf.RoundToInt(((clamped2 - (Int3)EndTransform.position)).costMagnitude*costFactor));
+							startNode.AddConnection(connectedNode1, (uint)Mathf.RoundToInt(((clamped1 - (VInt3)StartTransform.position)).costMagnitude*costFactor));
+							endNode.AddConnection(connectedNode2, (uint)Mathf.RoundToInt(((clamped2 - (VInt3)EndTransform.position)).costMagnitude*costFactor));
 
 							return;
 						}

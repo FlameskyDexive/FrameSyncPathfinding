@@ -107,7 +107,7 @@ namespace Pathfinding {
 		static readonly int[] iterationsByQuality = new [] { 1, 2, 1, 3 };
 	    //Good Game
         //static List<Vector3> buffer = new List<Vector3>();
-        static List<Int3> buffer = new List<Int3>();
+        static List<VInt3> buffer = new List<VInt3>();
 		static float[] DPCosts = new float[16];
 		static int[] DPParents = new int[16];
 
@@ -143,14 +143,14 @@ namespace Pathfinding {
 		}
 
 	    //Good Game
-        List<Int3> ApplyGreedy (Path p, List<Int3> points) {
+        List<VInt3> ApplyGreedy (Path p, List<VInt3> points) {
 			bool canBeOriginalNodes = points.Count == p.path.Count;
 			int startIndex = 0;
 
 			while (startIndex < points.Count)
 			{
 			    //Good Game
-                Int3 start = points[startIndex];
+                VInt3 start = points[startIndex];
 			    //Good Game
                 //var startNode = canBeOriginalNodes && points[startIndex] == (Vector3)p.path[startIndex].position ? p.path[startIndex] : null;
                 var startNode = canBeOriginalNodes && points[startIndex] == p.path[startIndex].position ? p.path[startIndex] : null;
@@ -166,7 +166,7 @@ namespace Pathfinding {
 				    }
 				    //Good Game
 					//Vector3 end = points[endIndex];
-                    Int3 end = points[endIndex];
+                    VInt3 end = points[endIndex];
 				    //Good Game
                     //var endNode = canBeOriginalNodes && end == (Vector3)p.path[endIndex].position ? p.path[endIndex] : null;
                     var endNode = canBeOriginalNodes && end == p.path[endIndex].position ? p.path[endIndex] : null;
@@ -182,7 +182,7 @@ namespace Pathfinding {
 					int endIndex = startIndex + mid;
 				    //Good Game
                     //Vector3 end = points[endIndex];
-                    Int3 end = points[endIndex];
+                    VInt3 end = points[endIndex];
 				    //Good Game
                     //var endNode = canBeOriginalNodes && end == (Vector3)p.path[endIndex].position ? p.path[endIndex] : null;
                     var endNode = canBeOriginalNodes && end == p.path[endIndex].position ? p.path[endIndex] : null;
@@ -205,7 +205,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //List<Vector3> ApplyDP (Path p, List<Vector3> points) {
-        List<Int3> ApplyDP (Path p, List<Int3> points) {
+        List<VInt3> ApplyDP (Path p, List<VInt3> points) {
 			if (DPCosts.Length < points.Count) {
 				DPCosts = new float[points.Count];
 				DPParents = new int[points.Count];
@@ -217,7 +217,7 @@ namespace Pathfinding {
 				float d = DPCosts[i];
 			    //Good Game
                 //Vector3 start = points[i];
-                Int3 start = points[i];
+                VInt3 start = points[i];
 			    //Good Game
                 //var startIsOriginalNode = canBeOriginalNodes && start == (Vector3)p.path[i].position;
                 var startIsOriginalNode = canBeOriginalNodes && start == p.path[i].position;
@@ -291,8 +291,8 @@ namespace Pathfinding {
 			    //Good Game
                 /*if (n1 == null) n1 = AstarPath.active.GetNearest(v1).node;
 				if (n2 == null) n2 = AstarPath.active.GetNearest(v2).node;*/
-                if (n1 == null) n1 = AstarPath.active.GetNearest((Int3)v1).node;
-				if (n2 == null) n2 = AstarPath.active.GetNearest((Int3)v2).node;
+                if (n1 == null) n1 = AstarPath.active.GetNearest((VInt3)v1).node;
+				if (n2 == null) n2 = AstarPath.active.GetNearest((VInt3)v2).node;
 
 				if (n1 != null && n2 != null) {
 					// Use graph raycasting to check if a straight path between v1 and v2 is valid
@@ -318,7 +318,7 @@ namespace Pathfinding {
 					{
 					    //Good Game
                         //return !rayGraph.Linecast(v1, v2, n1);
-                        return !rayGraph.Linecast((Int3)v1, (Int3)v2, n1);
+                        return !rayGraph.Linecast((VInt3)v1, (VInt3)v2, n1);
 					}
 				}
 			}

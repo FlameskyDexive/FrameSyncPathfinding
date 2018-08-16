@@ -203,7 +203,7 @@ namespace Pathfinding.Examples {
 			case DemoMode.ABPath:
 			    //Good Game
                     //p = ABPath.Construct(start.position, end.position, OnPathComplete);
-                    p = ABPath.Construct((Int3)start.position, (Int3)end.position, OnPathComplete);
+                    p = ABPath.Construct((VInt3)start.position, (VInt3)end.position, OnPathComplete);
 				break;
 			case DemoMode.MultiTargetPath:
 				StartCoroutine(DemoMultiTargetPath());
@@ -214,19 +214,19 @@ namespace Pathfinding.Examples {
 			case DemoMode.RandomPath:
 			    //Good Game
                     //RandomPath rp = RandomPath.Construct(start.position, searchLength, OnPathComplete);
-                    RandomPath rp = RandomPath.Construct((Int3)start.position, searchLength, OnPathComplete);
+                    RandomPath rp = RandomPath.Construct((VInt3)start.position, searchLength, OnPathComplete);
 				rp.spread = spread;
 				rp.aimStrength = aimStrength;
 			    //Good Game
                     //rp.aim = end.position;
-                    rp.aim = (Int3)end.position;
+                    rp.aim = (VInt3)end.position;
 
 				p = rp;
 				break;
 			case DemoMode.FleePath:
 			    //Good Game
                     //FleePath fp = FleePath.Construct(start.position, end.position, searchLength, OnPathComplete);
-                    FleePath fp = FleePath.Construct((Int3)start.position, (Int3)end.position, searchLength, OnPathComplete);
+                    FleePath fp = FleePath.Construct((VInt3)start.position, (VInt3)end.position, searchLength, OnPathComplete);
 				fp.aimStrength = aimStrength;
 				fp.spread = spread;
 
@@ -235,14 +235,14 @@ namespace Pathfinding.Examples {
 			case DemoMode.FloodPath:
 			    //Good Game
                     //p = lastFloodPath = FloodPath.Construct(end.position, null);
-                    p = lastFloodPath = FloodPath.Construct((Int3)end.position, null);
+                    p = lastFloodPath = FloodPath.Construct((VInt3)end.position, null);
 				break;
 			case DemoMode.FloodPathTracer:
 				if (lastFloodPath != null)
 				{
 				    //Good Game
                         //FloodPathTracer fpt = FloodPathTracer.Construct(end.position, lastFloodPath, OnPathComplete);
-                        FloodPathTracer fpt = FloodPathTracer.Construct((Int3)end.position, lastFloodPath, OnPathComplete);
+                        FloodPathTracer fpt = FloodPathTracer.Construct((VInt3)end.position, lastFloodPath, OnPathComplete);
 					p = fpt;
 				}
 				break;
@@ -258,12 +258,12 @@ namespace Pathfinding.Examples {
 		{
 		    //Good Game
             //MultiTargetPath mp = MultiTargetPath.Construct(multipoints.ToArray(), end.position, null, null);
-		    List<Int3> multipointsInt3 = new List<Int3>();
+		    List<VInt3> multipointsInt3 = new List<VInt3>();
 		    for (int i = 0; i < multipoints.Count; i++)
 		    {
-		        multipointsInt3.Add((Int3)multipoints[i]);
+		        multipointsInt3.Add((VInt3)multipoints[i]);
 		    }
-            MultiTargetPath mp = MultiTargetPath.Construct(multipointsInt3.ToArray(), (Int3)end.position, null, null);
+            MultiTargetPath mp = MultiTargetPath.Construct(multipointsInt3.ToArray(), (VInt3)end.position, null, null);
 
 			lastPath = mp;
 			AstarPath.StartPath(mp);
@@ -277,7 +277,7 @@ namespace Pathfinding.Examples {
 
 			    //Good Game
                 //List<Vector3> vpath = mp.vectorPaths[i];
-                List<Int3> vpath = mp.vectorPaths[i];
+                List<VInt3> vpath = mp.vectorPaths[i];
 
 				GameObject ob = null;
 				if (unused.Count > i && unused[i].GetComponent<LineRenderer>() != null) {
@@ -321,7 +321,7 @@ namespace Pathfinding.Examples {
 		{
 		    //Good Game
             //ConstantPath constPath = ConstantPath.Construct(end.position, searchLength, null);
-            ConstantPath constPath = ConstantPath.Construct((Int3)end.position, searchLength, null);
+            ConstantPath constPath = ConstantPath.Construct((VInt3)end.position, searchLength, null);
 
 			AstarPath.StartPath(constPath);
 			lastPath = constPath;

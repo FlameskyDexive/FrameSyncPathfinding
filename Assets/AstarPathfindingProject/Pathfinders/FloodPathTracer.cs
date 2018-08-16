@@ -46,7 +46,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //public static FloodPathTracer Construct (Vector3 start, FloodPath flood, OnPathDelegate callback = null) {
-        public static FloodPathTracer Construct (Int3 start, FloodPath flood, OnPathDelegate callback = null) {
+        public static FloodPathTracer Construct (VInt3 start, FloodPath flood, OnPathDelegate callback = null) {
 			var p = PathPool.GetPath<FloodPathTracer>();
 
 			p.Setup(start, flood, callback);
@@ -55,7 +55,7 @@ namespace Pathfinding {
 
 	    //Good Game
         //protected void Setup (Vector3 start, FloodPath flood, OnPathDelegate callback) {
-        protected void Setup (Int3 start, FloodPath flood, OnPathDelegate callback) {
+        protected void Setup (VInt3 start, FloodPath flood, OnPathDelegate callback) {
 			this.flood = flood;
 
 			if (flood == null || flood.PipelineState < PathState.Returned) {

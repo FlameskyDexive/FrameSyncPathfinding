@@ -105,7 +105,7 @@ namespace Pathfinding {
         /** Holds the (possibly post processed) path as a Vector3 list */
 	    //Good Game
         //public List<Vector3> vectorPath;
-        public List<Int3> vectorPath;
+        public List<VInt3> vectorPath;
 
 		/** The node currently being processed */
 		protected PathNode currentR;
@@ -160,7 +160,7 @@ namespace Pathfinding {
 		protected GraphNode hTargetNode;
 
 		/** Target to use for H score calculations. \see Pathfinding.Node.H */
-		protected Int3 hTarget;
+		protected VInt3 hTarget;
 
 		/** Which graph tags are traversable.
 		 * This is a bitmask so -1 = all bits set = all tags traversable.
@@ -236,7 +236,7 @@ namespace Pathfinding {
 			float tot = 0;
 		    //Good Game
             //for (int i = 0; i < vectorPath.Count-1; i++) tot += Vector3.Distance(vectorPath[i], vectorPath[i+1]);
-			for (int i = 0; i < vectorPath.Count-1; i++) tot += Int3.Distance(vectorPath[i], vectorPath[i+1]);
+			for (int i = 0; i < vectorPath.Count-1; i++) tot += VInt3.Distance(vectorPath[i], vectorPath[i+1]);
 			return tot;
 		}
 
@@ -306,14 +306,14 @@ namespace Pathfinding {
 				}
 				return h;
 			case Heuristic.Manhattan:
-				Int3 p2 = node.position;
+				VInt3 p2 = node.position;
 				h = (uint)((System.Math.Abs(hTarget.x-p2.x) + System.Math.Abs(hTarget.y-p2.y) + System.Math.Abs(hTarget.z-p2.z))*heuristicScale);
 				if (hTargetNode != null) {
 					h = System.Math.Max(h, AstarPath.active.euclideanEmbedding.GetHeuristic(node.NodeIndex, hTargetNode.NodeIndex));
 				}
 				return h;
 			case Heuristic.DiagonalManhattan:
-				Int3 p = GetHTarget() - node.position;
+				VInt3 p = GetHTarget() - node.position;
 				p.x = System.Math.Abs(p.x);
 				p.y = System.Math.Abs(p.y);
 				p.z = System.Math.Abs(p.z);
@@ -335,7 +335,7 @@ namespace Pathfinding {
 			return (uint)internalTagPenalties[tag];
 		}
 
-		internal Int3 GetHTarget () {
+		internal VInt3 GetHTarget () {
 			return hTarget;
 		}
 
@@ -471,7 +471,7 @@ namespace Pathfinding {
 			if (vectorPath != null)
                 //Good Game
 			    //Pathfinding.Util.ListPool<Vector3>.Release(ref vectorPath);
-			    Pathfinding.Util.ListPool<Int3>.Release(ref vectorPath);
+			    Pathfinding.Util.ListPool<VInt3>.Release(ref vectorPath);
 			if (path != null) Pathfinding.Util.ListPool<GraphNode>.Release(ref path);
 			// Clear the callback to remove a potential memory leak
 			// while the path is in the pool (which it could be for a long time).
@@ -511,7 +511,7 @@ namespace Pathfinding {
 			path = Pathfinding.Util.ListPool<GraphNode>.Claim();
 		    //Good Game
             //vectorPath = Pathfinding.Util.ListPool<Vector3>.Claim();
-            vectorPath = Pathfinding.Util.ListPool<Int3>.Claim();
+            vectorPath = Pathfinding.Util.ListPool<VInt3>.Claim();
 
 			currentR = null;
 
@@ -529,7 +529,7 @@ namespace Pathfinding {
 
 			pathID = AstarPath.active.GetNextPathID();
 
-			hTarget = Int3.zero;
+			hTarget = VInt3.zero;
 			hTargetNode = null;
 
 			traversalProvider = null;

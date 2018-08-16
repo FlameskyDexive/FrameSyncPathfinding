@@ -104,10 +104,10 @@ public class PathFindingDemo : MonoBehaviour
     void SpawnPathPoint()
     {
         //先固定一些斜坡的点，这些点比较特殊，斜坡高度与其他不同
-        listPaths.Add(new Int3(8024, 6132, 46522));
-        listPaths.Add(new Int3(-11252, 3765, 32511));
-        listPaths.Add(new Int3(-5423, 6045, 4687));
-        listPaths.Add(new Int3(16254, 2357, 24562));
+        listPaths.Add(new VInt3(8024, 6132, 46522));
+        listPaths.Add(new VInt3(-11252, 3765, 32511));
+        listPaths.Add(new VInt3(-5423, 6045, 4687));
+        listPaths.Add(new VInt3(16254, 2357, 24562));
 
         for (int i = 1; i <= 10; i++)
         {
@@ -121,10 +121,10 @@ public class PathFindingDemo : MonoBehaviour
                 go2.transform.position = new Vector3(i * 15, 0, j * -15);
                 GameObject go3 = Instantiate(ball);
                 go3.transform.position = new Vector3(i * -15, 0, j * -15);*/
-                listPaths.Add(new Int3(i * 43241, 2000, j * 45482));
-                listPaths.Add(new Int3(i * -44573, 2000, j * 46644));
-                listPaths.Add(new Int3(i * 43765, 2000, j * -45276));
-                listPaths.Add(new Int3(i * -44687, 2000, j * -46878));
+                listPaths.Add(new VInt3(i * 43241, 2000, j * 45482));
+                listPaths.Add(new VInt3(i * -44573, 2000, j * 46644));
+                listPaths.Add(new VInt3(i * 43765, 2000, j * -45276));
+                listPaths.Add(new VInt3(i * -44687, 2000, j * -46878));
             }
         }
 
@@ -215,7 +215,7 @@ public class PathFindingDemo : MonoBehaviour
         {
             if (GUI.Button(new Rect(Screen.width - 190, 2, 180, 60), "SeekPaths-TotalGroup-" + listPaths.Count))
             {
-                //Debug.Log("--start position--" + (Int3)startObj.position + "--end position--" + (Int3)endObj.position);
+                //Debug.Log("--start position--" + (VInt3)startObj.position + "--end position--" + (VInt3)endObj.position);
                 Debug.Log("--path group--" + listPaths.Count);
                 isPathing = true;
                 //StartCoroutine(Seeking());
@@ -295,7 +295,7 @@ public class PathFindingDemo : MonoBehaviour
     private int pathId = 0;
     string content = String.Empty;
     string log = String.Empty;
-    private void PositionsLog(List<Int3> p)
+    private void PositionsLog(List<VInt3> p)
     {
         for (int i = 0; i < p.Count; i++)
         {
@@ -332,7 +332,7 @@ public class PathFindingDemo : MonoBehaviour
 
     }
     
-    private List<Int3> listPaths = new List<Int3>();
+    private List<VInt3> listPaths = new List<VInt3>();
         int groupId = 0;
     IEnumerator Seeking()
     {
@@ -357,7 +357,7 @@ public class PathFindingDemo : MonoBehaviour
         }
     }
 
-    public void SeekPath(Int3 from, Int3 to)
+    public void SeekPath(VInt3 from, VInt3 to)
     {
         seeker.StartPath(from, to, OnPathComplete);
     }

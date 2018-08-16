@@ -97,7 +97,7 @@ namespace Pathfinding {
 		}
         //GG
 		//public override Vector3 RandomPointOnSurface () {
-		public override Int3 RandomPointOnSurface () {
+		public override VInt3 RandomPointOnSurface () {
 			GridGraph gg = GridNode.GetGridGraph(GraphIndex);
 
 		    //GG
@@ -106,7 +106,7 @@ namespace Pathfinding {
 
 		    //GG
             //return gg.transform.Transform(graphSpacePosition + new Vector3(Random.value - 0.5f, 0, Random.value - 0.5f));
-            return gg.transform.Transform(graphSpacePosition + new Int3(VRandom.Random(1, 1000) -500, 0, VRandom.Random(1, 1000) - 500));
+            return gg.transform.Transform(graphSpacePosition + new VInt3(VRandom.Random(1, 1000) -500, 0, VRandom.Random(1, 1000) - 500));
 		}
 
 		public override int GetGizmoHashCode () {
