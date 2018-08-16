@@ -1,8 +1,10 @@
 using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 //namespace Pathfinding {
 /** Holds a coordinate in integers */
+[Serializable, StructLayout(LayoutKind.Sequential)]
 public struct VInt3 : System.IEquatable<VInt3>
 {
     public int x;
@@ -49,6 +51,14 @@ public struct VInt3 : System.IEquatable<VInt3>
         z = _z;
     }
 
+    public Vector3 vec3
+    {
+        get
+        {
+            return new Vector3((float)this.x * 0.001f, (float)this.y * 0.001f, (float)this.z * 0.001f);
+        }
+    }
+
     public VInt2 xz
     {
         get
@@ -81,7 +91,7 @@ public struct VInt3 : System.IEquatable<VInt3>
                lhs.z != rhs.z;
     }
 
-    public static explicit operator VInt3(Vector3 ob)
+    public static implicit operator VInt3(Vector3 ob)
     {
         VInt3 vInt3 = new VInt3(
             (int)System.Math.Round(ob.x * FloatPrecision),
@@ -98,7 +108,7 @@ public struct VInt3 : System.IEquatable<VInt3>
             );*/
     }
 
-    public static explicit operator Vector3(VInt3 ob)
+    public static implicit operator Vector3(VInt3 ob)
     {
         return new Vector3(ob.x * PrecisionFactor, ob.y * PrecisionFactor, ob.z * PrecisionFactor);
     }
@@ -207,6 +217,61 @@ public struct VInt3 : System.IEquatable<VInt3>
             ((long)lhs.x * (long)rhs.x +
             (long)lhs.y * (long)rhs.y +
             (long)lhs.z * (long)rhs.z) / 10000;
+    }
+
+
+    public VInt3 NormalizeV3()
+    {
+        VInt3 retVal = this;
+        long num = retVal.x * 100;
+        long num2 = retVal.y * 100;
+        long num3 = retVal.z * 100;
+        long a = ((num * num) + (num2 * num2)) + (num3 * num3);
+        if (a != 0)
+        {
+            long b = IntMath.Sqrt(a);
+            //if (b)
+            //{
+            //}
+            long num6 = Precision;
+            if (Math.Abs(num) == b)
+            {
+                retVal.x = (int)(num * num6 / b);
+            }
+            else
+            {
+                retVal.x = (int)IntMath.Divide((long)(num * num6), b);
+            }
+            if (Math.Abs(num2) == b)
+            {
+                retVal.y = (int)(num2 * num6 / b);
+            }
+            else
+            {
+                retVal.y = (int)IntMath.Divide((long)(num2 * num6), b);
+            }
+            if (Math.Abs(num3) == b)
+            {
+                retVal.z = (int)(num3 * num6 / b);
+            }
+            else
+            {
+                retVal.z = (int)IntMath.Divide((long)(num3 * num6), b);
+            }
+            //retVal.y = (int)IntMath.Divide((long)(num2 * num6), b);
+            //retVal.z = (int)IntMath.Divide((long)(num3 * num6), b);
+            //retVal *= Precision;
+        }
+        return retVal;
+    }
+
+    public VInt3 normalized
+    {
+        get
+        {
+            return NormalizeV3();
+            //return ((Vector3)this).normalized;
+        }
     }
 
     /** Normal in 2D space (XZ).
@@ -456,6 +521,60 @@ public struct VInt3 : System.IEquatable<VInt3>
         return vInt3.NormalizeTo(1000);
     }
 
+    /// <summary>
+    /// 球形插值
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <param name="percent"></param>
+    /// <returns></returns>
+    public static VInt3 Slerp(VInt3 start, VInt3 end, VFactor percent)
+    {
+        if (percent == VFactor.zero)
+        {
+            return start;
+        }
+        else if (percent == VFactor.one)
+        {
+            return end;
+        }
+
+        long den = start.magnitude * end.magnitude;
+
+        VFactor dot = new VFactor((long)Dot(ref start, ref end), den);
+
+        VFactor angle = IntMath.acos(dot.nom, dot.den);
+
+        VFactor theta = angle * percent;
+
+        VInt3 RelativeVec = end - start * dot;
+        RelativeVec.NormalizeTo(Precision);
+
+        VFactor sin_theta, cos_thera;
+        IntMath.sincos(out sin_theta, out cos_thera, theta);
+
+        return start * cos_thera + RelativeVec * sin_theta;
+    }
+
+    /// <summary>
+    /// 向量旋转
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <param name="max_radians"></param>
+    /// <returns></returns>
+    public static VInt3 RotateTowards(VInt3 start, VInt3 end, VFactor max_radians)
+    {
+        VFactor angle = AngleInt(start, end);
+        if (angle == VFactor.zero)
+        {
+            return end;
+        }
+
+        VFactor percent = IntMath.Min(max_radians / angle, VFactor.one);
+        return Slerp(start, end, percent);
+    }
+
     public static VInt3 Lerp(VInt3 a, VInt3 b, float f)
     {
         return new VInt3(Mathf.RoundToInt((float)a.x * (1f - f)) + Mathf.RoundToInt((float)b.x * f), Mathf.RoundToInt((float)a.y * (1f - f)) + Mathf.RoundToInt((float)b.y * f), Mathf.RoundToInt((float)a.z * (1f - f)) + Mathf.RoundToInt((float)b.z * f));
@@ -508,6 +627,67 @@ public struct VInt3 : System.IEquatable<VInt3>
                z == rhs.z;
     }
 
+    public bool IsEqualXZ(VInt3 rhs)
+    {
+        return ((this.x == rhs.x) && (this.z == rhs.z));
+    }
+
+    public bool IsEqualXZ(ref VInt3 rhs)
+    {
+        return ((this.x == rhs.x) && (this.z == rhs.z));
+    }
+
+    public static VInt3 ProjectOnXZ(VInt3 value)
+    {
+        value.y = 0;
+        return value;
+    }
+
+    /// <summary>
+    /// Transforms a vector by a quaternion rotation.
+    /// </summary>
+    /// <param name="vec">The vector to transform.</param>
+    /// <param name="quat">The quaternion to rotate the vector by.</param>
+    /// <returns></returns>
+    public static VInt3 operator *(VQuaternion quat, VInt3 vec)
+    {
+        VInt3 result;
+        VInt3.Transform(ref vec, ref quat, out result);
+        return result;
+    }
+
+    /// <summary>
+    /// Transforms a vector by a quaternion rotation.
+    /// </summary>
+    /// <param name="vec">The vector to transform.</param>
+    /// <param name="quat">The quaternion to rotate the vector by.</param>
+    /// <returns>The result of the operation.</returns>
+    public static VInt3 Transform(VInt3 vec, VQuaternion quat)
+    {
+        VInt3 result;
+        Transform(ref vec, ref quat, out result);
+        return result;
+    }
+
+    /// <summary>
+    /// Transforms a vector by a quaternion rotation.
+    /// </summary>
+    /// <param name="vec">The vector to transform.</param>
+    /// <param name="quat">The quaternion to rotate the vector by.</param>
+    /// <param name="result">The result of the operation.</param>
+    public static void Transform(ref VInt3 vec, ref VQuaternion quat, out VInt3 result)
+    {
+        // Since vec.W == 0, we can optimize quat * vec * quat^-1 as follows:
+        // vec + 2.0 * cross(quat.xyz, cross(quat.xyz, vec) + quat.w * vec)
+        VInt3 xyz = quat.xyz, temp, temp2;
+        temp = Cross(ref xyz, ref vec);
+        temp2 = vec * quat.w / Precision;
+        temp += temp2;
+        temp = Cross(ref xyz, ref temp);
+        temp *= 2;
+        result = vec + temp;
+    }
+
     #region IEquatable implementation
 
     public bool Equals(VInt3 other)
@@ -521,6 +701,22 @@ public struct VInt3 : System.IEquatable<VInt3>
     {
         return x * 73856093 ^ y * 19349663 ^ z * 83492791;
     }
+
+#if UNITY_EDITOR
+    public static VInt3 EditorGUIVInt3Field(GUIContent content, VInt3 vint3)
+    {
+        UnityEditor.EditorGUIUtility.labelWidth = 10;
+        content.text += "(VInt3)";
+        UnityEditor.EditorGUILayout.LabelField(content);
+        GUILayout.BeginHorizontal();
+        vint3.x = UnityEditor.EditorGUILayout.IntField("x", vint3.x);
+        vint3.y = UnityEditor.EditorGUILayout.IntField("y", vint3.y);
+        vint3.z = UnityEditor.EditorGUILayout.IntField("z", vint3.z);
+        GUILayout.EndHorizontal();
+        UnityEditor.EditorGUIUtility.labelWidth = 0;
+        return vint3;
+    }
+#endif
 }
 
 

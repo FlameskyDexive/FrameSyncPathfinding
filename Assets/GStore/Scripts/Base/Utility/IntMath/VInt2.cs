@@ -249,4 +249,19 @@ public struct VInt2 : System.IEquatable<VInt2>
     {
         return "(" + x + ", " + y + ")";
     }
+
+#if UNITY_EDITOR
+    public static VInt2 EditorGUIVInt2Field(GUIContent content, VInt2 vint2)
+    {
+        UnityEditor.EditorGUIUtility.labelWidth = 10;
+        content.text += "(VInt2)";
+        UnityEditor.EditorGUILayout.LabelField(content);
+        GUILayout.BeginHorizontal();
+        vint2.x = UnityEditor.EditorGUILayout.IntField("x", vint2.x);
+        vint2.y = UnityEditor.EditorGUILayout.IntField("y", vint2.y);
+        GUILayout.EndHorizontal();
+        UnityEditor.EditorGUIUtility.labelWidth = 0;
+        return vint2;
+    }
+#endif
 }
