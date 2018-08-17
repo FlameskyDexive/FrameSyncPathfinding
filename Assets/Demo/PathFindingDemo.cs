@@ -30,6 +30,7 @@ public class PathFindingDemo : MonoBehaviour
 
     void Awake()
     {
+        Debug.Log("---1---" + gameObject.isStatic);
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Application.runInBackground = true;
         Application.targetFrameRate = 30;
@@ -38,6 +39,7 @@ public class PathFindingDemo : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        Debug.Log("---2---" + gameObject.isStatic);
         style = new GUIStyle()
         {
             fontSize = 22,

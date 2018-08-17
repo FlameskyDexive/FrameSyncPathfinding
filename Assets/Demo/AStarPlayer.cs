@@ -1,4 +1,5 @@
-﻿
+﻿/*
+
 using System;
 using UnityEngine;
 using System.Collections;
@@ -82,7 +83,7 @@ public class AStarPlayer : MonoBehaviour
             targetPosition = hit.point;// new Vector3(hit.point.x, transform.localPosition.y, hit.point.z);
             UnityEngine.Debug.Log("targetPosition=" + targetPosition);
             seeker.StartPath((VInt3)transform.position, (VInt3)targetPosition, OnPathComplete);
-        }*/
+        }#1#
         
     }
 
@@ -107,7 +108,7 @@ public class AStarPlayer : MonoBehaviour
         /*if (!File.Exists(PathHelper.AppHotfixResPath))
         {
             File.Create(PathHelper.AppHotfixResPath);
-        }*/
+        }#1#
     }
 
     void OnGUI()
@@ -123,7 +124,7 @@ public class AStarPlayer : MonoBehaviour
 
         }
         GUI.Label(new Rect(0, 80, 700, 800), content);
-        GUI.EndScrollView();*/
+        GUI.EndScrollView();#1#
     }
 
     IEnumerator Seeking()
@@ -206,8 +207,9 @@ public class AStarPlayer : MonoBehaviour
             transform.localPosition += dir;
         }
 
-    }*/
+    }#1#
 
 }
 
 
+*/
