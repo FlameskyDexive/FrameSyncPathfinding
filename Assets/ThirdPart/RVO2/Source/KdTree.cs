@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using System;
 using RVO2;
 
-namespace RVO
+namespace RVO2
 {
     /**
      * <summary>Defines k-D trees for agents and static obstacles in the
@@ -65,22 +65,7 @@ namespace RVO
             internal Obstacle obstacle_;
             internal ObstacleTreeNode left_;
             internal ObstacleTreeNode right_;
-
-            /*[Script_SharpLogic((int)FrameWorkCmdDefine.SET_LEFT_LEAF)]
-            private static void SetObstacleLeftTreeNode(AbstractParams p)
-            {
-                ObstacleTreeNode node = p.ReadObject() as ObstacleTreeNode;
-                node.left_ = p.ReadObject() as ObstacleTreeNode;
-
-            }
-
-            [Script_SharpLogic((int)FrameWorkCmdDefine.SET_RIGHT_LEAF)]
-            private static void SetObstacleRightTreeNode(AbstractParams p)
-            {
-                ObstacleTreeNode node = p.ReadObject() as ObstacleTreeNode;
-                node.right_ = p.ReadObject() as ObstacleTreeNode;
- 
-            }*/
+            
         };
 
         /**

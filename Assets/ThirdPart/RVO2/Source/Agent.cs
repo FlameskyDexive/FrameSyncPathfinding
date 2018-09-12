@@ -35,7 +35,7 @@ using System.Collections.Generic;
 using RVO2;
 using UnityEngine;
 
-namespace RVO
+namespace RVO2
 {
     /**
      * <summary>Defines an agent in the simulation.</summary>
@@ -550,6 +550,12 @@ namespace RVO
          */
         internal void update()
         {
+            if (newVelocity_.x > 10 || newVelocity_.y > 10 || newVelocity_.x < -10 || newVelocity_.y < -10)
+            {
+                //newVelocity_ = newVelocity_ / 1000;
+                UnityEngine.Debug.LogError("wrong velocity");
+                //return;
+            }
             velocity_ = newVelocity_;
             position_ += velocity_ * Simulator.Instance.timeStep_;
         }

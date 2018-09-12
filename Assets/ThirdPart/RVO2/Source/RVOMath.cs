@@ -31,9 +31,8 @@
  */
 
 using System;
-using RVO2;
 
-namespace RVO
+namespace RVO2
 {
     /**
      * <summary>Contains functions and constants used in multiple classes.
@@ -201,7 +200,79 @@ namespace RVO
 
         internal static KInt sqrt(KInt scalar)
         {
-            return scalar.IntSqrt;
+            //return scalar.IntSqrt;
+            return KInt.ToInt(Sqrt(scalar.IntValue * KInt.divscale));
+        }
+
+        /// <summary>
+        /// GG
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns></returns>
+        public static int Sqrt(long a)
+        {
+            if (a <= 0L)
+            {
+                return 0;
+            }
+            if (a <= 0xffffffffL)
+            {
+                return (int)Sqrt32((uint)a);
+            }
+            return (int)Sqrt64((ulong)a);
+        }
+
+        public static uint Sqrt32(uint a)
+        {
+            uint num = 0;
+            uint num2 = 0;
+            for (int i = 0; i < 0x10; i++)
+            {
+                num2 = num2 << 1;
+                num = num << 2;
+                num += a >> 30;
+                a = a << 2;
+                if (num2 < num)
+                {
+                    num2++;
+                    num -= num2;
+                    num2++;
+                }
+            }
+            return ((num2 >> 1) & 0xffff);
+        }
+
+        public static ulong Sqrt64(ulong a)
+        {
+            ulong num = 0L;
+            ulong num2 = 0L;
+            for (int i = 0; i < 0x20; i++)
+            {
+                num2 = num2 << 1;
+                num = num << 2;
+                num += a >> 0x3e;
+                a = a << 2;
+                if (num2 < num)
+                {
+                    num2 += (ulong)1L;
+                    num -= num2;
+                    num2 += (ulong)1L;
+                }
+            }
+            return ((num2 >> 1) & 0xffffffffL);
+        }
+
+        public static long SqrtLong(long a)
+        {
+            if (a <= 0L)
+            {
+                return 0L;
+            }
+            if (a <= 0xffffffffL)
+            {
+                return (long)Sqrt32((uint)a);
+            }
+            return (long)Sqrt64((ulong)a);
         }
     }
 }

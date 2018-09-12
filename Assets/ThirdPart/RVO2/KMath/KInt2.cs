@@ -187,6 +187,12 @@ namespace RVO2
             this._y = (int)(pos.z * divscale);
         }
 
+        public KInt2(Vector2 pos)
+        {
+            this._x = (int)(pos.x * divscale);
+            this._y = (int)(pos.y * divscale);
+        }
+
         public static KInt2 ToInt2(int x, int y)
         {
             KInt2 value = new KInt2();
@@ -768,6 +774,15 @@ namespace RVO2
             return !(left._x == right._x && left._y == right._y);
         }
 
+        public static explicit operator KInt2(VInt2 v)
+        {
+            KInt2 k = new KInt2
+            {
+                IntX = v.x,
+                IntY = v.y
+            };
+            return k;
+        }
     }
 
 }

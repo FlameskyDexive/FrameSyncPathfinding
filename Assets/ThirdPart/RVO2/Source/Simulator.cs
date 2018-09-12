@@ -33,9 +33,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using RVO2;
 
-namespace RVO
+namespace RVO2
 {
     /**
      * <summary>Defines the simulation.</summary>
@@ -374,36 +373,7 @@ namespace RVO
         {
             return new UnityEngine.Vector3(v.x,0,v.y);
         }
-
-        /*[Script_SharpLogic((int)FrameWorkCmdDefine.GET_KDTREE)]
-        private static AbstractParams getkdtree(AbstractParams p)
-        {
-            p = SimpleParams.Create(1);
-            p.InsertObject(0,instance_.kdTree_);
-            return p;
-
-        }*/
-
-        /*[Script_SharpLogic((int)FrameWorkCmdDefine.GET_OBSTACLES)]
-        private static AbstractParams getobstacles(AbstractParams p)
-        {
-            p = SimpleParams.Create(1);
-            p.InsertObject(0,instance_.obstacles_);
-            return p;
-
-        }*/
-
-        /*public void CreateKdtreeFromAsset(KdtreeAsset asset)
-        {
-            if(asset != null)
-            {
-                this.kdTree_  = asset.CopythisToKdtree(this.obstacles_);
-            }
-            else
-            {
-                LogMgr.LogError("KdtreeAsset is Null");
-            }
-        }*/
+        
 
         /**
          * <summary>Clears the simulation.</summary>
@@ -670,9 +640,9 @@ namespace RVO
          * <param name="agentNo">The number of the agent whose two-dimensional
          * position is to be retrieved.</param>
          */
-        public KInt2 getAgentPosition(int agentNo)
+        public VInt2 getAgentPosition(int agentNo)
         {
-            return agents_[agentNo2indexDict_[agentNo]].position_;
+            return (VInt2)agents_[agentNo2indexDict_[agentNo]].position_;
         }
 
         /**
@@ -685,9 +655,9 @@ namespace RVO
          * <param name="agentNo">The number of the agent whose two-dimensional
          * preferred velocity is to be retrieved.</param>
          */
-        public KInt2 getAgentPrefVelocity(int agentNo)
+        public VInt2 getAgentPrefVelocity(int agentNo)
         {
-            return agents_[agentNo2indexDict_[agentNo]].prefVelocity_;
+            return (VInt2)agents_[agentNo2indexDict_[agentNo]].prefVelocity_;
         }
 
         /**
@@ -741,9 +711,9 @@ namespace RVO
          * <param name="agentNo">The number of the agent whose two-dimensional
          * linear velocity is to be retrieved.</param>
          */
-        public KInt2 getAgentVelocity(int agentNo)
+        public VInt2 getAgentVelocity(int agentNo)
         {
-            return agents_[agentNo2indexDict_[agentNo]].velocity_;
+            return (VInt2)agents_[agentNo2indexDict_[agentNo]].velocity_;
         }
 
         /**
@@ -993,9 +963,9 @@ namespace RVO
          * <param name="prefVelocity">The replacement of the two-dimensional
          * preferred velocity.</param>
          */
-        public void setAgentPrefVelocity(int agentNo, KInt2 prefVelocity)
+        public void setAgentPrefVelocity(int agentNo, VInt2 prefVelocity)
         {
-            agents_[agentNo2indexDict_[agentNo]].prefVelocity_ = prefVelocity;
+            agents_[agentNo2indexDict_[agentNo]].prefVelocity_ = (KInt2)prefVelocity;
         }
 
         /**

@@ -29,10 +29,9 @@
  *
  * <http://gamma.cs.unc.edu/RVO2/>
  */
+ 
 
-using RVO2;
-
-namespace RVO
+namespace RVO2
 {
     /**
      * <summary>Defines static obstacles in the simulation.</summary>

@@ -33,7 +33,7 @@ using RVO2;
 using System;
 using UnityEngine;
 
-namespace RVO
+namespace RVO2
 {
     /**
      * <summary>Defines a directed line.</summary>
