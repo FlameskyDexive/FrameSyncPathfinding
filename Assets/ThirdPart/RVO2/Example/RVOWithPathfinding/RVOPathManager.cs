@@ -4,9 +4,12 @@ using Lean;
 using RVO2;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
 public class RVOPathManager : SingletonBehaviour<RVOPathManager>
 {
+    private GUIStyle style;
+    private GUISkin skin;
 
     public GameObject agentPrefab;
     public GameObject obstacles;
@@ -30,11 +33,17 @@ public class RVOPathManager : SingletonBehaviour<RVOPathManager>
     public KInt maxSpeed = 2;
     public KInt2 velocity = new KInt2(2, 2);
 
+    void Awake()
+    {
+        Application.targetFrameRate = 240;
+    }
+
     // Use this for initialization
     void Start()
     {
         KInt timestep = 0.25f;
         Simulator.Instance.setTimeStep(timestep);
+        //设置单线程，true:Unity主线程工作，false:开启多线程
         Simulator.Instance.SetSingleTonMode(true);
         Simulator.Instance.setAgentDefaults(15, 10, 5, 5, 2, 2, KInt2.zero);
 
@@ -62,6 +71,13 @@ public class RVOPathManager : SingletonBehaviour<RVOPathManager>
         Simulator.Instance.SetNumWorkers(0);
         SetObstacles();
         Simulator.Instance.processObstacles();
+
+        style = new GUIStyle()
+        {
+            fontSize = 26,
+            alignment = TextAnchor.MiddleCenter,
+            normal = new GUIStyleState() { textColor = Color.white }
+        };
     }
 
     private void SetObstacles()
@@ -90,12 +106,23 @@ public class RVOPathManager : SingletonBehaviour<RVOPathManager>
     // Update is called once per frame
     private void Update()
     {
+        UnityEngine.Profiling.Profiler.BeginSample("DoStep");
         Simulator.Instance.doStep();
+        UnityEngine.Profiling.Profiler.EndSample();
     }
 
     void OnDrawGizmos()
     {
         if (draw)
             Simulator.Instance.DrawObstacles();
+    }
+
+    void OnGUI()
+    {
+        GUI.Label(new Rect(Screen.width - 80, 0, 100, 30), (/*1 / */Time.smoothDeltaTime * 1000).ToString("f2") + " ms");
+        /*if (GUI.Button(new Rect(Screen.width - 100, 30, 100, 30), "WithObstacles"))
+        {
+            SceneManager.LoadScene("example");
+        }*/
     }
 }

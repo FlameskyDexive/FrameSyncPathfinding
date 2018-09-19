@@ -32,6 +32,7 @@ public struct VInt3 : System.IEquatable<VInt3>
     public static readonly VInt3 half = new VInt3(500, 500, 500);
 
     public static readonly VInt3 forward = new VInt3(0, 0, 1000);
+    public static readonly VInt3 back = new VInt3(0, 0, -1000);
 
     public static readonly VInt3 up = new VInt3(0, 1000, 0);
 
@@ -161,6 +162,14 @@ public struct VInt3 : System.IEquatable<VInt3>
         lhs.y = (int)System.Math.Round(lhs.y * rhs);
         lhs.z = (int)System.Math.Round(lhs.z * rhs);
 
+        return lhs;
+    }
+
+    public static VInt3 operator *(VInt3 lhs, VInt3 rhs)
+    {
+        lhs.x *= rhs.x;
+        lhs.y *= rhs.y;
+        lhs.z *= rhs.z;
         return lhs;
     }
 

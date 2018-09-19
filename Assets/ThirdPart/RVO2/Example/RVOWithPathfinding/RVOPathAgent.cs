@@ -13,6 +13,7 @@ public class RVOPathAgent : MonoBehaviour
     /** Random number generator. */
     private Random m_random = new Random();
 
+    //单次移动的终点
     private Vector3 targetpos;
 
     private Seeker seeker;
@@ -23,14 +24,32 @@ public class RVOPathAgent : MonoBehaviour
     private List<VInt3> paths = new List<VInt3>();
     //定义碰撞信息，一个角色定义一次
     private GraphHitInfo hit = new GraphHitInfo();
+    //寻路频率，单位s
+    public int repathRate = 5;
+    //设置寻路终点
+    private VInt3 endPoint;
 
     // Use this for initialization
     void Start()
     {
         targetpos = -transform.position;
+        endPoint = -transform.position;
 
         seeker = gameObject.GetComponent<Seeker>();
-        seeker.StartPath(transform.position, -transform.position, OnCompleted);
+        
+        InvokeRepeating("StartSeekPath", 0, repathRate);
+    }
+
+    void StartSeekPath()
+    {
+        /*if (transform.GetSiblingIndex() == 0)
+            Debug.Log("--target--" + transform.GetSiblingIndex() + "---" + endPoint);*/
+        if ((VInt3) transform.position == endPoint)
+        {
+            Debug.Log("End Seek");
+            CancelInvoke("StartSeekPath");
+        }
+        seeker.StartPath(transform.position, endPoint, OnCompleted);
     }
 
     // Update is called once per frame
@@ -83,12 +102,10 @@ public class RVOPathAgent : MonoBehaviour
             Simulator.Instance.setAgentPrefVelocity(sid, goalVector);
 
             /* Perturb a little to avoid deadlocks due to perfect symmetry. */
-            /*float angle = (float) m_random.NextDouble()*2.0f*(float) Math.PI;
-            float dist = (float) m_random.NextDouble()*0.0001f;
+            //float angle = (float) m_random.NextDouble()*2.0f*(float) Math.PI;
+            //float dist = (float) m_random.NextDouble()*0.0001f;
 
-            Simulator.Instance.setAgentPrefVelocity(sid, Simulator.Instance.getAgentPrefVelocity(sid) +
-                                                         dist*
-                                                         new KInt2((float) Math.Cos(angle), (float) Math.Sin(angle)));*/
+            //Simulator.Instance.setAgentPrefVelocity(sid, Simulator.Instance.getAgentPrefVelocity(sid) + new VInt2((int) (Math.Cos(angle) * 1000), (int) (Math.Sin(angle)) * 1000) * (int)(dist * 1000));
             /*Simulator.Instance.setAgentPrefVelocity(sid, Simulator.Instance.getAgentPrefVelocity(sid) +
                                                          (VInt2)(dist*
                                                          new KInt2((float) Math.Cos(angle), (float) Math.Sin(angle))));*/
@@ -98,9 +115,12 @@ public class RVOPathAgent : MonoBehaviour
 
     void OnCompleted(Path path)
     {
-        Debug.Log("--agent--" + transform.GetSiblingIndex() + "---" + path.vectorPath.Count);
+        /*if(transform.GetSiblingIndex() == 0)
+            Debug.Log("--agent--" + transform.GetSiblingIndex() + "---" + path.vectorPath.Count);*/
         paths = path.vectorPath;
-        targetpos = paths[curPathId];
+        curPathId = 1;
+        if(paths.Count > 1)
+            targetpos = paths[curPathId];
         isPathFound = true;
     }
 

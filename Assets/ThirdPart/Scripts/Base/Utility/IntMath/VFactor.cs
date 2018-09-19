@@ -248,6 +248,12 @@ public struct VFactor
         return a;
     }
 
+    public static VFactor operator *(VInt b, VFactor a)
+    {
+        a.nom *= (long)b;
+        return a;
+    }
+
     public static VFactor operator /(VFactor a, long b)
     {
         a.den *= b;
@@ -324,6 +330,11 @@ public struct VFactor
     {
         a.nom = -a.nom;
         return a;
+    }
+
+    public static explicit operator int(VFactor a)
+    {
+        return (int)(a.nom * 1000 / a.den);
     }
 }
 

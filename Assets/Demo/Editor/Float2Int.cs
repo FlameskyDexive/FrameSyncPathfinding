@@ -7,7 +7,7 @@ using UnityEngine;
 public class Float2Int : EditorWindow
 {
 
-    [MenuItem("Tools/SetFloatTags")]
+    //[MenuItem("Tools/SetFloatTags")]
     private static void ShowWindow()
     {
         SetFloatTags();

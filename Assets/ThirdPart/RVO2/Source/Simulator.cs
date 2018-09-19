@@ -33,6 +33,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
 
 namespace RVO2
 {
@@ -373,7 +374,28 @@ namespace RVO2
         {
             return new UnityEngine.Vector3(v.x,0,v.y);
         }
-        
+
+        public IList<Obstacle> GetObstacles()
+        {
+            return obstacles_;
+        }
+
+        public KdTree GetKdTree()
+        {
+            return kdTree_;
+        }
+
+        public void CreateKdtreeFromAsset(KdtreeAsset asset)
+        {
+            if (asset != null)
+            {
+                this.kdTree_ = asset.CopythisToKdtree(this.obstacles_);
+            }
+            else
+            {
+                Debug.LogError("KdtreeAsset is Null");
+            }
+        }
 
         /**
          * <summary>Clears the simulation.</summary>

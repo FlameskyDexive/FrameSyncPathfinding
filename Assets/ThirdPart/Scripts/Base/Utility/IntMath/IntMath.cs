@@ -84,12 +84,29 @@ public class IntMath
         return new VFactor((long)SinCosLookupTable.cos_table[index], (long)SinCosLookupTable.FACTOR);
     }
 
+    //GG
+    public static VFactor cos(VFactor factor)
+    {
+        int index = SinCosLookupTable.getIndex(factor.nom, factor.den);
+        return new VFactor((long)SinCosLookupTable.cos_table[index], (long)SinCosLookupTable.FACTOR);
+    }
+
+    //GG
+    public static VFactor abs(VFactor factor)
+    {
+        return new VFactor(Math.Abs(factor.nom), Math.Abs(factor.den));
+    }
+
     public static int Divide(int a, int b)
     {
         //if (Math.Abs(a) == Math.Abs(b))
         //{
         //    return a / b;
         //}
+        if (b == 0)
+        {
+            return 0;
+        }
         int num = ((a ^ b) & -2147483648) >> 0x1f;
         int num2 = (num * -2) + 1;
         return ((a + ((b / 2) * num2)) / b);
@@ -211,6 +228,10 @@ public class IntMath
     public static int Lerp(int src, int dest, int nom, int den)
     {
         return Divide((int)((src * den) + ((dest - src) * nom)), den);
+    }
+    public static int Lerp(int src, int dest, VFactor factor)
+    {
+        return Divide((int)((src * factor.den) + (int)((dest - src) * factor.nom)), (int)factor.den);
     }
 
     public static long Lerp(long src, long dest, long nom, long den)
@@ -335,6 +356,13 @@ public class IntMath
     public static VFactor sin(long nom, long den)
     {
         int index = SinCosLookupTable.getIndex(nom, den);
+        return new VFactor((long)SinCosLookupTable.sin_table[index], (long)SinCosLookupTable.FACTOR);
+    }
+
+    //GG
+    public static VFactor sin(VFactor a)
+    {
+        int index = SinCosLookupTable.getIndex(a.nom, a.den);
         return new VFactor((long)SinCosLookupTable.sin_table[index], (long)SinCosLookupTable.FACTOR);
     }
 
@@ -504,8 +532,8 @@ public class IntMath
 
         long nom = dir2.x * (start1.z - start2.z) - dir2.z * (start1.x - start2.x);
 
-        long u = nom / den;
-
+        //long u = nom / den;
+        VFactor u =  new VFactor(nom, den);
         intersects = true;
         return start1 + dir1 * u;
     }
@@ -608,15 +636,25 @@ public class IntMath
      * \see ClosestPointOnLine
      * \see ClosestPointOnSegmentXZ
      */
-    public static VInt3 ClosestPointOnSegment(Vector3 lineStart, Vector3 lineEnd, Vector3 point)
+    public static VInt3 ClosestPointOnSegment(VInt3 lineStart, VInt3 lineEnd, VInt3 point)
     {
         var dir = lineEnd - lineStart;
-        float sqrMagn = dir.sqrMagnitude;
+        long sqrMagn = dir.sqrMagnitudeLong;
 
-        if (sqrMagn <= 0.000001) return (VInt3)lineStart;
+        if (sqrMagn <= 1) return lineStart;
 
-        float factor = Vector3.Dot(point - lineStart, dir) / sqrMagn;
-        return (VInt3)(lineStart + (Mathf.Clamp01(factor) * dir));
+        long factor = VInt3.DotLong(point - lineStart, dir) / sqrMagn;
+        return (lineStart + dir * IntMath.Clamp(0, 1000,factor));
+    }
+    public static VInt2 ClosestPointOnSegment(VInt2 lineStart, VInt2 lineEnd, VInt2 point)
+    {
+        var dir = lineEnd - lineStart;
+        long sqrMagn = dir.sqrMagnitudeLong;
+
+        if (sqrMagn <= 1) return lineStart;
+
+        long factor = VInt2.DotLong(point - lineStart, dir) / sqrMagn;
+        return (lineStart + dir * (int)IntMath.Clamp(0, 1000,factor));
     }
 
     /** Returns the closest point on the segment in the XZ plane.
@@ -637,6 +675,28 @@ public class IntMath
         VInt3 lineDirection = magn > float.Epsilon ? fullDirection2 / magn : VInt3.zero;
 
         int closestPoint = VInt3.Dot((point - lineStart), lineDirection);
+        int a = (int)Clamp(closestPoint, 0, fullDirection2.magnitude);
+        return lineStart + ( lineDirection * a);
+    }
+
+    /** Returns the closest point on the segment in the XZ plane.
+     * The y coordinate of the result will be the same as the y coordinate of the \a point parameter.
+     *
+     * The segment is NOT treated as infinite.
+     * \see ClosestPointOnSegment
+     * \see ClosestPointOnLine
+     */
+    public static VInt2 ClosestPointOnSegmentXZ(VInt2 lineStart, VInt2 lineEnd, VInt2 point)
+    {
+        lineStart.y = point.y;
+        lineEnd.y = point.y;
+        VInt2 fullDirection = lineEnd - lineStart;
+        VInt2 fullDirection2 = fullDirection;
+        fullDirection2.y = 0;
+        int magn = fullDirection2.magnitude;
+        VInt2 lineDirection = magn > float.Epsilon ? fullDirection2 / magn : VInt2.zero;
+
+        int closestPoint = VInt2.Dot((point - lineStart), lineDirection);
         int a = (int)Clamp(closestPoint, 0, fullDirection2.magnitude);
         return lineStart + ( lineDirection * a);
     }
@@ -1085,6 +1145,17 @@ public class IntMath
         }
 
         return int3s;
+    }
+    /** Complex number multiplication.
+     * \returns a * b
+     *
+     * Used to rotate vectors in an efficient way.
+     *
+     * \see https://en.wikipedia.org/wiki/Complex_number#Multiplication_and_division
+     */
+    public static VInt2 ComplexMultiply(VInt2 a, VInt2 b)
+    {
+        return new VInt2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
     }
 }
 

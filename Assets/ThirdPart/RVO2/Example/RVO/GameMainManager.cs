@@ -8,6 +8,7 @@ using UnityEngine.Assertions.Comparers;
 using Random = System.Random;
 using RVO2;
 using Pathfinding.Examples;
+using UnityEngine.SceneManagement;
 
 public class GameMainManager : SingletonBehaviour<GameMainManager>
 {
@@ -18,7 +19,7 @@ public class GameMainManager : SingletonBehaviour<GameMainManager>
     [HideInInspector] public Vector2 mousePosition;
 
     private Plane m_hPlane = new Plane(Vector3.up, Vector3.zero);
-    private Dictionary<int, RVOPathAgent> m_agentMap = new Dictionary<int, RVOPathAgent>();
+    private Dictionary<int, GameAgent> m_agentMap = new Dictionary<int, GameAgent>();
 
     public Vector3 goalOffset = Vector3.zero;
     public int agentCount=20;
@@ -31,6 +32,11 @@ public class GameMainManager : SingletonBehaviour<GameMainManager>
     public KInt radius = 2;
     public KInt maxSpeed =2;
     public KInt2 velocity = new KInt2(2, 2);
+
+    void Awake()
+    {
+        Application.targetFrameRate = -1;
+    }
 
     // Use this for initialization
     void Start()
@@ -54,7 +60,7 @@ public class GameMainManager : SingletonBehaviour<GameMainManager>
                 GameObject go = LeanPool.Spawn(agentPrefab, new Vector3(pos.x, 0, pos.y), Quaternion.Euler(0, angle + 180, 0));
                 go.transform.parent = transform;
                 go.transform.position = pos;
-                RVOPathAgent ga = go.GetComponent<RVOPathAgent>();
+                GameAgent ga = go.GetComponent<GameAgent>();
                 Assert.IsNotNull(ga);
                 ga.sid = sid;
                 m_agentMap.Add(sid, ga);
@@ -74,5 +80,13 @@ public class GameMainManager : SingletonBehaviour<GameMainManager>
     {
         if (draw)
             Simulator.Instance.DrawObstacles();
+    }
+    void OnGUI()
+    {
+        GUI.Label(new Rect(Screen.width - 80, 0, 100, 30), (/*1 / */Time.smoothDeltaTime * 1000).ToString("f2") + " ms");
+        /*if (GUI.Button(new Rect(Screen.width - 100, 30, 100, 30), "NoObstacles"))
+        {
+            SceneManager.LoadScene("RVOPathfinding");
+        }*/
     }
 }

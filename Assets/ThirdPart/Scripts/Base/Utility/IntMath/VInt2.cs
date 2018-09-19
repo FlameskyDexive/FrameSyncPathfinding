@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -56,9 +57,23 @@ public struct VInt2 : System.IEquatable<VInt2>
         return a.x == b.x && a.y == b.y;
     }
 
+    public static explicit operator VInt2(Vector3 v)
+    {
+        return new VInt2((int)(v.x * 1000),(int)(v.z * 1000));
+    }
+
     public static bool operator !=(VInt2 a, VInt2 b)
     {
         return a.x != b.x || a.y != b.y;
+    }
+    public static VInt2 Lerp(VInt2 a, VInt2 b, VFactor f)
+    {
+        return new VInt2((int)IntMath.Divide((long)(b.x - a.x) * f.nom, f.den) + a.x, (int)IntMath.Divide((long)(b.y - a.y) * f.nom, f.den) + a.y);
+    }
+
+    public static VInt2 Lerp(VInt2 a, VInt2 b, int factorNom, int factorDen)
+    {
+        return new VInt2(IntMath.Divide((b.x - a.x) * factorNom, factorDen) + a.x, IntMath.Divide((b.y - a.y) * factorNom, factorDen) + a.y);
     }
 
     public static int Dot(VInt2 a, VInt2 b)
@@ -101,6 +116,27 @@ public struct VInt2 : System.IEquatable<VInt2>
         lhs.y = lhs.y / rhs;
         return lhs;
     }
+
+    public static implicit operator Vector2(VInt2 ob)
+    {
+        return new Vector2((float)ob.x * 0.001f, (float)ob.y * 0.001f);
+    }
+
+    public static explicit operator VInt3(VInt2 ob)
+    {
+        return new VInt3(ob.x, 0, ob.y);
+    }
+
+    public static implicit operator VInt2(Vector2 ob)
+    {
+        return new VInt2((int)(ob.x *1000), (int)(ob.y *1000));
+    }
+
+    //GG
+    /*public static implicit operator VInt2(VFactor a, VFactor b)
+    {
+        return new VInt2((int)(a.nom * 1000 / a.den), (int)(b.nom * 1000 / b.den));
+    }*/
 
     public override bool Equals(System.Object o)
     {
