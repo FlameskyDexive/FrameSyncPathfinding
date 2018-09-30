@@ -424,7 +424,9 @@ namespace Pathfinding
                 // of the path. If the RVO simulation FPS is low and we did
                 // not do this, the agent might overshoot the target a lot.
                 var rvoTarget = position3D + movementPlane.ToWorld(Vector2.ClampMagnitude(velocity2D, distanceToEndOfPath));
-                rvoController.SetTarget(rvoTarget, velocity2D.magnitude, maxSpeed);
+                //GG
+                //rvoController.SetTarget(rvoTarget, velocity2D.magnitude, maxSpeed);
+                rvoController.SetTarget(rvoTarget, (int)(velocity2D.magnitude * 1000), (int)(maxSpeed * 1000));
             }
 
             // Direction and distance to move during this frame
@@ -462,7 +464,9 @@ namespace Pathfinding
                         // to move forwards and avoidance quality may suffer
                         if (rvoController != null && rvoController.enabled)
                         {
-                            rvoController.SetCollisionNormal(difference);
+                            //GG
+                            //rvoController.SetCollisionNormal(difference);
+                            rvoController.SetCollisionNormal((VInt3)((VInt2)difference));
                         }
                         positionChanged = true;
                         // Return the new position, but ignore any changes in the y coordinate from the ClampToNavmesh method as the y coordinates in the navmesh are rarely very accurate

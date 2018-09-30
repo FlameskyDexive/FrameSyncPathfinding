@@ -11,8 +11,11 @@ namespace Pathfinding.RVO
         public bool ignore;
 
         /** Position of the vertex */
-        public Vector3 position;
-        public Vector2 dir;
+        //GG
+        /*public Vector3 position;
+        public Vector2 dir;*/
+        public VInt3 position;
+        public VInt2 dir;
 
         /** Height of the obstacle in this vertex */
         public float height;

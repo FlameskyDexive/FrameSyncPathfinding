@@ -23,6 +23,7 @@ namespace Pathfinding {
 		 * If negative, no updates will be done. They must be manually triggered using #ForceUpdate
 		 */
 		public float updateInterval;
+	    public bool isFrameSync = false;
 
 		float lastUpdateTime = float.NegativeInfinity;
 
@@ -122,14 +123,31 @@ namespace Pathfinding {
 			lastUpdateTime = float.NegativeInfinity;
 		}
 
-		/** Update is called once per frame */
-		void Update () {
-			if (handler == null) FindGraph();
+        //GG
+	    public void DoUpdate(int deltaTimeMs)
+	    {
+            if(isFrameSync)
+                UpdateNavmesh();
+        }
 
-			if (handler != null && !AstarPath.active.isScanning && ((updateInterval >= 0 && Time.realtimeSinceStartup - lastUpdateTime > updateInterval) || !handler.isValid)) {
-				ForceUpdate();
-			}
+		/** Update is called once per frame */
+		void Update ()
+		{
+		    if (!isFrameSync)
+		    {
+                UpdateNavmesh();
+		    }
 		}
+
+	    void UpdateNavmesh()
+	    {
+	        if (handler == null) FindGraph();
+
+	        if (handler != null && !AstarPath.active.isScanning && ((updateInterval >= 0 && Time.realtimeSinceStartup - lastUpdateTime > updateInterval) || !handler.isValid))
+	        {
+	            ForceUpdate();
+	        }
+        }
 
 		/** Checks all NavmeshCut instances and updates graphs if needed.
 		 * \note This schedules updates for all necessary tiles to happen as soon as possible.

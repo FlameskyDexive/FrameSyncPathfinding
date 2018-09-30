@@ -1018,6 +1018,21 @@ namespace Pathfinding
             }
         }
 
+        //GG
+        public static VInt2 Normalize(VInt2 v, out int magnitude)
+        {
+            magnitude = v.magnitude;
+            // This is the same constant that Unity uses
+            if (magnitude > 1E-05f)
+            {
+                return v / magnitude;
+            }
+            else
+            {
+                return VInt2.zero;
+            }
+        }
+
         /* Clamp magnitude along the X and Z axes.
 		 * The y component will not be changed.
 		 */

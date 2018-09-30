@@ -15,13 +15,13 @@ public class ExportObstacleAsset : EditorWindow
         if (Application.isPlaying)
         {
             string file = AssetDatabase.GetAssetPath(Selection.activeObject);
-            Debug.Log(Selection.activeObject.name + "\n" + file);
             if (!file.EndsWith(".csv"))
             {
                 EditorUtility.DisplayDialog("提示", "请确保您选中了一个有效的csv地图文件", "确定");
                 return;
             }
 
+            Debug.Log(Selection.activeObject.name + "\n" + file);
             EditorUtility.DisplayProgressBar("导出障碍————" + Selection.activeObject.name, "正在读取障碍并构建障碍树，此过程时间较长，请耐心等候", 0);
             ReadObstacle(file);
             EditorUtility.DisplayProgressBar("导出障碍————" + Selection.activeObject.name, "正在导出障碍到本地，请耐心等候", 0.9f);

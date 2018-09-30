@@ -763,7 +763,7 @@ namespace Pathfinding
             {
                 //Good Game
                 //Vector3 closest = VectorMath.ClosestPointOnSegment(vectorPath[i], vectorPath[i+1], point);
-                VInt3 closest = IntMath.ClosestPointOnSegment((Vector3)vectorPath[i], (Vector3)vectorPath[i + 1], (Vector3)point);
+                VInt3 closest = IntMath.ClosestPointOnSegment(vectorPath[i], vectorPath[i + 1], point);
                 float dist = (closest - point).sqrMagnitude;
                 if (dist < minDist)
                 {

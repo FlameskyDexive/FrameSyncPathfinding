@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 1
-  drawGizmos: 0
+  drawGizmos: 1
   detailedGizmos: 0
   startEndModifier:
     addPoints: 0
@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   repathRate: 1
-  maxSpeed: 10
+  maxSpeed: 30
   moveNextDist: 5
   slowdownDistance: 5
   groundMask:
@@ -227,18 +227,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   radius: 2
-  height: 4
+  height: 2
   locked: 0
-  lockWhenNotMoving: 1
+  lockWhenNotMoving: 0
   agentTimeHorizon: 2
-  obstacleTimeHorizon: 2.5
-  maxNeighbours: 4
+  obstacleTimeHorizon: 2
+  maxNeighbours: 10
   layer: 1
   collidesWith: -5
   wallAvoidForce: 1
   wallAvoidFalloff: 1
-  priority: 0.5
-  center: 2
+  center: 1000
   debug: 0
 --- !u!1001 &100100000
 Prefab:

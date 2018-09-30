@@ -25,9 +25,13 @@ namespace Pathfinding.RVO {
 	[ExecuteInEditMode]
 	[AddComponentMenu("Pathfinding/Local Avoidance/RVO Simulator")]
 	[HelpURL("http://arongranberg.com/astar/docs/class_pathfinding_1_1_r_v_o_1_1_r_v_o_simulator.php")]
-	public class RVOSimulator : VersionedMonoBehaviour {
-		/** First RVOSimulator in the scene (usually there is only one) */
-		public static RVOSimulator active { get; private set; }
+	public class RVOSimulator : VersionedMonoBehaviour
+	{
+        //GG
+	    public static bool IsFrameMode = false;
+
+        /** First RVOSimulator in the scene (usually there is only one) */
+        public static RVOSimulator active { get; private set; }
 
 		/** Desired FPS for rvo simulation.
 		 * It is usually not necessary to run a crowd simulation at a very high fps.
@@ -65,8 +69,11 @@ namespace Pathfinding.RVO {
 			 "This helps to break up symmetries and makes it possible to resolve some situations much faster.\n\n" +
 			 "When many agents have the same goal this can however have the side effect that the group " +
 			 "clustered around the target point may as a whole start to spin around the target point.")]
-		[Range(0, 0.2f)]
-		public float symmetryBreakingBias = 0.1f;
+		//GG
+        /*[Range(0, 0.2f)]
+		public float symmetryBreakingBias = 0.1f;*/
+        [Range(0, 200)]
+		public int symmetryBreakingBias = 100;
 
 		/** Determines if the XY (2D) or XZ (3D) plane is used for movement.
 		 * For 2D games you would set this to XY and for 3D games you would usually set it to XZ.
@@ -113,7 +120,9 @@ namespace Pathfinding.RVO {
 			if (desiredSimulationFPS < 1) desiredSimulationFPS = 1;
 
 			var sim = GetSimulator();
-			sim.DesiredDeltaTime = 1.0f / desiredSimulationFPS;
+		    //GG
+            //sim.DesiredDeltaTime = 1.0f / desiredSimulationFPS;
+            sim.DesiredDeltaTime = new VFactor(1, desiredSimulationFPS);
 			sim.symmetryBreakingBias = symmetryBreakingBias;
 			sim.Update();
 		}
@@ -158,10 +167,15 @@ namespace Pathfinding.RVO {
 							do {
 								vertices[edgeIndex*6 + 0] = c.position;
 								vertices[edgeIndex*6 + 1] = c.next.position;
-								vertices[edgeIndex*6 + 2] = c.next.position + up*c.next.height;
+							    //GG
+                                //vertices[edgeIndex*6 + 2] = c.next.position + up*c.next.height;
+                                vertices[edgeIndex*6 + 2] = (Vector3)c.next.position + up*c.next.height;
 								vertices[edgeIndex*6 + 3] = c.position;
-								vertices[edgeIndex*6 + 4] = c.next.position + up*c.next.height;
-								vertices[edgeIndex*6 + 5] = c.position + up*c.height;
+							    //GG
+                                /*vertices[edgeIndex*6 + 4] = c.next.position + up*c.next.height;
+								vertices[edgeIndex*6 + 5] = c.position + up*c.height;*/
+                                vertices[edgeIndex*6 + 4] = (Vector3)c.next.position + up*c.next.height;
+								vertices[edgeIndex*6 + 5] = (Vector3)c.position + up*c.height;
 								edgeIndex++;
 								c = c.next;
 							} while (c != start && c != null && c.next != null);

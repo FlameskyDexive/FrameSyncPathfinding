@@ -35,7 +35,9 @@ namespace Pathfinding.RVO
 		 * Vector3 position3D = new Vector3(agent.Position.x, agent.ElevationCoordinate, agent.Position.y);
 		 * \endcode
 		 */
-        Vector2 Position { get; set; }
+        //GG
+        //Vector2 Position { get; set; }
+        VInt2 Position { get; set; }
 
         /** Coordinate which separates characters in the height direction.
 		 * Since RVO can be used either in 2D or 3D, it is not as simple as just using the y coordinate of the 3D position.
@@ -45,7 +47,9 @@ namespace Pathfinding.RVO
 		 *
 		 * The position is assumed to be at the base of the character (near the feet).
 		 */
-        float ElevationCoordinate { get; set; }
+        //GG
+        //float ElevationCoordinate { get; set; }
+        int ElevationCoordinate { get; set; }
 
         /** Optimal point to move towards to avoid collisions.
 		 * The movement script should move towards this point with a speed of #CalculatedSpeed.
@@ -54,12 +58,16 @@ namespace Pathfinding.RVO
 		 *
 		 * \see RVOController.CalculateMovementDelta.
 		 */
-        Vector2 CalculatedTargetPoint { get; }
+        //GG
+        //Vector2 CalculatedTargetPoint { get; }
+        VInt2 CalculatedTargetPoint { get; }
 
         /** Optimal speed of the agent to avoid collisions.
 		 * The movement script should move towards #CalculatedTargetPoint with this speed.
 		 */
-        float CalculatedSpeed { get; }
+        //GG
+        //float CalculatedSpeed { get; }
+        int CalculatedSpeed { get; }
 
         /** Point towards which the agent should move.
 		 * Usually you set this once per frame. The agent will try move as close to the target point as possible.
@@ -99,7 +107,9 @@ namespace Pathfinding.RVO
 		 *      Should be at least as high as desiredSpeed, but it is recommended to use a slightly
 		 *      higher value than desiredSpeed (for example desiredSpeed*1.2).
 		 */
-        void SetTarget(Vector2 targetPoint, float desiredSpeed, float maxSpeed);
+        //GG
+        //void SetTarget(Vector2 targetPoint, float desiredSpeed, float maxSpeed);
+        void SetTarget(VInt2 targetPoint, int desiredSpeed, int maxSpeed);
 
         /** Locked agents will be assumed not to move */
         bool Locked { get; set; }
@@ -107,22 +117,30 @@ namespace Pathfinding.RVO
         /** Radius of the agent in world units.
 		 * Agents are modelled as circles/cylinders.
 		 */
-        float Radius { get; set; }
+        //GG
+        //float Radius { get; set; }
+        VInt Radius { get; set; }
 
         /** Height of the agent in world units.
 		 * Agents are modelled as circles/cylinders.
 		 */
-        float Height { get; set; }
+        //GG
+        //float Height { get; set; }
+        VInt Height { get; set; }
 
         /** Max number of estimated seconds to look into the future for collisions with agents.
 		 * As it turns out, this variable is also very good for controling agent avoidance priorities.
 		 * Agents with lower values will avoid other agents less and thus you can make 'high priority agents' by
 		 * giving them a lower value.
 		 */
-        float AgentTimeHorizon { get; set; }
+        //GG
+        //float AgentTimeHorizon { get; set; }
+        int AgentTimeHorizon { get; set; }
 
         /** Max number of estimated seconds to look into the future for collisions with obstacles */
-        float ObstacleTimeHorizon { get; set; }
+        //GG
+        //float ObstacleTimeHorizon { get; set; }
+        int ObstacleTimeHorizon { get; set; }
 
         /** Max number of agents to take into account.
 		 * Decreasing this value can lead to better performance, increasing it can lead to better quality of the simulation.
@@ -176,7 +194,9 @@ namespace Pathfinding.RVO
 		 *     avoidanceStrength = 0.5
 		 * \endcode
 		 */
-        float Priority { get; set; }
+        //GG
+        //float Priority { get; set; }
+        VFactor Priority { get; set; }
 
         /** Callback which will be called right before avoidance calculations are started.
 		 * Used to update the other properties with the most up to date values
@@ -191,7 +211,9 @@ namespace Pathfinding.RVO
 		 * This value will be cleared after the next simulation step, normally it should be set every frame
 		 * when the collision is still happening.
 		 */
-        void SetCollisionNormal(Vector2 normal);
+        //GG
+        //void SetCollisionNormal(Vector2 normal);
+        void SetCollisionNormal(VInt2 normal);
 
         /** Set the current velocity of the agent.
 		 * This will override the local avoidance input completely.
@@ -201,7 +223,9 @@ namespace Pathfinding.RVO
 		 * Local avoidance calculations will be skipped for the next simulation step but will be resumed
 		 * after that unless this method is called again.
 		 */
-        void ForceSetVelocity(Vector2 velocity);
+        //GG
+        //void ForceSetVelocity(Vector2 velocity);
+        void ForceSetVelocity(VInt2 velocity);
     }
 
     /** Plane which movement is primarily happening in */
@@ -276,7 +300,9 @@ namespace Pathfinding.RVO
         /** Inverse desired simulation fps.
 		 * \see DesiredDeltaTime
 		 */
-        private float desiredDeltaTime = 0.05f;
+        //GG
+        //private float desiredDeltaTime = 0.05f;
+        private VFactor desiredDeltaTime = new VFactor(1, 20);
 
         /** Worker threads */
         readonly Worker[] workers;
@@ -294,13 +320,17 @@ namespace Pathfinding.RVO
 		 */
         public RVOQuadtree Quadtree { get; private set; }
 
-        private float deltaTime;
+        //GG
+        //private float deltaTime;
+        private VFactor deltaTimeFactor;
         private float lastStep = -99999;
 
         private bool doUpdateObstacles = false;
         private bool doCleanObstacles = false;
 
-        public float DeltaTime { get { return deltaTime; } }
+        //GG
+            //public float DeltaTime { get { return deltaTime; } }
+        public VFactor DeltaTimeFactor {get {return deltaTimeFactor;} }
 
         /** Is using multithreading */
         public bool Multithreading { get { return workers != null && workers.Length > 0; } }
@@ -309,7 +339,25 @@ namespace Pathfinding.RVO
 		 * This is the desired delta time, the simulation will never run at a higher fps than
 		 * the rate at which the Update function is called.
 		 */
-        public float DesiredDeltaTime { get { return desiredDeltaTime; } set { desiredDeltaTime = System.Math.Max(value, 0.0f); } }
+        //GG
+        //public float DesiredDeltaTime { get { return desiredDeltaTime; } set { desiredDeltaTime = System.Math.Max(value, 0.0f); } }
+        public VFactor DesiredDeltaTime
+        {
+            get { return desiredDeltaTime; }
+            set
+            {
+                //GG
+                //desiredDeltaTime = System.Math.Max(value, 0);
+                if (value > 0)
+                {
+                    desiredDeltaTime = value;
+                }
+                else
+                {
+                    desiredDeltaTime = VFactor.zero;
+                }
+            }
+        }
 
         /** Bias agents to pass each other on the right side.
 		 * If the desired velocity of an agent puts it on a collision course with another agent or an obstacle
@@ -323,7 +371,9 @@ namespace Pathfinding.RVO
 		 *
 		 * If this value is negative, the agents will be biased towards passing each other on the left side instead.
 		 */
-        public float symmetryBreakingBias = 0.1f;
+        //GG
+        //public float symmetryBreakingBias = 0.1f;
+        public int symmetryBreakingBias = 100;
 
         /** Determines if the XY (2D) or XZ (3D) plane is used for movement */
         public readonly MovementPlane movementPlane = MovementPlane.XZ;
@@ -377,7 +427,9 @@ namespace Pathfinding.RVO
         {
             this.workers = new Simulator.Worker[workers];
             this.doubleBuffering = doubleBuffering;
-            this.DesiredDeltaTime = 1;
+            //GG
+            //this.DesiredDeltaTime = 1;
+            this.DesiredDeltaTime = VFactor.one;
             this.movementPlane = movementPlane;
             Quadtree = new RVOQuadtree();
 
@@ -446,9 +498,13 @@ namespace Pathfinding.RVO
 		 * \deprecated Use AddAgent(Vector2,float) instead
 		 */
         [System.Obsolete("Use AddAgent(Vector2,float) instead")]
-        public IAgent AddAgent(Vector3 position)
+        //GG
+        //public IAgent AddAgent(Vector3 position)
+        public IAgent AddAgent(VInt3 position)
         {
-            return AddAgent(new Vector2(position.x, position.z), position.y);
+            //GG
+            //return AddAgent(new Vector2(position.x, position.z), position.y);
+            return AddAgent(new VInt2(position.x, position.z), position.y);
         }
 
         /** Add an agent at the specified position.
@@ -460,7 +516,9 @@ namespace Pathfinding.RVO
 		 * \param position See IAgent.Position
 		 * \param elevationCoordinate See IAgent.ElevationCoordinate
 		 */
-        public IAgent AddAgent(Vector2 position, float elevationCoordinate)
+        //GG
+        //public IAgent AddAgent(Vector2 position, float elevationCoordinate)
+        public IAgent AddAgent(VInt2 position, int elevationCoordinate)
         {
             return AddAgent(new Agent(position, elevationCoordinate));
         }
@@ -512,7 +570,9 @@ namespace Pathfinding.RVO
 		 *
 		 * \see RemoveObstacle
 		 */
-        public ObstacleVertex AddObstacle(Vector3[] vertices, float height, bool cycle = true)
+        //GG
+        //public ObstacleVertex AddObstacle(Vector3[] vertices, float height, bool cycle = true)
+        public ObstacleVertex AddObstacle(VInt3[] vertices, int height, bool cycle = true)
         {
             return AddObstacle(vertices, height, Matrix4x4.identity, RVOLayer.DefaultObstacle, cycle);
         }
@@ -521,7 +581,9 @@ namespace Pathfinding.RVO
 		 *
 		 * \see RemoveObstacle
 		 */
-        public ObstacleVertex AddObstacle(Vector3[] vertices, float height, Matrix4x4 matrix, RVOLayer layer = RVOLayer.DefaultObstacle, bool cycle = true)
+        //GG
+        //public ObstacleVertex AddObstacle(Vector3[] vertices, float height, Matrix4x4 matrix, RVOLayer layer = RVOLayer.DefaultObstacle, bool cycle = true)
+        public ObstacleVertex AddObstacle(VInt3[] vertices, int height, Matrix4x4 matrix, RVOLayer layer = RVOLayer.DefaultObstacle, bool cycle = true)
         {
             if (vertices == null) throw new System.ArgumentNullException("Vertices must not be null");
             if (vertices.Length < 2) throw new System.ArgumentException("Less than 2 vertices in an obstacle");
@@ -563,7 +625,9 @@ namespace Pathfinding.RVO
 		 *
 		 * \see RemoveObstacle
 		 */
-        public ObstacleVertex AddObstacle(Vector3 a, Vector3 b, float height)
+        //GG
+        //public ObstacleVertex AddObstacle(Vector3 a, Vector3 b, float height)
+        public ObstacleVertex AddObstacle(VInt3 a, VInt3 b, int height)
         {
             ObstacleVertex first = new ObstacleVertex();
             ObstacleVertex second = new ObstacleVertex();
@@ -582,7 +646,9 @@ namespace Pathfinding.RVO
             second.height = height;
             second.ignore = true;
 
-            first.dir = new Vector2(b.x - a.x, b.z - a.z).normalized;
+            //GG
+            //first.dir = new Vector2(b.x - a.x, b.z - a.z).normalized;
+            first.dir = new VInt2(b.x - a.x, b.z - a.z).normalized;
             second.dir = -first.dir;
 
             //Don't interfere with ongoing calculations
@@ -601,7 +667,9 @@ namespace Pathfinding.RVO
 		 *
 		 * The number of vertices in an obstacle cannot be changed, existing vertices can only be moved.
 		 */
-        public void UpdateObstacle(ObstacleVertex obstacle, Vector3[] vertices, Matrix4x4 matrix)
+        //GG
+        //public void UpdateObstacle(ObstacleVertex obstacle, Vector3[] vertices, Matrix4x4 matrix)
+        public void UpdateObstacle(ObstacleVertex obstacle, VInt3[] vertices, Matrix4x4 matrix)
         {
             if (vertices == null) throw new System.ArgumentNullException("Vertices must not be null");
             if (obstacle == null) throw new System.ArgumentNullException("Obstacle must not be null");
@@ -626,7 +694,9 @@ namespace Pathfinding.RVO
                 }
 
                 // Premature optimization ftw!
-                vertex.position = identity ? vertices[count] : matrix.MultiplyPoint3x4(vertices[count]);
+                //GG
+                //vertex.position = identity ? vertices[count] : matrix.MultiplyPoint3x4(vertices[count]);
+                vertex.position = identity ? vertices[count] : (VInt3)matrix.MultiplyPoint3x4((Vector3)vertices[count]);
                 vertex = vertex.next;
                 count++;
             } while (vertex != obstacle && vertex != null);
@@ -636,12 +706,17 @@ namespace Pathfinding.RVO
             {
                 if (vertex.next == null)
                 {
-                    vertex.dir = Vector2.zero;
+                    //GG
+                    //vertex.dir = Vector2.zero;
+                    vertex.dir = VInt2.zero;
                 }
                 else
                 {
-                    Vector3 dir = vertex.next.position - vertex.position;
-                    vertex.dir = new Vector2(dir.x, dir.z).normalized;
+                    //GG
+                    /*Vector3 dir = vertex.next.position - vertex.position;
+                    vertex.dir = new Vector2(dir.x, dir.z).normalized;*/
+                    VInt3 dir = vertex.next.position - vertex.position;
+                    vertex.dir = new VInt2(dir.x, dir.z).normalized;
                 }
 
                 vertex = vertex.next;
@@ -690,11 +765,16 @@ namespace Pathfinding.RVO
             Quadtree.Clear();
             if (agents.Count > 0)
             {
-                Rect bounds = Rect.MinMaxRect(agents[0].position.x, agents[0].position.y, agents[0].position.x, agents[0].position.y);
+                //GG
+                //Rect bounds = Rect.MinMaxRect(agents[0].position.x, agents[0].position.y, agents[0].position.x, agents[0].position.y);
+                VRect bounds = VRect.MinMaxRect(agents[0].position.x, agents[0].position.y, agents[0].position.x, agents[0].position.y);
                 for (int i = 1; i < agents.Count; i++)
                 {
-                    Vector2 p = agents[i].position;
-                    bounds = Rect.MinMaxRect(Mathf.Min(bounds.xMin, p.x), Mathf.Min(bounds.yMin, p.y), Mathf.Max(bounds.xMax, p.x), Mathf.Max(bounds.yMax, p.y));
+                    //GG
+                    /*Vector2 p = agents[i].position;
+                    bounds = Rect.MinMaxRect(Mathf.Min(bounds.xMin, p.x), Mathf.Min(bounds.yMin, p.y), Mathf.Max(bounds.xMax, p.x), Mathf.Max(bounds.yMax, p.y));*/
+                    VInt2 p = agents[i].position;
+                    bounds = VRect.MinMaxRect(Mathf.Min(bounds.xMin, p.x), Mathf.Min(bounds.yMin, p.y), Mathf.Max(bounds.xMax, p.x), Mathf.Max(bounds.yMax, p.y));
                 }
                 Quadtree.SetBounds(bounds);
 
@@ -746,16 +826,29 @@ namespace Pathfinding.RVO
             if (lastStep < 0)
             {
                 lastStep = Time.time;
-                deltaTime = DesiredDeltaTime;
+                //GG
+                //deltaTime = DesiredDeltaTime;
+                deltaTimeFactor = DesiredDeltaTime;
             }
 
-            if (Time.time - lastStep >= DesiredDeltaTime)
+            //GG
+            //Debug.Log($"--fdelta time--{(float)DesiredDeltaTime}");
+            //if ((Time.time - lastStep) >= DesiredDeltaTime)
+            if ((Time.time - lastStep) >= DesiredDeltaTime.single)
             {
-                deltaTime = Time.time - lastStep;
+                //GG
+                //deltaTime = Time.time - lastStep;
+                //deltaTimeFactor = (int)((Time.time - lastStep) * 1000);
                 lastStep = Time.time;
 
                 // Prevent a zero delta time
-                deltaTime = System.Math.Max(deltaTime, 1.0f / 2000f);
+                //GG
+                //deltaTime = System.Math.Max(deltaTime, 1.0f / 2000f);
+                //deltaTimeFactor = System.Math.Max(deltaTimeFactor, 1);
+                if (deltaTimeFactor < new VFactor(1, 2000))
+                {
+                    deltaTimeFactor = new VFactor(1, 2000);
+                }
 
                 if (Multithreading)
                 {
@@ -816,15 +909,24 @@ namespace Pathfinding.RVO
 
         internal class WorkerContext
         {
-            public Agent.VOBuffer vos = new Agent.VOBuffer(16);
+            //GG
+            //public Agent.VOBuffer vos = new Agent.VOBuffer(16);
+            public Agent.VOBuffer vos = new Agent.VOBuffer(20);
 
             public const int KeepCount = 3;
-            public Vector2[] bestPos = new Vector2[KeepCount];
+            //GG
+            /*public Vector2[] bestPos = new Vector2[KeepCount];
             public float[] bestSizes = new float[KeepCount];
             public float[] bestScores = new float[KeepCount + 1];
 
             public Vector2[] samplePos = new Vector2[50];
-            public float[] sampleSize = new float[50];
+            public float[] sampleSize = new float[50];*/
+            public VInt2[] bestPos = new VInt2[KeepCount];
+            public long[] bestSizes = new long[KeepCount];
+            public VFactor[] bestScores = new VFactor[KeepCount + 1];
+
+            public VInt2[] samplePos = new VInt2[50];
+            public long[] sampleSize = new long[50];
         }
 
         /** Worker thread for RVO simulation */

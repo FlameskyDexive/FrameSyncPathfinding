@@ -134,16 +134,18 @@ namespace Pathfinding.Examples
             VInt3 p1 = p.originalStartPoint;
             VInt3 p2 = (VInt3)transform.position;
             p1.y = p2.y;
-            float d = (p2 - p1).magnitude;
+            //GG
+            //float d = (p2 - p1).magnitude;
+            float d = ((Vector3)(p2 - p1)).magnitude;
             wp = 0;
 
             //Good Game
             vectorPath = p.vectorPath;
             //vectorPath = IntMath.Int3s2Vector3s(p.vectorPath);
-            /*for (int i = 0; i < vectorPath.Count; i++)
+            for (int i = 0; i < vectorPath.Count; i++)
 		    {
-		        Debug.Log(gameObject.name + "--second--" + i + "--" + vectorPath[i]);
-		    }*/
+		        Debug.Log(gameObject.name + "--path count--" + i + "--" + vectorPath[i]);
+		    }
             //Good Game
             //Vector3 waypoint;
             VInt3 waypoint;
@@ -161,12 +163,17 @@ namespace Pathfinding.Examples
                     {
                         wp++;
                         waypoint = vectorPath[wp];
+                        //Debug.Log($"--waypoint--{gameObject.name}--{((Vector2)controller.To2D((VInt3)pos - vectorPath[wp])).sqrMagnitude}--{moveNextDist * moveNextDist}");
                     }
                     //Good Game
                     //while (controller.To2D(pos - waypoint).sqrMagnitude < moveNextDist*moveNextDist && wp != vectorPath.Count-1);
-                    while (controller.To2D((Vector3)(pos - waypoint)).sqrMagnitude < moveNextDist * moveNextDist && wp != vectorPath.Count - 1);
+                    //while (((Vector2)controller.To2D((VInt3)pos - vectorPath[wp])).sqrMagnitude < moveNextDist * moveNextDist && wp != vectorPath.Count - 1);
+                    while (controller.To2D((pos - waypoint)).sqrMagnitude < moveNextDist * moveNextDist && wp != vectorPath.Count - 1);
                 }
+                //Debug.Log($"--waypoint index--{gameObject.name}--{wp}");
             }
+            //GG Test
+            //wp = 2;
         }
 
         public void Update()
@@ -181,10 +188,13 @@ namespace Pathfinding.Examples
             if (vectorPath != null && vectorPath.Count != 0)
             {
                 //Good Game
-                //while ((controller.To2D(pos - vectorPath[wp]).sqrMagnitude < moveNextDist*moveNextDist && wp != vectorPath.Count-1) || wp == 0) {
-                while ((controller.To2D(pos - (Vector3)vectorPath[wp]).sqrMagnitude < moveNextDist * moveNextDist && wp != vectorPath.Count - 1) || wp == 0)
+                //while ((controller.To2D(pos - vectorPath[wp]).sqrMagnitude < moveNextDist*moveNextDist && wp != vectorPath.Count-1) || wp == 0)
+                //while ((controller.To2D((VInt3)pos - vectorPath[wp]).sqrMagnitude < moveNextDist*moveNextDist && wp != vectorPath.Count-1) || wp == 0) 
+                //Debug.Log($"--waypoint--{gameObject.name}--{(controller.To2D((VInt3)pos - vectorPath[wp])).sqrMagnitude / 1000000f}--{moveNextDist * moveNextDist}");
+                while ((((Vector2)controller.To2D((VInt3)pos - vectorPath[wp])).sqrMagnitude < moveNextDist * moveNextDist && wp != vectorPath.Count - 1) || wp == 0)
                 {
                     wp++;
+                    //Debug.Log($"--agent{transform.GetSiblingIndex()}--wp--{wp}");
                 }
 
                 // Current path segment goes from vectorPath[wp-1] to vectorPath[wp]
@@ -197,49 +207,69 @@ namespace Pathfinding.Examples
                 // Calculate the intersection with the circle. This involves some math.
                 //Good Game
                 //var t = VectorMath.LineCircleIntersectionFactor(controller.To2D(transform.position), controller.To2D(p1), controller.To2D(p2), moveNextDist);
-                var t = VectorMath.LineCircleIntersectionFactor(controller.To2D(transform.position), controller.To2D((Vector3)p1), controller.To2D((Vector3)p2), moveNextDist);
+                var t = VectorMath.LineCircleIntersectionFactor((Vector2)controller.To2D((VInt3)transform.position), (Vector2)controller.To2D(p1), (Vector2)controller.To2D(p2), moveNextDist );
                 // Clamp to a point on the segment
                 t = Mathf.Clamp01(t);
                 //Good Game
                 //Vector3 waypoint = Vector3.Lerp(p1, p2, t);
-                Vector3 waypoint = Vector3.Lerp((Vector3)p1, (Vector3)p2, t);
+                VInt3 waypoint = VInt3.Lerp(p1, p2, t);
 
                 // Calculate distance to the end of the path
                 //Good Game
                 /*float remainingDistance = controller.To2D(waypoint - pos).magnitude + controller.To2D(waypoint - p2).magnitude;
 				for (int i = wp; i < vectorPath.Count - 1; i++)
 				    remainingDistance += controller.To2D(vectorPath[i+1] - vectorPath[i]).magnitude;*/
-                float remainingDistance = controller.To2D(waypoint - pos).magnitude + controller.To2D(waypoint - (Vector3)p2).magnitude;
+                float remainingDistance = controller.To2D(waypoint - (VInt3)pos).magnitude + controller.To2D(waypoint - p2).magnitude;
                 for (int i = wp; i < vectorPath.Count - 1; i++)
-                    remainingDistance += controller.To2D((Vector3)vectorPath[i + 1] - (Vector3)vectorPath[i]).magnitude;
+                    remainingDistance += controller.To2D(vectorPath[i + 1] - vectorPath[i]).magnitude;
 
                 // Set the target to a point in the direction of the current waypoint at a distance
                 // equal to the remaining distance along the path. Since the rvo agent assumes that
                 // it should stop when it reaches the target point, this will produce good avoidance
                 // behavior near the end of the path. When not close to the end point it will act just
                 // as being commanded to move in a particular direction, not toward a particular point
-                var rvoTarget = (waypoint - pos).normalized * remainingDistance + pos;
+                //GG
+                remainingDistance /= 1000000;
+                //Debug.Log("--remian--" + remainingDistance.ToString("f2"));
+                //var rvoTarget = (waypoint - pos).normalized * remainingDistance + pos;
+                var rvoTarget = ((Vector3)waypoint - pos).normalized * remainingDistance + pos;
                 // When within [slowdownDistance] units from the target, use a progressively lower speed
                 var desiredSpeed = Mathf.Clamp01(remainingDistance / slowdownDistance) * maxSpeed;
                 Debug.DrawLine(transform.position, waypoint, Color.red);
-                controller.SetTarget(rvoTarget, desiredSpeed, maxSpeed);
+                //GG
+                //controller.SetTarget(rvoTarget, desiredSpeed, maxSpeed);
+                //Debug.Log($"--target--{rvoTarget}--de speed--{desiredSpeed}--maxSpeed--{maxSpeed}");
+                controller.SetTarget((VInt3)rvoTarget, (int)(desiredSpeed * 1000), (int)(maxSpeed* 1000));
+                //controller.SetTarget((VInt3)rvoTarget, 50, (int)(maxSpeed* 1000));
             }
             else
             {
                 // Stand still
-                controller.SetTarget(pos, maxSpeed, maxSpeed);
+                //GG
+                //controller.SetTarget(pos, maxSpeed, maxSpeed);
+                controller.SetTarget((VInt3)pos, (int)(maxSpeed * 1000), (int)(maxSpeed * 1000));
             }
 
             // Get a processed movement delta from the rvo controller and move the character.
             // This is based on information from earlier frames.
-            var movementDelta = controller.CalculateMovementDelta(Time.deltaTime);
-            pos += movementDelta;
+            //GG
+            //var movementDelta = controller.CalculateMovementDelta(Time.deltaTime);
+            //var movementDelta = controller.CalculateMovementDelta((int)(Time.deltaTime * 1000));
+            var movementDelta = controller.CalculateMovementDelta(50);
+            //GG
+            //pos += movementDelta;
+            pos += (Vector3)movementDelta;
+            //Debug.Log("--" + movementDelta.ToString());
 
             //Rotate the character if the velocity is not extremely small
-            if (Time.deltaTime > 0 && movementDelta.magnitude / Time.deltaTime > 0.01f)
+            //GG
+            //if (Time.deltaTime > 0 && movementDelta.magnitude / Time.deltaTime > 0.01f)
+            if (Time.deltaTime > 0 && ((Vector3)movementDelta).magnitude / Time.deltaTime > 0.01f)
             {
                 var rot = transform.rotation;
-                var targetRot = Quaternion.LookRotation(movementDelta, controller.To3D(Vector2.zero, 1));
+                //GG
+                //var targetRot = Quaternion.LookRotation((Vector3)movementDelta, (Vector3)controller.To3D(Vector2.zero, 1));
+                var targetRot = Quaternion.LookRotation((Vector3)movementDelta, (Vector3)controller.To3D(VInt2.zero, 1000));
                 const float RotationSpeed = 5;
                 if (controller.movementPlane == MovementPlane.XY)
                 {

@@ -39,9 +39,11 @@ namespace Pathfinding.Legacy {
 
 			RaycastHit hit;
 
-			Vector3 pos = tr.position + CalculateMovementDelta(Time.deltaTime);
+            //GG
+			//Vector3 pos = tr.position + CalculateMovementDelta(Time.deltaTime);
+		    Vector3 pos = tr.position + (Vector3)CalculateMovementDelta((int)(Time.deltaTime * 1000));
 
-			if (mask != 0 && Physics.Raycast(pos + Vector3.up*height*0.5f, Vector3.down, out hit, float.PositiveInfinity, mask)) {
+            if (mask != 0 && Physics.Raycast(pos + Vector3.up*height*0.5f, Vector3.down, out hit, float.PositiveInfinity, mask)) {
 				pos.y = hit.point.y;
 			} else {
 				pos.y = 0;
@@ -49,7 +51,9 @@ namespace Pathfinding.Legacy {
 
 			tr.position = pos + Vector3.up*(height*0.5f - center);
 
-			if (enableRotation && velocity != Vector3.zero) transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(velocity), Time.deltaTime * rotationSpeed * Mathf.Min(velocity.magnitude, 0.2f));
+		    //GG
+            //if (enableRotation && velocity != Vector3.zero) transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(velocity), Time.deltaTime * rotationSpeed * Mathf.Min(velocity.magnitude, 0.2f));
+            if (enableRotation && (Vector3)velocity != Vector3.zero) transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(velocity), Time.deltaTime * rotationSpeed * Mathf.Min(velocity.magnitude, 0.2f));
 		}
 	}
 }

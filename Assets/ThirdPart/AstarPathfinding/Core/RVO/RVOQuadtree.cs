@@ -10,7 +10,9 @@ namespace Pathfinding.RVO
     {
         const int LeafSize = 15;
 
-        float maxRadius = 0;
+        //GG
+        //float maxRadius = 0;
+        int maxRadius = 0;
 
         /** Node in a quadtree for storing RVO agents.
 		 * \see Pathfinding.GraphNode for the node class that is used for pathfinding data.
@@ -25,7 +27,9 @@ namespace Pathfinding.RVO
             public byte count;
 
             /** Maximum speed of all agents inside this node */
-            public float maxSpeed;
+            //GG
+            //public float maxSpeed;
+            public int maxSpeed;
 
             public void Add(Agent agent)
             {
@@ -36,9 +40,13 @@ namespace Pathfinding.RVO
             /** Distribute the agents in this node among the children.
 			 * Used after subdividing the node.
 			 */
-            public void Distribute(Node[] nodes, Rect r)
+            //GG
+            //public void Distribute(Node[] nodes, Rect r)
+            public void Distribute(Node[] nodes, VRect r)
             {
-                Vector2 c = r.center;
+                //GG
+                //Vector2 c = r.center;
+                VInt2 c = r.center;
 
                 while (linkedList != null)
                 {
@@ -70,7 +78,9 @@ namespace Pathfinding.RVO
                 count = 0;
             }
 
-            public float CalculateMaxSpeed(Node[] nodes, int index)
+            //GG
+            //public float CalculateMaxSpeed(Node[] nodes, int index)
+            public int CalculateMaxSpeed(Node[] nodes, int index)
             {
                 if (child00 == index)
                 {
@@ -93,7 +103,9 @@ namespace Pathfinding.RVO
         Node[] nodes = new Node[42];
         int filledNodes = 1;
 
-        Rect bounds;
+        //GG
+        //Rect bounds;
+        VRect bounds;
 
         /** Removes all agents from the tree */
         public void Clear()
@@ -103,7 +115,9 @@ namespace Pathfinding.RVO
             maxRadius = 0;
         }
 
-        public void SetBounds(Rect r)
+        //GG
+        //public void SetBounds(Rect r)
+        public void SetBounds(VRect r)
         {
             bounds = r;
         }
@@ -128,12 +142,17 @@ namespace Pathfinding.RVO
         public void Insert(Agent agent)
         {
             int i = 0;
-            Rect r = bounds;
-            Vector2 p = new Vector2(agent.position.x, agent.position.y);
+            //GG
+            /*Rect r = bounds;
+            Vector2 p = new Vector2(agent.position.x, agent.position.y);*/
+            VRect r = bounds;
+            VInt2 p = new VInt2(agent.position.x, agent.position.y);
 
             agent.next = null;
 
-            maxRadius = System.Math.Max(agent.radius, maxRadius);
+            //GG
+            //maxRadius = System.Math.Max(agent.radius, maxRadius);
+            maxRadius = System.Math.Max((int)agent.radius, maxRadius);
 
             int depth = 0;
 
@@ -167,18 +186,24 @@ namespace Pathfinding.RVO
                 if (nodes[i].child00 != i)
                 {
                     // Not a leaf node
-                    Vector2 c = r.center;
+                    //GG
+                    //Vector2 c = r.center;
+                    VInt2 c = r.center;
                     if (p.x > c.x)
                     {
                         if (p.y > c.y)
                         {
                             i = nodes[i].child11;
-                            r = Rect.MinMaxRect(c.x, c.y, r.xMax, r.yMax);
+                            //GG
+                            //r = Rect.MinMaxRect(c.x, c.y, r.xMax, r.yMax);
+                            r = VRect.MinMaxRect(c.x, c.y, r.xMax, r.yMax);
                         }
                         else
                         {
                             i = nodes[i].child10;
-                            r = Rect.MinMaxRect(c.x, r.yMin, r.xMax, c.y);
+                            //GG
+                            //r = Rect.MinMaxRect(c.x, r.yMin, r.xMax, c.y);
+                            r = VRect.MinMaxRect(c.x, r.yMin, r.xMax, c.y);
                         }
                     }
                     else
@@ -186,12 +211,16 @@ namespace Pathfinding.RVO
                         if (p.y > c.y)
                         {
                             i = nodes[i].child01;
-                            r = Rect.MinMaxRect(r.xMin, c.y, c.x, r.yMax);
+                            //GG
+                                //r = Rect.MinMaxRect(r.xMin, c.y, c.x, r.yMax);
+                            r = VRect.MinMaxRect(r.xMin, c.y, c.x, r.yMax);
                         }
                         else
                         {
                             i = nodes[i].child00;
-                            r = Rect.MinMaxRect(r.xMin, r.yMin, c.x, c.y);
+                            //GG
+                            //r = Rect.MinMaxRect(r.xMin, r.yMin, c.x, c.y);
+                            r = VRect.MinMaxRect(r.xMin, r.yMin, c.x, c.y);
                         }
                     }
                 }
@@ -203,14 +232,18 @@ namespace Pathfinding.RVO
             nodes[0].CalculateMaxSpeed(nodes, 0);
         }
 
-        public void Query(Vector2 p, float speed, float timeHorizon, float agentRadius, Agent agent)
+        //GG
+        //public void Query(Vector2 p, float speed, float timeHorizon, float agentRadius, Agent agent)
+        public void Query(VInt2 p, long speed, long timeHorizon, long agentRadius, Agent agent)
         {
             new QuadtreeQuery
             {
                 p = p,
                 speed = speed,
                 timeHorizon = timeHorizon,
-                maxRadius = float.PositiveInfinity,
+                //GG
+                //maxRadius = float.PositiveInfinity,
+                maxRadius = int.MaxValue,
                 agentRadius = agentRadius,
                 agent = agent,
                 nodes = nodes
@@ -219,12 +252,18 @@ namespace Pathfinding.RVO
 
         struct QuadtreeQuery
         {
-            public Vector2 p;
-            public float speed, timeHorizon, agentRadius, maxRadius;
+            //GG
+            //public Vector2 p;
+            public VInt2 p;
+            //GG
+            //public float speed, timeHorizon, agentRadius, maxRadius;
+            public long speed, timeHorizon, agentRadius, maxRadius;
             public Agent agent;
             public Node[] nodes;
 
-            public void QueryRec(int i, Rect r)
+            //GG
+            //public void QueryRec(int i, Rect r)
+            public void QueryRec(int i, VRect r)
             {
                 // Determine the radius that we need to search to take all agents into account
                 // Note: the second agentRadius usage should actually be the radius of the other agents, not this agent
@@ -238,28 +277,38 @@ namespace Pathfinding.RVO
                     // Leaf node
                     for (Agent a = nodes[i].linkedList; a != null; a = a.next)
                     {
-                        float v = agent.InsertAgentNeighbour(a, radius * radius);
+                        //GG
+                        //float v = agent.InsertAgentNeighbour(a, radius * radius);
+                        long v = agent.InsertAgentNeighbour(a, (int)(radius * radius));
                         // Limit the search if the agent has hit the max number of nearby agents threshold
                         if (v < maxRadius * maxRadius)
                         {
-                            maxRadius = Mathf.Sqrt(v);
+                            //GG
+                            //maxRadius = Mathf.Sqrt(v);
+                            maxRadius = IntMath.Sqrt(v);
                         }
                     }
                 }
                 else
                 {
                     // Not a leaf node
-                    Vector2 c = r.center;
+                    //GG
+                    //Vector2 c = r.center;
+                    VInt2 c = r.center;
                     if (p.x - radius < c.x)
                     {
                         if (p.y - radius < c.y)
                         {
-                            QueryRec(nodes[i].child00, Rect.MinMaxRect(r.xMin, r.yMin, c.x, c.y));
+                            //GG
+                            //QueryRec(nodes[i].child00, Rect.MinMaxRect(r.xMin, r.yMin, c.x, c.y));
+                            QueryRec(nodes[i].child00, VRect.MinMaxRect(r.xMin, r.yMin, c.x, c.y));
                             radius = System.Math.Min(radius, maxRadius);
                         }
                         if (p.y + radius > c.y)
                         {
-                            QueryRec(nodes[i].child01, Rect.MinMaxRect(r.xMin, c.y, c.x, r.yMax));
+                            //GG
+                            //QueryRec(nodes[i].child01, Rect.MinMaxRect(r.xMin, c.y, c.x, r.yMax));
+                            QueryRec(nodes[i].child01, VRect.MinMaxRect(r.xMin, c.y, c.x, r.yMax));
                             radius = System.Math.Min(radius, maxRadius);
                         }
                     }
@@ -268,12 +317,16 @@ namespace Pathfinding.RVO
                     {
                         if (p.y - radius < c.y)
                         {
-                            QueryRec(nodes[i].child10, Rect.MinMaxRect(c.x, r.yMin, r.xMax, c.y));
+                            //GG
+                            //QueryRec(nodes[i].child10, Rect.MinMaxRect(c.x, r.yMin, r.xMax, c.y));
+                            QueryRec(nodes[i].child10, VRect.MinMaxRect(c.x, r.yMin, r.xMax, c.y));
                             radius = System.Math.Min(radius, maxRadius);
                         }
                         if (p.y + radius > c.y)
                         {
-                            QueryRec(nodes[i].child11, Rect.MinMaxRect(c.x, c.y, r.xMax, r.yMax));
+                            //GG
+                            //QueryRec(nodes[i].child11, Rect.MinMaxRect(c.x, c.y, r.xMax, r.yMax));
+                            QueryRec(nodes[i].child11, VRect.MinMaxRect(c.x, c.y, r.xMax, r.yMax));
                         }
                     }
                 }
@@ -282,7 +335,9 @@ namespace Pathfinding.RVO
 
         public void DebugDraw()
         {
-            DebugDrawRec(0, bounds);
+            //GG
+            //DebugDrawRec(0, bounds);
+            //DebugDrawRec(0, (Rect)bounds);
         }
 
         void DebugDrawRec(int i, Rect r)

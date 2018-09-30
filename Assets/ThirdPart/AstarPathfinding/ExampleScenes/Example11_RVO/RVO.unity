@@ -1584,7 +1584,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   uniqueID: 0
-  wallHeight: 5
+  wallHeight:
+    i: 5
 --- !u!114 &99
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1598,9 +1599,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   desiredSimulationFPS: 20
-  workerThreads: -1
+  workerThreads: 0
   doubleBuffering: 0
-  symmetryBreakingBias: 0.1
+  symmetryBreakingBias: 0
   movementPlane: 0
   drawObstacles: 0
 --- !u!114 &101
@@ -1695,7 +1696,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   data:
-    dataString: UEsDBBQAAAgIAABAIexDGbc57QEAALsDAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQF1Uk1z2jAQ/SuMzw1jgz97DGHSQwkdzCGTTg+LtLY1kSUqy4HA8N+rNXZqJq0v632r93b1tGePVWCAWTQb4KJtvK+T5MvEY1pZ3ZoVHJfGaOPQGaEoZS5O6NLApQeQr7CT+A1FWVkHxiNwIUW963k1HHOp98SLZtPkiix5id9RlbaiUz6BQm2wFFoNPXz3ORy5sNpshcS+EIcOtX3+TKphMEJeCIkIaRskGt2qANmggwxKfANlHw3sq7w1BTBcaU6y3oN+0naDv1th0KOz0DhjnOJCSyk4mhuhobjCpupaWNPeFLZoDAj1L87W4JjCev3NUH9AC0J2HnRuNa/u/zzx3kC2NOrdfHKhG0O5utZ+/qL02jCHev/h1ZzaagvW+XrVOLpAqu99PFHs5AptGPJ73SreLFA5uc+MeDoLgyxM/0vs+/a0KPSnaZLFPXvuT+eJH/XkKPKn0TxLO42m0geyct1aKRSOXKPKk3uihVYKGV1kZN1A659yRFMIBhubu8CqtZLvzy+jatkKfuup5wdxEWQs9bNZgOkuucviJIx85DwtomSXFF43qFDCCpA/UIG0g4luu9XfoRTUneIGmXvRbtVon7iBw6M41Xo0v1CFzplbB7W+Snzc2i0CSGcmX3b7n6O1QpVE9c4X7/IHUEsDBBQAAAgIAABAIeyeWM+ibwAAAHoAAAAJACQAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0Bq1YqSy0qzszPU7JSMNEz1DM001FQSi9KLMgoBooYgjilmSkgdrSSgaFZmqFlsoWBpZFhqkWSua6lmbmJqUFqSopFmql5knmaUixQfUllQapfYm4qRE9AYklGWmZeSmZeul5QanJicYk7yHCl2FoAUEsBAi0AFAAACAgAAEAh7EMZtzntAQAAuwMAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAEAh7J5Yz6JvAAAAegAAAAkAJAAAAAAAAAAAAAAAOgIAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAAD0AgAAAAA=
+    dataString: UEsDBBQAAAgIAABAIeynQE5q6wEAALwDAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQF1U02PmzAQ/SsR5y6C8N1js9H20GyqkMNqqx4m9gDWOnZqzCabKP+9HgIVUVsuw7zhvfE8DxePNWCAWTQb4KJrvc+z7NPMY1pZ3ZkVnJbGaOPQOaEoZSnO6NLQpUeQb7CT+BVF3VgHphNwIcV+N/D2cCqlPhAvmfvZDVnyGr+hqm1DXwUECrXBWmg19gjc43DkwmqzFRKHQho71A75C6nG4QR5JSQhpGuRaDRVBbJFBxmU+A7KPhk4NGVnKmC40pxkvUf9rO0Gf3XCoEffQuuMcYoLLaXgaO6ExuIK26ZvYU13V9iiMSDUvzhbg1MKG/Q3Y/0RLQjZe9C71b6598vMewfZ0VEfotmVJoZ6dav9+EnprWEJ+8MfryJqqy1Y5+tN4+QCqX4M8Uyxl6u0Yci/6E7xdoHKyf3NSP15HBZx/l/i0HegJXHg51mRDuwo8KMsSAZykgR+EhV5r9E2+khWrjsrhcKJa1R5dle00Eoho0Em1o204SonNIVgsLWlC6xZK/nx8jqp1p3g9556QZhWYcHyoJiHmO+yhyLN4iRAzvMqyXZZ5fUHFUpYAfI7KpB2NNFt9/SiFex7yQ0yd6X9rtFCcQPHJ3He68kAQlW6ZG4f1Ppeo3WbANK5yZf9D1CitULVRPUuV+/6G1BLAwQUAAAICAAAQCHsnljPom8AAAB6AAAACQAkAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAatWKkstKs7Mz1OyUjDRM9QzNNNRUEovSizIKAaKGII4pZkpIHa0koGhWZqhZbKFgaWRYapFkrmupZm5ialBakqKRZqpeZJ5mlIsUH1JZUGqX2JuKkRPQGJJRlpmXkpmXrpeUGpyYnGJO8hwpdhaAFBLAQItABQAAAgIAABAIeynQE5q6wEAALwDAAALACQAAAAAAAAAAAAAAAAAAABncmFwaDAuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLAQItABQAAAgIAABAIeyeWM+ibwAAAHoAAAAJACQAAAAAAAAAAAAAADgCAABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFQSwUGAAAAAAIAAgC4AAAA8gIAAAAA
     upgradeData: 
     file_cachedStartup: {fileID: 0}
     data_cachedStartup: 
@@ -1757,7 +1758,7 @@ MonoBehaviour:
   - 31
   heuristic: 2
   heuristicScale: 1
-  threadCount: -1
+  threadCount: 0
   maxFrameTime: 10
   minAreaSize: 10
   batchGraphUpdates: 0
@@ -1779,14 +1780,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c42c8ec55e7cf4e76b727f9cde90212d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agents: 200
+  agents: 4
   ringSize: 200
   mask:
     serializedVersion: 2
     m_Bits: 4294967293
   prefab: {fileID: 100002, guid: dbf1877db1c4f4ff3930d903c0f5bb28, type: 2}
   goalOffset: {x: 0, y: 10, z: 0}
-  repathRate: 1
+  repathRate: 9999
 --- !u!196 &109
 NavMeshSettings:
   serializedVersion: 2

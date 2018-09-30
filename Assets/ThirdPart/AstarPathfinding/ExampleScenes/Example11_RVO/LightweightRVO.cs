@@ -167,7 +167,9 @@ namespace Pathfinding.Examples
                 for (int i = 0; i < agentCount; i++)
                 {
                     Vector3 pos = new Vector3(Mathf.Cos(i * Mathf.PI * 2.0f / agentCount), 0, Mathf.Sin(i * Mathf.PI * 2.0f / agentCount)) * circleRad * (1 + Random.value * 0.01f);
-                    IAgent agent = sim.AddAgent(new Vector2(pos.x, pos.z), pos.y);
+                    //GG
+                    //IAgent agent = sim.AddAgent(new Vector2(pos.x, pos.z), pos.y);
+                    IAgent agent = sim.AddAgent((VInt2)new Vector2(pos.x, pos.z), (int)(pos.y * 1000));
                     agents.Add(agent);
                     goals.Add(-pos);
                     colors.Add(AstarMath.HSVToRGB(i * 360.0f / agentCount, 0.8f, 0.6f));
@@ -178,7 +180,9 @@ namespace Pathfinding.Examples
                 for (int i = 0; i < agentCount; i++)
                 {
                     Vector3 pos = new Vector3((i % 2 == 0 ? 1 : -1) * exampleScale, 0, (i / 2) * radius * 2.5f);
-                    IAgent agent = sim.AddAgent(new Vector2(pos.x, pos.z), pos.y);
+                    //GG
+                    //IAgent agent = sim.AddAgent(new Vector2(pos.x, pos.z), pos.y);
+                    IAgent agent = sim.AddAgent((VInt2)new Vector2(pos.x, pos.z), (int)(pos.y * 1000));
                     agents.Add(agent);
                     goals.Add(new Vector3(-pos.x, pos.y, pos.z));
                     colors.Add(i % 2 == 0 ? Color.red : Color.blue);
@@ -189,7 +193,9 @@ namespace Pathfinding.Examples
                 for (int i = 0; i < agentCount; i++)
                 {
                     Vector3 pos = new Vector3(Mathf.Cos(i * Mathf.PI * 2.0f / agentCount), 0, Mathf.Sin(i * Mathf.PI * 2.0f / agentCount)) * exampleScale;
-                    IAgent agent = sim.AddAgent(new Vector2(pos.x, pos.z), pos.y);
+                    //GG
+                    //IAgent agent = sim.AddAgent(new Vector2(pos.x, pos.z), pos.y);
+                    IAgent agent = sim.AddAgent((VInt2)new Vector2(pos.x, pos.z), (int)(pos.y * 1000));
                     agents.Add(agent);
                     goals.Add(new Vector3(0, pos.y, 0));
                     colors.Add(AstarMath.HSVToRGB(i * 360.0f / agentCount, 0.8f, 0.6f));
@@ -204,7 +210,9 @@ namespace Pathfinding.Examples
                     float angle = Random.value * Mathf.PI * 2.0f;
                     float targetAngle = Random.value * Mathf.PI * 2.0f;
                     Vector3 pos = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * uniformDistance(circleRad);
-                    IAgent agent = sim.AddAgent(new Vector2(pos.x, pos.z), pos.y);
+                    //GG
+                    //IAgent agent = sim.AddAgent(new Vector2(pos.x, pos.z), pos.y);
+                    IAgent agent = sim.AddAgent((VInt2)new Vector2(pos.x, pos.z), (int)(pos.y * 1000));
                     agents.Add(agent);
                     goals.Add(new Vector3(Mathf.Cos(targetAngle), 0, Mathf.Sin(targetAngle)) * uniformDistance(circleRad));
                     colors.Add(AstarMath.HSVToRGB(targetAngle * Mathf.Rad2Deg, 0.8f, 0.6f));
@@ -222,8 +230,12 @@ namespace Pathfinding.Examples
                     float angle = ((i % directions) / (float)directions) * Mathf.PI * 2.0f;
                     var dist = distanceBetweenGroups * ((i / (directions * AgentsPerDistance) + 1) + 0.3f * Random.value);
                     Vector3 pos = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * dist;
-                    IAgent agent = sim.AddAgent(new Vector2(pos.x, pos.z), pos.y);
-                    agent.Priority = (i % directions) == 0 ? 1 : 0.01f;
+                    //GG
+                    //IAgent agent = sim.AddAgent(new Vector2(pos.x, pos.z), pos.y);
+                    IAgent agent = sim.AddAgent((VInt2)new Vector2(pos.x, pos.z), (int)(pos.y * 1000));
+                    //GG
+                    //agent.Priority = (i % directions) == 0 ? 1 : 0.01f;
+                    agent.Priority = (i % directions) == 0 ? VFactor.one : new VFactor(1, 100);
                     agents.Add(agent);
                     goals.Add(-pos.normalized * distanceBetweenGroups * 3);
                     colors.Add(AstarMath.HSVToRGB(angle * Mathf.Rad2Deg, 0.8f, 0.6f));
@@ -243,9 +255,13 @@ namespace Pathfinding.Examples
             for (int i = 0; i < agents.Count; i++)
             {
                 IAgent agent = agents[i];
-                agent.Radius = radius;
+                //GG
+                /*agent.Radius = radius;
                 agent.AgentTimeHorizon = agentTimeHorizon;
-                agent.ObstacleTimeHorizon = obstacleTimeHorizon;
+                agent.ObstacleTimeHorizon = obstacleTimeHorizon;*/
+                agent.Radius = (int)(radius * 1000);
+                agent.AgentTimeHorizon = (int)(agentTimeHorizon * 1000);
+                agent.ObstacleTimeHorizon = (int)(obstacleTimeHorizon * 1000);
                 agent.MaxNeighbours = maxNeighbours;
                 agent.DebugDraw = i == 0 && debug;
             }
@@ -282,7 +298,9 @@ namespace Pathfinding.Examples
                 // Move agent
                 // This is the responsibility of this script, not the RVO system
                 Vector2 pos = agent.Position;
-                var deltaPosition = Vector2.ClampMagnitude(agent.CalculatedTargetPoint - pos, agent.CalculatedSpeed * Time.deltaTime);
+                //GG
+                //var deltaPosition = Vector2.ClampMagnitude(agent.CalculatedTargetPoint - pos, agent.CalculatedSpeed * Time.deltaTime);
+                var deltaPosition = Vector2.ClampMagnitude((Vector2)agent.CalculatedTargetPoint - pos, agent.CalculatedSpeed * Time.deltaTime);
                 pos += deltaPosition;
                 agent.Position = pos;
 
@@ -292,7 +310,9 @@ namespace Pathfinding.Examples
                 // Set the desired velocity for all agents
                 var target = new Vector2(goals[i].x, goals[i].z);
                 var dist = (target - pos).magnitude;
-                agent.SetTarget(target, Mathf.Min(dist, maxSpeed), maxSpeed * 1.1f);
+                //GG
+                //agent.SetTarget(target, Mathf.Min(dist, maxSpeed), maxSpeed * 1.1f);
+                agent.SetTarget(target, (int)(Mathf.Min(dist, maxSpeed * 1000)), (int)(maxSpeed * 1100f));
 
                 interpolatedVelocities[i] += deltaPosition;
                 if (interpolatedVelocities[i].magnitude > maxSpeed * 0.1f)
@@ -303,8 +323,12 @@ namespace Pathfinding.Examples
 
                 //Debug.DrawRay(new Vector3(pos.x, 0, pos.y), new Vector3(interpolatedVelocities[i].x, 0, interpolatedVelocities[i].y) * 10);
                 // Create a square with the "forward" direction along the agent's velocity
-                Vector3 forward = new Vector3(interpolatedRotations[i].x, 0, interpolatedRotations[i].y).normalized * agent.Radius;
-                if (forward == Vector3.zero) forward = new Vector3(0, 0, agent.Radius);
+                //GG
+                //Vector3 forward = new Vector3(interpolatedRotations[i].x, 0, interpolatedRotations[i].y).normalized * agent.Radius;
+                Vector3 forward = new Vector3(interpolatedRotations[i].x, 0, interpolatedRotations[i].y).normalized * (int)agent.Radius;
+                //GG
+                //if (forward == Vector3.zero) forward = new Vector3(0, 0, agent.Radius);
+                if (forward == Vector3.zero) forward = new Vector3(0, 0, (int)agent.Radius / 1000f);
                 Vector3 right = Vector3.Cross(Vector3.up, forward);
                 Vector3 orig = new Vector3(agent.Position.x, agent.ElevationCoordinate, agent.Position.y) + renderingOffset;
 

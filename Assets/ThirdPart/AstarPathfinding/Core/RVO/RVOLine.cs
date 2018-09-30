@@ -9,7 +9,10 @@ namespace Pathfinding.RVO
 	 */
     public struct Line
     {
-        public Vector2 point;
-        public Vector2 dir;
+        /*public Vector2 point;
+        public Vector2 dir;*/
+        //GG
+        public VInt2 point;
+        public VInt2 dir;
     }
 }

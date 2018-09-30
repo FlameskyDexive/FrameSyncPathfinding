@@ -146,7 +146,9 @@ namespace Pathfinding
 		 *
 		 * \see #GetContours(NavGraph)
 		 */
-        public static void GetContours(GridGraph grid, System.Action<Vector3[]> callback, float yMergeThreshold, GridNodeBase[] nodes = null)
+        //GG
+        //public static void GetContours(GridGraph grid, System.Action<Vector3[]> callback, float yMergeThreshold, GridNodeBase[] nodes = null)
+        public static void GetContours(GridGraph grid, System.Action<VInt3[]> callback, int yMergeThreshold, GridNodeBase[] nodes = null)
         {
             // Set of all allowed nodes or null if all nodes are allowed
             HashSet<GridNodeBase> nodeSet = nodes != null ? new HashSet<GridNodeBase>(nodes) : null;
@@ -156,11 +158,15 @@ namespace Pathfinding
             int[] neighbourXOffsets = grid.neighbourXOffsets;
             int[] neighbourZOffsets = grid.neighbourZOffsets;
             var neighbourIndices = grid.neighbours == NumNeighbours.Six ? GridGraph.hexagonNeighbourIndices : new[] { 0, 1, 2, 3 };
-            var offsetMultiplier = grid.neighbours == NumNeighbours.Six ? 1 / 3f : 0.5f;
+            //GG
+            //var offsetMultiplier = grid.neighbours == NumNeighbours.Six ? 1 / 3f : 0.5f;
+            var offsetMultiplier = grid.neighbours == NumNeighbours.Six ? new VFactor(1, 3) : new VFactor(1, 2);
 
             if (nodes != null)
             {
-                var trace = ListPool<Vector3>.Claim();
+                //GG
+                //var trace = ListPool<Vector3>.Claim();
+                var trace = ListPool<VInt3>.Claim();
                 var seenStates = new HashSet<int>();
 
                 for (int i = 0; i < nodes.Length; i++)
@@ -201,11 +207,15 @@ namespace Pathfinding
                                         var d1 = neighbourIndices[dir];
 
                                         // Position in graph space of the vertex
-                                        Vector3 graphSpacePos = new Vector3(node.XCoordinateInGrid + 0.5f, 0, node.ZCoordinateInGrid + 0.5f);
+                                        //GG
+                                        //Vector3 graphSpacePos = new Vector3(node.XCoordinateInGrid + 0.5f, 0, node.ZCoordinateInGrid + 0.5f);
+                                        VInt3 graphSpacePos = new VInt3(node.XCoordinateInGrid, 0, node.ZCoordinateInGrid);
                                         // Offset along diagonal to get the correct XZ coordinates
                                         graphSpacePos.x += (neighbourXOffsets[d0] + neighbourXOffsets[d1]) * offsetMultiplier;
                                         graphSpacePos.z += (neighbourZOffsets[d0] + neighbourZOffsets[d1]) * offsetMultiplier;
-                                        graphSpacePos.y = grid.transform.InverseTransform((Vector3)node.position).y;
+                                        //GG
+                                        //graphSpacePos.y = grid.transform.InverseTransform((Vector3)node.position).y;
+                                        graphSpacePos.y = grid.transform.InverseTransform(node.position).y;
 
                                         if (trace.Count >= 2)
                                         {
@@ -244,7 +254,9 @@ namespace Pathfinding
                     }
                 }
 
-                ListPool<Vector3>.Release(ref trace);
+                //GG
+                //ListPool<Vector3>.Release(ref trace);
+                ListPool<VInt3>.Release(ref trace);
             }
         }
     }

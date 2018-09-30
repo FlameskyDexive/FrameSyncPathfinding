@@ -36,8 +36,10 @@ namespace Pathfinding.RVO {
 		/** All obstacles added */
 		private List<ObstacleVertex> addedObstacles;
 
-		/** Original vertices for the obstacles */
-		private List<Vector3[]> sourceObstacles;
+        /** Original vertices for the obstacles */
+	    //GG
+        //private List<Vector3[]> sourceObstacles;
+        private List<VInt3[]> sourceObstacles;
 
 		/** Create Obstacles.
 		 * Override this and add logic for creating obstacles.
@@ -63,7 +65,9 @@ namespace Pathfinding.RVO {
 		 */
 		protected abstract bool StaticObstacle { get; }
 
-		protected abstract float Height { get; }
+	    //GG
+        //protected abstract float Height { get; }
+        protected abstract int Height { get; }
 		/** Called in the editor.
 		 * This function should return true if any variables which can change the shape or position of the obstacle
 		 * has changed since the last call to this function. Take a look at the RVOSquareObstacle for an example.
@@ -191,7 +195,9 @@ namespace Pathfinding.RVO {
 		/** Creates obstacles */
 		public void Start () {
 			addedObstacles = new List<ObstacleVertex>();
-			sourceObstacles = new List<Vector3[]>();
+		    //GG
+			//sourceObstacles = new List<Vector3[]>();
+            sourceObstacles = new List<VInt3[]>();
 			prevUpdateMatrix = GetMatrix();
 			CreateObstacles();
 		}
@@ -221,9 +227,11 @@ namespace Pathfinding.RVO {
 			sim = RVOSimulator.active.GetSimulator();
 		}
 
-		/** Adds an obstacle with the specified vertices.
+        /** Adds an obstacle with the specified vertices.
 		 * The vertices array might be changed by this function. */
-		protected void AddObstacle (Vector3[] vertices, float height) {
+	    //GG
+        //protected void AddObstacle (Vector3[] vertices, float height) {
+        protected void AddObstacle (VInt3[] vertices, int height) {
 			if (vertices == null) throw new System.ArgumentNullException("Vertices Must Not Be Null");
 			if (height < 0) throw new System.ArgumentOutOfRangeException("Height must be non-negative");
 			if (vertices.Length < 2) throw new System.ArgumentException("An obstacle must have at least two vertices");
@@ -247,18 +255,22 @@ namespace Pathfinding.RVO {
 			AddObstacleInternal(vertices, height);
 		}
 
-		/** Adds an obstacle.
+        /** Adds an obstacle.
 		 * Winding is assumed to be correct and very little error checking is done.
 		 */
-		private void AddObstacleInternal (Vector3[] vertices, float height) {
+	    //GG
+        //private void AddObstacleInternal (Vector3[] vertices, float height) {
+        private void AddObstacleInternal (VInt3[] vertices, int height) {
 			addedObstacles.Add(sim.AddObstacle(vertices, height, GetMatrix(), layer));
 			sourceObstacles.Add(vertices);
 		}
 
-		/** Winds the vertices correctly.
+        /** Winds the vertices correctly.
 		 * Winding order is determined from #obstacleMode.
 		 */
-		private void WindCorrectly (Vector3[] vertices) {
+	    //GG
+        //private void WindCorrectly (Vector3[] vertices) {
+        private void WindCorrectly (VInt3[] vertices) {
 			int leftmost = 0;
 			float leftmostX = float.PositiveInfinity;
 

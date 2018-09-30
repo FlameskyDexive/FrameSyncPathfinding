@@ -51,6 +51,7 @@ public class MovementTest : MonoBehaviour
         
         //获取当前点所在的图形节点
         GraphNode startNode = AstarPath.active.GetNearest((VInt3)pointRoot.GetChild(0).position).node;
+        var other = startNode as TriangleMeshNode;
         GameObject go4 = Instantiate(ball);
         go4.transform.position = (Vector3)startNode.position;
         Debug.Log("--0--" + startNode.position);

@@ -500,7 +500,9 @@ namespace Pathfinding
             {
                 // Use RVOController to get a processed delta position
                 // such that collisions will be avoided if possible
-                return movementPlane.ToPlane(rvoController.CalculateMovementDelta(movementPlane.ToWorld(position, 0), deltaTime));
+                //GG
+                //return movementPlane.ToPlane(rvoController.CalculateMovementDelta(movementPlane.ToWorld(position, 0), deltaTime));
+                return movementPlane.ToPlane(rvoController.CalculateMovementDelta(movementPlane.ToWorld(position, 0), (int)(deltaTime * 1000)));
             }
             // Direction and distance to move during this frame
             return Vector2.ClampMagnitude(velocity2D * deltaTime, distanceToEndOfPath);

@@ -9,11 +9,15 @@ namespace Pathfinding.RVO {
 			EditorGUILayout.Separator();
 			EditorGUILayout.LabelField("Shape", EditorStyles.boldLabel);
 			PropertyField("radius");
-			Clamp("radius", 0.01f);
+		    //GG
+			//Clamp("radius", 0.01f);
+			ClampInt("radius", 1);
 
 			if ((target as RVOController).movementPlane == MovementPlane.XZ) {
 				PropertyField("height");
-				Clamp("height", 0.01f);
+			    //GG
+                //Clamp("height", 0.01f);
+                ClampInt("height", 1);
 				PropertyField("center");
 			}
 
@@ -24,7 +28,8 @@ namespace Pathfinding.RVO {
 			PropertyField("maxNeighbours");
 			PropertyField("layer");
 			PropertyField("collidesWith");
-			PropertyField("priority");
+		    //GG
+            //PropertyField("priority");
 			EditorGUILayout.Separator();
 			EditorGUI.BeginDisabledGroup(PropertyField("lockWhenNotMoving"));
 			PropertyField("locked");
